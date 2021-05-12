@@ -27,7 +27,7 @@ The time we greeted you.
 
 ### Install dependencies
 
-#### `npm install`
+`npm install`
 
 ### Run
 
