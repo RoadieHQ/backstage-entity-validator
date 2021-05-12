@@ -1,0 +1,24 @@
+{
+  "name": "backstage-entity-validator",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "bev": "./bin/bev"
+  },
+  "scripts": {
+    "validate": "node src/index.js",
+    "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "@backstage/catalog-model": "^0.7.8",
+    "@actions/core": "^1.2.7"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.27.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

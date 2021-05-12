@@ -1,0 +1,22 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sample-service-5
+  description: |
+    A service for testing Backstage functionality. Configured for GitHub Actions, Sentry, AWS Lambda, Datadog and mis-configured techdocs.
+  annotations:
+    github.com/project-slug: roadiehq/sample-service
+    # The Sentry organization is stored in the app-config.yaml of the Backstage instance.
+    sentry.io/project-slug: sample-service
+    aws.com/lambda-function-name: HelloWorld
+    aws.com/lambda-region: eu-west-1
+    backstage.io/techdocs-ref: https://github.com/RoadieHQ/sample-service/tree/main
+    jira/project-key: TEST
+    jira/component: COMP
+    snyk.io/org-name: roadie
+spec:
+  type: service
+  owner: user:dtuite
+  lifecycle: experimental
+  providesApis:
+    - sample-service

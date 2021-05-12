@@ -1,0 +1,10 @@
+name: 'Backstage entity validator'
+description: 'Run through a default set of schema validation for backstage entity catalog-info.yaml file'
+inputs:
+  path:
+    description: 'path to the catalog-info.yaml file to validate'
+    required: true
+    default: "catalog-info.yaml"
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
