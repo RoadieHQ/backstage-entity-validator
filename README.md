@@ -23,7 +23,7 @@ The time we greeted you.
     path: 'catalog-info-1.yaml'
 ```
 
-## Running with NPM
+## Running with NPM from the repository
 
 ### Install dependencies
 
@@ -39,3 +39,13 @@ The time we greeted you.
 #### As an executable
 
 `bin/bev <path-to-file-to-be-validated.yaml>`
+
+## Running with NPM as a globally installed package
+
+### Install this package
+
+`npm install @roadiehq/backstage-entity-validator -g`
+
+### Run
+
+`validate-entity <path-to-file-to-be-validated.yaml>`
