@@ -23,7 +23,7 @@
 ## Checklist:
 
 <!--
-	Thank you for contributing to CircleCI Orbs!
+	Thank you for contributing to this package!
 	before submitting your a request, please go through the following
 	items and place an x in the [ ] if they have been completed
 -->

@@ -1,6 +1,6 @@
 ---
 name: "\U0001F680 Feature Request"
-about: Propose changes to the orb.
+about: Propose changes to the package.
 title: ''
 labels: feature_request
 assignees: ''
