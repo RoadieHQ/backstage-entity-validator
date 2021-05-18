@@ -109,7 +109,12 @@
             {"properties": {"aws.com/lambda-region": {"type": "string"}}},
             {"properties": {"jira/project-key": {"type": "string"}}},
             {"properties": {"snyk.io/org-name": {"type": "string"}}},
-            {"properties": {"graph.microsoft.com/tenant-id": {"type": "string"}}}
+            {"properties": {"graph.microsoft.com/tenant-id": {"type": "string"}}},
+            {"properties": {"datadog/dashboard-url": {"type": "string",
+              "format": "uri"
+            }
+            }
+            }
           ]
         }
       }
