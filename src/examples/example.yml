@@ -1,13 +1,11 @@
 description: >
-  Sample example description.
-# Provide a use-case based example for using this orb.
-# Everything in the `usage` section will be displayed in the orb registry.
-# Comments are not retained.
+  Sample catalog-info.yaml validation
 usage:
   version: 2.1
   orbs:
-    <orb-name>: <namespace>/<orb-name>@1.2.3
+    entity-validator: "roadiehq/backstage-entity-validator@0.2.3"
   workflows:
-    use-my-orb:
+    use-entity-validator:
       jobs:
-        - <orb-name>/<job-name>
+        - entity-validator/validate:
+            path: catalog-info.yaml

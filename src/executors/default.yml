@@ -1,5 +1,5 @@
 description: >
-  This is a sample executor using Docker and Node.
+  Node executor to have npm available
 docker:
   - image: 'cimg/node:<<parameters.tag>>'
 parameters:
