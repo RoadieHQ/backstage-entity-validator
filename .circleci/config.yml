@@ -45,8 +45,7 @@ workflows:
             - orb-tools/lint
             - orb-tools/pack
             - shellcheck/check
-  integration-test_deploy:
-    when: << pipeline.parameters.run-integration-tests >>
+  publish-orb:
     jobs:
       # Publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
