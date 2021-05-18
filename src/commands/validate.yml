@@ -10,4 +10,4 @@ steps:
       environment:
         PARAM_PATH: <<parameters.path>>
       name: Validate entity schema
-      command: <<include(scripts/bev)>>
+      command: <<include(scripts/circle.sh)>>
