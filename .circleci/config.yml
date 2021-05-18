@@ -21,15 +21,11 @@ parameters:
     default: "dev:alpha"
 
 jobs:
-  # Define one or more jobs which will utilize your orb's commands and parameters to validate your changes.
   integration-test-1:
     docker:
       - image: cimg/base:stable
     steps:
       - checkout
-      # "greet" is a sample command packaged with this orb config.
-      # This sample integration test will run as long as the greet command exists. Once you remove the greet command you should remove this line.
-      # Push new changes first, before adding new tests to your config.
       - backstage-entity-validator/validate
 
 workflows:
@@ -49,11 +45,6 @@ workflows:
             - orb-tools/lint
             - orb-tools/pack
             - shellcheck/check
-
-  # This `integration-test_deploy` workflow will only run
-  # when the run-integration-tests pipeline parameter is set to true.
-  # It is meant to be triggered by the "trigger-integration-tests-workflow"
-  # job, and run tests on <your orb>@dev:${CIRCLE_SHA1:0:7}.
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
