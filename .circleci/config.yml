@@ -45,6 +45,10 @@ workflows:
             - orb-tools/lint
             - orb-tools/pack
             - shellcheck/check
+      - orb-tools/trigger-integration-tests-workflow:
+          name: trigger-integration-dev
+          requires:
+            - orb-tools/publish-dev
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
