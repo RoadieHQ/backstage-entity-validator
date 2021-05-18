@@ -1,0 +1,11 @@
+version: 2.1
+
+description: >
+  Run through a default set of schema validation for backstage entity catalog-info.yaml file
+
+display:
+  home_url: "https://roadie.io/docs"
+  source_url: "https://github.com/RoadieHQ/backstage-entity-validator"
+
+orbs:
+  node: circleci/node@4.3.0
