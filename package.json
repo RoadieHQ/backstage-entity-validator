@@ -1,6 +1,6 @@
 {
   "name": "backstage-entity-validator",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -11,6 +11,8 @@
     "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt"
   },
   "dependencies": {
+    "ajv": "^8.4.0",
+    "ajv-formats": "^2.1.0",
     "js-yaml": "^4.1.0",
     "@backstage/catalog-model": "^0.7.8",
     "@actions/core": "^1.2.7"
