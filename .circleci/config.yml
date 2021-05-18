@@ -49,7 +49,6 @@ workflows:
           requires:
             - orb-tools/lint
             - orb-tools/pack
-            - bats/run
             - shellcheck/check
       # Trigger an integration workflow to test the
       # dev:${CIRCLE_SHA1:0:7} version of your orb
@@ -73,7 +72,7 @@ workflows:
       # be skipped.
       # e.g. [semver:patch] will cause a patch version to be published.
       - orb-tools/dev-promote-prod-from-commit-subject:
-          orb-name: <namespace>/<orb-name>
+          orb-name: roadiehq/backstage-entity-validator
           context: <publishing-context>
           add-pr-comment: false
           fail-if-semver-not-indicated: true
