@@ -1,0 +1,11 @@
+description: >
+  Sample catalog-info.yaml validation
+usage:
+  version: 2.1
+  orbs:
+    entity-validator: "roadiehq/backstage-entity-validator@0.2.3"
+  workflows:
+    use-entity-validator:
+      jobs:
+        - entity-validator/validate:
+            path: catalog-info.yaml

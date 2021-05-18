@@ -1,0 +1,13 @@
+description: >
+  Runs through a default set of schema validation for backstage entity catalog-info.yaml file# What will this command do?
+parameters:
+  path:
+    description: 'path to the catalog-info.yaml file to validate'
+    type: string
+    default: "catalog-info.yaml"
+steps:
+  - run:
+      environment:
+        PARAM_PATH: <<parameters.path>>
+      name: Validate entity schema
+      command: <<include(scripts/circle.sh)>>

@@ -1,44 +1,66 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. 
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
 orbs:
-  # The Node.js orb contains a set of prepackaged CircleCI configuration you can utilize
-  # Orbs reduce the amount of configuration required for common tasks. 
-  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
-  node: circleci/node@4.1
+  orb-tools: circleci/orb-tools@10.0
+  bats: circleci/bats@1.0
+  shellcheck: circleci/shellcheck@2.0
 
+# Pipeline Parameters
+## These parameters are used internally by orb-tools. Skip to the Jobs section.
+parameters:
+  run-integration-tests:
+    description: An internal flag to prevent integration test from running before a development version has been created.
+    type: boolean
+    default: false
+  dev-orb-version:
+    description: >
+      The development version of the orb to test.
+      This value is automatically adjusted by the "trigger-integration-tests-workflow" job to correspond with the specific version created by the commit and should not be edited.
+      A "dev:alpha" version must exist for the initial pipeline run.
+    type: string
+    default: "dev:alpha"
 
 jobs:
-  # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
-  validate:  
-    # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
-    # You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/node
+  integration-test-1:
     docker:
-      - image: cimg/node:15.1
-    # Then run your tests!
-    # CircleCI will report the results back to your VCS provider.
+      - image: cimg/base:stable
     steps:
-      # Checkout the code as the first step.
       - checkout
-      # Next, the node orb's install-packages step will install the dependencies from a package.json.
-      # The orb install-packages step will also automatically cache them for faster future runs.
-      - node/install-packages
-      # If you are using yarn instead npm, remove the line above and uncomment the two lines below.
-      # - node/install-packages:
-      #     pkg-manager: yarn 
-      - run:
-          name: Validate
-          command: npm validate
+      - backstage-entity-validator/validate
 
 workflows:
-  # Below is the definition of your workflow.
-  # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the build-and-test job above.
-  # CircleCI will run this workflow on every commit.
-  # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows
-  sample: 
+  # Prior to producing a development orb (which requires credentials) basic validation, linting, and even unit testing can be performed.
+  # This workflow will run on every commit
+  test-pack:
     jobs:
-      - validate
-      # For running simple node tests, you could optionally use the node/test job from the orb to replicate and replace the job above in fewer lines.
-      # - node/test
+      - orb-tools/lint # Lint Yaml files
+      - orb-tools/pack # Pack orb source
+      - shellcheck/check:
+          dir: ./src/scripts
+          exclude: SC2148
+      # Publish development version(s) of the orb.
+      - orb-tools/publish-dev:
+          orb-name: roadiehq/backstage-entity-validator
+          requires:
+            - orb-tools/lint
+            - orb-tools/pack
+            - shellcheck/check
+  integration-test_deploy:
+    when: << pipeline.parameters.run-integration-tests >>
+    jobs:
+      # Publish a semver version of the orb. relies on
+      # the commit subject containing the text "[semver:patch|minor|major|skip]"
+      # as that will determine whether a patch, minor or major
+      # version will be published or if publishing should
+      # be skipped.
+      # e.g. [semver:patch] will cause a patch version to be published.
+      - orb-tools/dev-promote-prod-from-commit-subject:
+          orb-name: roadiehq/backstage-entity-validator
+          add-pr-comment: false
+          fail-if-semver-not-indicated: true
+          publish-version-tag: false
+          filters:
+            branches:
+              only:
+                - master
+                - main
