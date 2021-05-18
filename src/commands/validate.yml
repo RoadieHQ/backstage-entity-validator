@@ -3,7 +3,7 @@ description: >
 parameters:
   path:
     description: 'path to the catalog-info.yaml file to validate'
-    required: true
+    type: string
     default: "catalog-info.yaml"
 steps:
   - run:
