@@ -18,7 +18,7 @@ The time we greeted you.
 
 ### Example usage
 ```
-- uses:  RoadieHQ/backstage-entity-validator@v0.2.4
+- uses:  RoadieHQ/backstage-entity-validator@v0.2.5
   with:
     path: 'catalog-info-1.yaml'
 ```
@@ -45,7 +45,7 @@ description: >
 usage:
   version: 2.1
   orbs:
-    entity-validator: "roadiehq/backstage-entity-validator@0.2.4"
+    entity-validator: "roadiehq/backstage-entity-validator@0.2.5"
   workflows:
     use-entity-validator:
       jobs:
