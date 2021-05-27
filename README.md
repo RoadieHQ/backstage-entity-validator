@@ -14,8 +14,6 @@ This package can be used as a GitHub action or a standalone node.js module
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
 
-The time we greeted you.
-
 ### Example usage
 ```
 - uses:  RoadieHQ/backstage-entity-validator@v0.2.6
@@ -35,8 +33,6 @@ The time we greeted you.
 ### Outputs
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
-
-The time we greeted you.
 
 ### Example config
 ```
