@@ -47145,10 +47145,22 @@ const VALIDATORS = {
   user: userEntityV1alpha1Validator,
 }
 
+function modifyPlaceholders(obj) {
+  for (let k in obj) {
+    if (typeof obj[k] === "object") {
+      if(obj[k].$text){
+        obj[k] = "DUMMY TEXT"
+        return;
+      }
+      modifyPlaceholders(obj[k])
+    }
+  }
+}
+
 exports.validate = async (filepath = './sample/catalog-info.yml') => {
   const validator = ajv.compile(annotationSchema)
-  const validateAnnotations = (entity) => {
-    console.log('Validating entity annotations')
+  const validateAnnotations = (entity, idx) => {
+    console.log(`Validating entity annotations for file ${filepath}, document ${idx}`)
     const result = validator(entity)
     if (result === true) {
       return true
@@ -47165,25 +47177,29 @@ exports.validate = async (filepath = './sample/catalog-info.yml') => {
 
   }
 
-  console.log(`Validating Entity Schema for file ${filepath}\n`)
   try {
     const fileContents = fs.readFileSync(filepath, 'utf8')
-    const data = yaml.load(fileContents)
+    const data = yaml.loadAll(fileContents)
+    data.forEach(it => {
+      modifyPlaceholders(it)
+    })
     const entityPolicies = EntityPolicies.allOf([
       new DefaultNamespaceEntityPolicy(),
       new FieldFormatEntityPolicy(),
       new NoForeignRootFieldsEntityPolicy(),
       new SchemaValidEntityPolicy()]
     )
-    const respo = await entityPolicies.enforce(data)
-    console.log('Running file through validators\n')
+    const responses = await Promise.all(data.map((it, idx) => {
+      console.log(`Validating Entity Schema policies for file ${filepath}, document ${idx}`)
+      return entityPolicies.enforce(it)
+    }))
     const validateEntityKind = async (entity) => {
       const results = {}
       for (const validator of Object.entries(VALIDATORS)) {
         const result = await validator[1].check(entity)
         results[validator[0]] = result
         if (result === true) {
-          console.log(`Validated entity kind '${validator[0]}' successfully.\n`)
+          console.log(`Validated entity kind '${validator[0]}' successfully.`)
         }
       }
       return results
@@ -47192,11 +47208,12 @@ exports.validate = async (filepath = './sample/catalog-info.yml') => {
       const results = await Promise.all(entities.map(validateEntityKind))
       return Object.values(results[0]).filter((r) => r === false).length > 0
     }
-    const validKind = await validateEntities([data])
-    const validAnnotations = validateAnnotations(data)
+    const validKind = await validateEntities(data)
+    const validAnnotations = data.map((it, idx) => validateAnnotations(it, idx))
 
     if (validKind && validAnnotations) {
-      console.log('Entity Schema policy validated\n', yaml.dump(respo))
+      console.log('Entity Schema policies validated\n')
+      responses.forEach(it => console.log(yaml.dump(it)))
     }
   } catch (e) {
     core.setFailed(`Action failed with error ${e}`)
