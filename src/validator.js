@@ -30,6 +30,18 @@ const VALIDATORS = {
   user: userEntityV1alpha1Validator,
 }
 
+function modifyPlaceholders(obj) {
+  for (let k in obj) {
+    if (typeof obj[k] === "object") {
+      if(obj[k].$text){
+        obj[k] = "DUMMY TEXT"
+        return;
+      }
+      modifyPlaceholders(obj[k])
+    }
+  }
+}
+
 exports.validate = async (filepath = './sample/catalog-info.yml') => {
   const validator = ajv.compile(annotationSchema)
   const validateAnnotations = (entity, idx) => {
@@ -53,6 +65,9 @@ exports.validate = async (filepath = './sample/catalog-info.yml') => {
   try {
     const fileContents = fs.readFileSync(filepath, 'utf8')
     const data = yaml.loadAll(fileContents)
+    data.forEach(it => {
+      modifyPlaceholders(it)
+    })
     const entityPolicies = EntityPolicies.allOf([
       new DefaultNamespaceEntityPolicy(),
       new FieldFormatEntityPolicy(),

@@ -14,11 +14,9 @@ This package can be used as a GitHub action or a standalone node.js module
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
 
-The time we greeted you.
-
 ### Example usage
 ```
-- uses:  RoadieHQ/backstage-entity-validator@v0.2.5
+- uses:  RoadieHQ/backstage-entity-validator@v0.2.6
   with:
     path: 'catalog-info-1.yaml'
 ```
@@ -36,8 +34,6 @@ The time we greeted you.
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
 
-The time we greeted you.
-
 ### Example config
 ```
 description: >
@@ -45,7 +41,7 @@ description: >
 usage:
   version: 2.1
   orbs:
-    entity-validator: "roadiehq/backstage-entity-validator@0.2.5"
+    entity-validator: "roadiehq/backstage-entity-validator@0.2.6"
   workflows:
     use-entity-validator:
       jobs:

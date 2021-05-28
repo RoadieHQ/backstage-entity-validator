@@ -1,6 +1,6 @@
 {
   "name": "@roadiehq/backstage-entity-validator",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "author": "RoadieHQ",
   "description": "Backstage entity validator",
   "main": "index.js",
@@ -21,7 +21,8 @@
   },
   "scripts": {
     "validate": "node src/index.js",
-    "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt"
+    "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt",
+    "test": "jest"
   },
   "dependencies": {
     "ajv": "^8.4.0",
@@ -31,7 +32,13 @@
     "@actions/core": "^1.2.7"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.27.0"
+    "@vercel/ncc": "^0.27.0",
+    "jest": "^27.0.1"
   },
-  "keywords": ["backstage", "validation", "linting", "roadie"]
+  "keywords": [
+    "backstage",
+    "validation",
+    "linting",
+    "roadie"
+  ]
 }
