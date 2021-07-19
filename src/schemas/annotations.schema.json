@@ -48,7 +48,7 @@
               "properties": {
                 "backstage.io/source-location": {
                   "type": "string",
-                  "pattern": "(url|gitlab|github|azure\/api|dir):.*$"
+                  "pattern": "((url|gitlab|github|azure\/api):.*|(dir):.*\/)$"
                 }
               }
             },
