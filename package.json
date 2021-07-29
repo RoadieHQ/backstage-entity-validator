@@ -25,11 +25,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@actions/core": "^1.2.7",
+    "@backstage/catalog-model": "^0.7.8",
     "ajv": "^8.4.0",
     "ajv-formats": "^2.1.0",
     "js-yaml": "^4.1.0",
-    "@backstage/catalog-model": "^0.7.8",
-    "@actions/core": "^1.2.7"
+    "minimist": "^1.2.5"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.27.0",

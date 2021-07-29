@@ -50,29 +50,64 @@ usage:
 ```
 
 
-## Running with NPM from the repository
+## Using the CLI
 
-### Install dependencies
+### Usage
 
-`npm install`
+```
+Usage: validate-entity [OPTION] [FILE]
 
-### Run
+Validates Backstage entity definition files.  Files may be specified as
+arguments or via STDIN, one per line.
 
-#### Via NPM
+OPTION:
+-h  display help
+-q  minimal output while validating entities
+-i  validate files provided over standard input
+```
 
-`npm run validate <path-to-file-to-be-validated.yaml>`
+Examples:
 
+```
+# in a shell
 
-#### As an executable
+# validate all entities contained in the "catalog" and subfolders
+validate-entity catalog/**/*.yaml
 
-`bin/bev <path-to-file-to-be-validated.yaml>`
+# list of files produced by a script to validate
+find-relevant-yaml-files.sh | validate-entity -i 
+```
 
-## Running with NPM as a globally installed package
+### Installing and running
 
-### Install this package
+#### As a global tool
 
-`npm install @roadiehq/backstage-entity-validator -g`
+```
+# install
+npm install --global @roadiehq/backstage-entity-validator
 
-### Run
+# run
+validate-entity file1.yaml file2.yaml
+```
+#### In an existing node project
 
-`validate-entity <path-to-file-to-be-validated.yaml>`
+```
+# install
+npm install --save-dev @roadiehq/backstage-entity-validator
+
+# run
+npx validate-entity file1.yaml file2.yaml
+```
+
+#### When working on this tool
+
+```
+# install
+npm install
+
+# run
+npm run validate file1.yaml file2.yaml
+
+# or
+bin/bev file1.yaml file2.yaml
+```

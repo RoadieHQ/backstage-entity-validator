@@ -15,9 +15,7 @@ const {
 } = require('@backstage/catalog-model')
 const annotationSchema = require('./schemas/annotations.schema.json')
 
-const core = require('@actions/core')
 const Ajv = require('ajv')
-
 const ajv = new Ajv({verbose: true})
 require('ajv-formats')(ajv)
 
@@ -42,10 +40,15 @@ function modifyPlaceholders(obj) {
   }
 }
 
-exports.validate = async (filepath = './sample/catalog-info.yml') => {
-  const validator = ajv.compile(annotationSchema)
+exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true) => {
+  let validator
   const validateAnnotations = (entity, idx) => {
-    console.log(`Validating entity annotations for file ${filepath}, document ${idx}`)
+    if (!validator) {
+      validator = ajv.compile(annotationSchema);
+    }
+    if (verbose) {
+      console.log(`Validating entity annotations for file ${filepath}, document ${idx}`);
+    }
     const result = validator(entity)
     if (result === true) {
       return true
@@ -75,7 +78,9 @@ exports.validate = async (filepath = './sample/catalog-info.yml') => {
       new SchemaValidEntityPolicy()]
     )
     const responses = await Promise.all(data.map((it, idx) => {
-      console.log(`Validating Entity Schema policies for file ${filepath}, document ${idx}`)
+      if (verbose) {
+        console.log(`Validating Entity Schema policies for file ${filepath}, document ${idx}`);
+      }
       return entityPolicies.enforce(it)
     }))
     const validateEntityKind = async (entity) => {
@@ -83,8 +88,8 @@ exports.validate = async (filepath = './sample/catalog-info.yml') => {
       for (const validator of Object.entries(VALIDATORS)) {
         const result = await validator[1].check(entity)
         results[validator[0]] = result
-        if (result === true) {
-          console.log(`Validated entity kind '${validator[0]}' successfully.`)
+        if (result === true && verbose) {
+          console.log(`Validated entity kind '${validator[0]}' successfully.`);
         }
       }
       return results
@@ -96,14 +101,11 @@ exports.validate = async (filepath = './sample/catalog-info.yml') => {
     const validKind = await validateEntities(data)
     const validAnnotations = data.map((it, idx) => validateAnnotations(it, idx))
 
-    if (validKind && validAnnotations) {
+    if (validKind && validAnnotations && verbose) {
       console.log('Entity Schema policies validated\n')
       responses.forEach(it => console.log(yaml.dump(it)))
     }
   } catch (e) {
-    core.setFailed(`Action failed with error ${e}`)
-    console.log(e)
     throw new Error(e)
   }
-
 }
