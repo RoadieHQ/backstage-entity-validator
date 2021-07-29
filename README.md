@@ -16,7 +16,7 @@ None. Prints out the validated YAML on success. Prints out errors on invalid YAM
 
 ### Example usage
 ```
-- uses:  RoadieHQ/backstage-entity-validator@v0.2.7
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.0
   with:
     path: 'catalog-info-1.yaml'
 ```
@@ -41,7 +41,7 @@ description: >
 usage:
   version: 2.1
   orbs:
-    entity-validator: "roadiehq/backstage-entity-validator@0.2.7"
+    entity-validator: "roadiehq/backstage-entity-validator@0.3.0"
   workflows:
     use-entity-validator:
       jobs:
