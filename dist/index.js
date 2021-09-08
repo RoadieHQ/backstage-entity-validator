@@ -50779,6 +50779,11 @@ async function main() {
     options.github = true;
   }
 
+  const ghVerbose = core.getInput('verbose');
+  if (ghVerbose) {
+    options.verbose = ghVerbose === 'true';
+  }
+
   // add files specified as arguments
   files = files.concat(argv._);
 

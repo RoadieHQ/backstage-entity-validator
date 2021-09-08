@@ -9,6 +9,10 @@ inputs:
     description: 'path to the catalog-info.yaml file to validate'
     required: true
     default: "catalog-info.yaml"
+  verbose:
+    description: 'Specify whether the output should be verbose'
+    required: false
+    default: "true"
 runs:
   using: 'node12'
   main: 'dist/index.js'

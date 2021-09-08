@@ -41,6 +41,10 @@ None. Prints out the validated YAML on success. Prints out errors on invalid YAM
 
 **Optional** Path to the catalog-info.yaml file to validate. Defaults to `catalog-info.yaml` at the root of the repository.
 
+#### `verbose`
+
+**Optional** Specify whether the output should be verbose. Default `true`.
+
 ### Outputs
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
