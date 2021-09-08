@@ -16,19 +16,19 @@ None. Prints out the validated YAML on success. Prints out errors on invalid YAM
 
 ### Example usage
 ```
-- uses:  RoadieHQ/backstage-entity-validator@v0.3.1
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.2
   with:
     path: 'catalog-info-1.yaml'
 ```
 
 ```
-- uses:  RoadieHQ/backstage-entity-validator@v0.3.1
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.2
   with:
     path: 'catalog-info-1.yaml,catalog-info-2.yaml,catalog-info-3.yaml'
 ```
 
 ```
-- uses:  RoadieHQ/backstage-entity-validator@v0.3.1
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.2
   with:
     path: 'catalog-info-*.yaml,services/**/*/catalog-info.yaml'
 ```
