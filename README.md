@@ -8,7 +8,7 @@ This package can be used as a GitHub action or a standalone node.js module
 
 #### `path`
 
-**Optional** Path to the catalog-info.yaml file to validate. Defaults to `catalog-info.yaml` at the root of the repository.
+**Optional** Path to the catalog-info.yaml file to validate. Defaults to `catalog-info.yaml` at the root of the repository. It also can be a glob like `services/*/catalog-info.yaml` or a list of files seperated by comma `users.yaml,orgs/company.yaml`.
 
 ### Outputs
 
@@ -21,6 +21,17 @@ None. Prints out the validated YAML on success. Prints out errors on invalid YAM
     path: 'catalog-info-1.yaml'
 ```
 
+```
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.0
+  with:
+    path: 'catalog-info-1.yaml,catalog-info-2.yaml,catalog-info-3.yaml'
+```
+
+```
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.0
+  with:
+    path: 'catalog-info-*.yaml,services/**/*/catalog-info.yaml'
+```
 
 ## CircleCI Orb
 
