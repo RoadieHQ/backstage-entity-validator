@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const glob = require('glob');
 
 const usage = `
 Usage: validate-entity [OPTION] [FILE]
@@ -62,7 +63,8 @@ async function main() {
   // this will be empty in non-github environments
   const ghPath = core.getInput('path');
   if (ghPath) {
-    files.push(ghPath);
+    // add one or more files seperated by comma
+    files = files.concat(ghPath.split(','));
     options.github = true;
   }
 
@@ -77,6 +79,9 @@ async function main() {
       .split('\n')
       .filter(l => l.length > 0));
   }
+
+  // Expand glob patterns like services/*/catalog.yaml into a list of files
+  files = files.map(file => glob.sync(file)).flat();
 
   if (files.length === 0) {
     console.error('No files specified to validate');

@@ -29,6 +29,7 @@
     "@backstage/catalog-model": "^0.7.8",
     "ajv": "^8.4.0",
     "ajv-formats": "^2.1.0",
+    "glob": "^7.1.7",
     "js-yaml": "^4.1.0",
     "minimist": "^1.2.5"
   },
