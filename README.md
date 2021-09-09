@@ -10,6 +10,10 @@ This package can be used as a GitHub action or a standalone node.js module
 
 **Optional** Path to the catalog-info.yaml file to validate. Defaults to `catalog-info.yaml` at the root of the repository. It also can be a glob like `services/*/catalog-info.yaml` or a list of files seperated by comma `users.yaml,orgs/company.yaml`.
 
+#### `verbose`
+
+**Optional** Specify whether the output should be verbose. Default `true`.
+
 ### Outputs
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
@@ -40,10 +44,6 @@ None. Prints out the validated YAML on success. Prints out errors on invalid YAM
 #### `path`
 
 **Optional** Path to the catalog-info.yaml file to validate. Defaults to `catalog-info.yaml` at the root of the repository.
-
-#### `verbose`
-
-**Optional** Specify whether the output should be verbose. Default `true`.
 
 ### Outputs
 
