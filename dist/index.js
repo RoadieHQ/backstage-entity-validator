@@ -50725,14 +50725,14 @@ OPTION:
 `.trim();
 
 async function validate(files, { github, verbose }) {
-  const {validate} = __nccwpck_require__(531);
+  const { validateFromFile } = __nccwpck_require__(531);
 
   for (const file of files) {
     try {
       if (github) {
         core.setOutput('time', new Date().toTimeString());
       }
-      await validate(file, verbose);
+      await validateFromFile(file, verbose);
     } catch (err) {
       if (github) {
         core.setFailed(`Action failed with error: ${err.message}`);
@@ -50856,7 +50856,12 @@ function modifyPlaceholders(obj) {
   }
 }
 
-exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true) => {
+exports.validateFromFile = async (filepath = './sample/catalog-info.yml', verbose = true) => {
+  const fileContents = fs.readFileSync(filepath, 'utf8');
+  await validate(fileContents, verbose);
+};
+
+exports.validate = async (fileContents, verbose = true) => {
   let validator
   const validateAnnotations = (entity, idx) => {
     if (!validator) {
@@ -50882,7 +50887,6 @@ exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true
   }
 
   try {
-    const fileContents = fs.readFileSync(filepath, 'utf8')
     const data = yaml.loadAll(fileContents)
     data.forEach(it => {
       modifyPlaceholders(it)
