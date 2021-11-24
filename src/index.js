@@ -14,14 +14,14 @@ OPTION:
 `.trim();
 
 async function validate(files, { github, verbose }) {
-  const {validate} = require('./validator');
+  const { validateFromFile } = require('./validator');
 
   for (const file of files) {
     try {
       if (github) {
         core.setOutput('time', new Date().toTimeString());
       }
-      await validate(file, verbose);
+      await validateFromFile(file, verbose);
     } catch (err) {
       if (github) {
         core.setFailed(`Action failed with error: ${err.message}`);

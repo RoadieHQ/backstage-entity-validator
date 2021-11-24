@@ -40,14 +40,22 @@ function modifyPlaceholders(obj) {
   }
 }
 
-exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true) => {
+exports.validateFromFile = async (filepath = './sample/catalog-info.yml', verbose = true) => {
+  const fileContents = fs.readFileSync(filepath, 'utf8');
+  if (verbose) {
+    console.log(`Validating Entity Schema policies for file ${filepath}`);
+  }
+  await validate(fileContents, verbose);
+};
+
+const validate = async (fileContents, verbose = true) => {
   let validator
   const validateAnnotations = (entity, idx) => {
     if (!validator) {
       validator = ajv.compile(annotationSchema);
     }
     if (verbose) {
-      console.log(`Validating entity annotations for file ${filepath}, document ${idx}`);
+      console.log(`Validating entity annotations for file document ${idx}`);
     }
     const result = validator(entity)
     if (result === true) {
@@ -66,7 +74,6 @@ exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true
   }
 
   try {
-    const fileContents = fs.readFileSync(filepath, 'utf8')
     const data = yaml.loadAll(fileContents)
     data.forEach(it => {
       modifyPlaceholders(it)
@@ -77,10 +84,7 @@ exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true
       new NoForeignRootFieldsEntityPolicy(),
       new SchemaValidEntityPolicy()]
     )
-    const responses = await Promise.all(data.map((it, idx) => {
-      if (verbose) {
-        console.log(`Validating Entity Schema policies for file ${filepath}, document ${idx}`);
-      }
+    const responses = await Promise.all(data.map((it) => {
       return entityPolicies.enforce(it)
     }))
     const validateEntityKind = async (entity) => {
@@ -109,3 +113,5 @@ exports.validate = async (filepath = './sample/catalog-info.yml', verbose = true
     throw new Error(e)
   }
 }
+
+exports.validate = validate;
