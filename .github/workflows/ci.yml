@@ -1,0 +1,17 @@
+name: Test
+on:
+  pull_request:
+
+jobs:
+  CI:
+    name: TEST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+      - name: Set up Node.js
+        uses: actions/setup-node@main
+        with:
+          node-version: 12.18.3
+      - run: npm install
+      - run: npm test
