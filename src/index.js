@@ -14,8 +14,7 @@ OPTION:
 `.trim();
 
 async function validate(files, { github, verbose }) {
-  const { validateFromFile } = require('./validator');
-
+  const { validateFromFile } = require('@roadiehq/roadie-backstage-entity-validator');
   for (const file of files) {
     try {
       if (github) {
