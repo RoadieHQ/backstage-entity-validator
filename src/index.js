@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const glob = require('glob');
+const { validateFromFile } = require('@roadiehq/roadie-backstage-entity-validator/src/validator');
 
 const usage = `
 Usage: validate-entity [OPTION] [FILE]
@@ -14,7 +15,6 @@ OPTION:
 `.trim();
 
 async function validate(files, { github, verbose }) {
-  const { validateFromFile } = require('@roadiehq/roadie-backstage-entity-validator');
   for (const file of files) {
     try {
       if (github) {
