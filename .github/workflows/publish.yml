@@ -2,7 +2,7 @@ name: npm-publish
 on:
   push:
     branches:
-      - SC-5782-fix-npm-publish
+      - main
 jobs:
   publish:
     name: npm-publish
