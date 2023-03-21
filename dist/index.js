@@ -2,7 +2,7 @@ require('./sourcemap-register.js');module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 2703:
+/***/ 4962:
 /***/ ((module) => {
 
 "use strict";
@@ -10,7 +10,7 @@ module.exports = JSON.parse("{\"$id\":\"https://raw.githubusercontent.com/ajv-va
 
 /***/ }),
 
-/***/ 4777:
+/***/ 2474:
 /***/ ((module) => {
 
 "use strict";
@@ -23,14 +23,27 @@ module.exports = JSON.parse("{\"$schema\":\"http://json-schema.org/draft-07/sche
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.issue = exports.issueCommand = void 0;
 const os = __importStar(__nccwpck_require__(2087));
 const utils_1 = __nccwpck_require__(5278);
 /**
@@ -109,6 +122,25 @@ function escapeProperty(s) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -118,19 +150,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
 const command_1 = __nccwpck_require__(7351);
 const file_command_1 = __nccwpck_require__(717);
 const utils_1 = __nccwpck_require__(5278);
 const os = __importStar(__nccwpck_require__(2087));
 const path = __importStar(__nccwpck_require__(5622));
+const oidc_utils_1 = __nccwpck_require__(8041);
 /**
  * The code to exit an action
  */
@@ -159,13 +186,9 @@ function exportVariable(name, val) {
     process.env[name] = convertedVal;
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
-        const delimiter = '_GitHubActionsFileCommandDelimeter_';
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
-        file_command_1.issueCommand('ENV', commandValue);
+        return file_command_1.issueFileCommand('ENV', file_command_1.prepareKeyValueMessage(name, val));
     }
-    else {
-        command_1.issueCommand('set-env', { name }, convertedVal);
-    }
+    command_1.issueCommand('set-env', { name }, convertedVal);
 }
 exports.exportVariable = exportVariable;
 /**
@@ -183,7 +206,7 @@ exports.setSecret = setSecret;
 function addPath(inputPath) {
     const filePath = process.env['GITHUB_PATH'] || '';
     if (filePath) {
-        file_command_1.issueCommand('PATH', inputPath);
+        file_command_1.issueFileCommand('PATH', inputPath);
     }
     else {
         command_1.issueCommand('add-path', {}, inputPath);
@@ -192,7 +215,9 @@ function addPath(inputPath) {
 }
 exports.addPath = addPath;
 /**
- * Gets the value of an input.  The value is also trimmed.
+ * Gets the value of an input.
+ * Unless trimWhitespace is set to false in InputOptions, the value is also trimmed.
+ * Returns an empty string if the value is not defined.
  *
  * @param     name     name of the input to get
  * @param     options  optional. See InputOptions.
@@ -203,9 +228,52 @@ function getInput(name, options) {
     if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
     }
+    if (options && options.trimWhitespace === false) {
+        return val;
+    }
     return val.trim();
 }
 exports.getInput = getInput;
+/**
+ * Gets the values of an multiline input.  Each value is also trimmed.
+ *
+ * @param     name     name of the input to get
+ * @param     options  optional. See InputOptions.
+ * @returns   string[]
+ *
+ */
+function getMultilineInput(name, options) {
+    const inputs = getInput(name, options)
+        .split('\n')
+        .filter(x => x !== '');
+    if (options && options.trimWhitespace === false) {
+        return inputs;
+    }
+    return inputs.map(input => input.trim());
+}
+exports.getMultilineInput = getMultilineInput;
+/**
+ * Gets the input value of the boolean type in the YAML 1.2 "core schema" specification.
+ * Support boolean input list: `true | True | TRUE | false | False | FALSE` .
+ * The return value is also in boolean type.
+ * ref: https://yaml.org/spec/1.2/spec.html#id2804923
+ *
+ * @param     name     name of the input to get
+ * @param     options  optional. See InputOptions.
+ * @returns   boolean
+ */
+function getBooleanInput(name, options) {
+    const trueValue = ['true', 'True', 'TRUE'];
+    const falseValue = ['false', 'False', 'FALSE'];
+    const val = getInput(name, options);
+    if (trueValue.includes(val))
+        return true;
+    if (falseValue.includes(val))
+        return false;
+    throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}\n` +
+        `Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
+}
+exports.getBooleanInput = getBooleanInput;
 /**
  * Sets the value of an output.
  *
@@ -214,8 +282,12 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    const filePath = process.env['GITHUB_OUTPUT'] || '';
+    if (filePath) {
+        return file_command_1.issueFileCommand('OUTPUT', file_command_1.prepareKeyValueMessage(name, value));
+    }
     process.stdout.write(os.EOL);
-    command_1.issueCommand('set-output', { name }, value);
+    command_1.issueCommand('set-output', { name }, utils_1.toCommandValue(value));
 }
 exports.setOutput = setOutput;
 /**
@@ -261,19 +333,30 @@ exports.debug = debug;
 /**
  * Adds an error issue
  * @param message error issue message. Errors will be converted to string via toString()
+ * @param properties optional properties to add to the annotation.
  */
-function error(message) {
-    command_1.issue('error', message instanceof Error ? message.toString() : message);
+function error(message, properties = {}) {
+    command_1.issueCommand('error', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 exports.error = error;
 /**
- * Adds an warning issue
+ * Adds a warning issue
  * @param message warning issue message. Errors will be converted to string via toString()
+ * @param properties optional properties to add to the annotation.
  */
-function warning(message) {
-    command_1.issue('warning', message instanceof Error ? message.toString() : message);
+function warning(message, properties = {}) {
+    command_1.issueCommand('warning', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 exports.warning = warning;
+/**
+ * Adds a notice issue
+ * @param message notice issue message. Errors will be converted to string via toString()
+ * @param properties optional properties to add to the annotation.
+ */
+function notice(message, properties = {}) {
+    command_1.issueCommand('notice', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+}
+exports.notice = notice;
 /**
  * Writes info to log with console.log.
  * @param message info message
@@ -333,7 +416,11 @@ exports.group = group;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function saveState(name, value) {
-    command_1.issueCommand('save-state', { name }, value);
+    const filePath = process.env['GITHUB_STATE'] || '';
+    if (filePath) {
+        return file_command_1.issueFileCommand('STATE', file_command_1.prepareKeyValueMessage(name, value));
+    }
+    command_1.issueCommand('save-state', { name }, utils_1.toCommandValue(value));
 }
 exports.saveState = saveState;
 /**
@@ -346,6 +433,29 @@ function getState(name) {
     return process.env[`STATE_${name}`] || '';
 }
 exports.getState = getState;
+function getIDToken(aud) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield oidc_utils_1.OidcClient.getIDToken(aud);
+    });
+}
+exports.getIDToken = getIDToken;
+/**
+ * Summary exports
+ */
+var summary_1 = __nccwpck_require__(1327);
+Object.defineProperty(exports, "summary", ({ enumerable: true, get: function () { return summary_1.summary; } }));
+/**
+ * @deprecated use core.summary
+ */
+var summary_2 = __nccwpck_require__(1327);
+Object.defineProperty(exports, "markdownSummary", ({ enumerable: true, get: function () { return summary_2.markdownSummary; } }));
+/**
+ * Path exports
+ */
+var path_utils_1 = __nccwpck_require__(2981);
+Object.defineProperty(exports, "toPosixPath", ({ enumerable: true, get: function () { return path_utils_1.toPosixPath; } }));
+Object.defineProperty(exports, "toWin32Path", ({ enumerable: true, get: function () { return path_utils_1.toWin32Path; } }));
+Object.defineProperty(exports, "toPlatformPath", ({ enumerable: true, get: function () { return path_utils_1.toPlatformPath; } }));
 //# sourceMappingURL=core.js.map
 
 /***/ }),
@@ -356,20 +466,34 @@ exports.getState = getState;
 "use strict";
 
 // For internal use, subject to change.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(5747));
 const os = __importStar(__nccwpck_require__(2087));
+const uuid_1 = __nccwpck_require__(9521);
 const utils_1 = __nccwpck_require__(5278);
-function issueCommand(command, message) {
+function issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
@@ -381,8 +505,462 @@ function issueCommand(command, message) {
         encoding: 'utf8'
     });
 }
-exports.issueCommand = issueCommand;
+exports.issueFileCommand = issueFileCommand;
+function prepareKeyValueMessage(key, value) {
+    const delimiter = `ghadelimiter_${uuid_1.v4()}`;
+    const convertedValue = utils_1.toCommandValue(value);
+    // These should realistically never happen, but just in case someone finds a
+    // way to exploit uuid generation let's not allow keys or values that contain
+    // the delimiter.
+    if (key.includes(delimiter)) {
+        throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
+    }
+    if (convertedValue.includes(delimiter)) {
+        throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
+    }
+    return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
+}
+exports.prepareKeyValueMessage = prepareKeyValueMessage;
 //# sourceMappingURL=file-command.js.map
+
+/***/ }),
+
+/***/ 8041:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OidcClient = void 0;
+const http_client_1 = __nccwpck_require__(6255);
+const auth_1 = __nccwpck_require__(5526);
+const core_1 = __nccwpck_require__(2186);
+class OidcClient {
+    static createHttpClient(allowRetry = true, maxRetry = 10) {
+        const requestOptions = {
+            allowRetries: allowRetry,
+            maxRetries: maxRetry
+        };
+        return new http_client_1.HttpClient('actions/oidc-client', [new auth_1.BearerCredentialHandler(OidcClient.getRequestToken())], requestOptions);
+    }
+    static getRequestToken() {
+        const token = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN'];
+        if (!token) {
+            throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_TOKEN env variable');
+        }
+        return token;
+    }
+    static getIDTokenUrl() {
+        const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL'];
+        if (!runtimeUrl) {
+            throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_URL env variable');
+        }
+        return runtimeUrl;
+    }
+    static getCall(id_token_url) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpclient = OidcClient.createHttpClient();
+            const res = yield httpclient
+                .getJson(id_token_url)
+                .catch(error => {
+                throw new Error(`Failed to get ID Token. \n 
+        Error Code : ${error.statusCode}\n 
+        Error Message: ${error.result.message}`);
+            });
+            const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
+            if (!id_token) {
+                throw new Error('Response json body do not have ID Token field');
+            }
+            return id_token;
+        });
+    }
+    static getIDToken(audience) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // New ID Token is requested from action service
+                let id_token_url = OidcClient.getIDTokenUrl();
+                if (audience) {
+                    const encodedAudience = encodeURIComponent(audience);
+                    id_token_url = `${id_token_url}&audience=${encodedAudience}`;
+                }
+                core_1.debug(`ID token url is ${id_token_url}`);
+                const id_token = yield OidcClient.getCall(id_token_url);
+                core_1.setSecret(id_token);
+                return id_token;
+            }
+            catch (error) {
+                throw new Error(`Error message: ${error.message}`);
+            }
+        });
+    }
+}
+exports.OidcClient = OidcClient;
+//# sourceMappingURL=oidc-utils.js.map
+
+/***/ }),
+
+/***/ 2981:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = void 0;
+const path = __importStar(__nccwpck_require__(5622));
+/**
+ * toPosixPath converts the given path to the posix form. On Windows, \\ will be
+ * replaced with /.
+ *
+ * @param pth. Path to transform.
+ * @return string Posix path.
+ */
+function toPosixPath(pth) {
+    return pth.replace(/[\\]/g, '/');
+}
+exports.toPosixPath = toPosixPath;
+/**
+ * toWin32Path converts the given path to the win32 form. On Linux, / will be
+ * replaced with \\.
+ *
+ * @param pth. Path to transform.
+ * @return string Win32 path.
+ */
+function toWin32Path(pth) {
+    return pth.replace(/[/]/g, '\\');
+}
+exports.toWin32Path = toWin32Path;
+/**
+ * toPlatformPath converts the given path to a platform-specific path. It does
+ * this by replacing instances of / and \ with the platform-specific path
+ * separator.
+ *
+ * @param pth The path to platformize.
+ * @return string The platform-specific path.
+ */
+function toPlatformPath(pth) {
+    return pth.replace(/[/\\]/g, path.sep);
+}
+exports.toPlatformPath = toPlatformPath;
+//# sourceMappingURL=path-utils.js.map
+
+/***/ }),
+
+/***/ 1327:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
+const os_1 = __nccwpck_require__(2087);
+const fs_1 = __nccwpck_require__(5747);
+const { access, appendFile, writeFile } = fs_1.promises;
+exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
+exports.SUMMARY_DOCS_URL = 'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary';
+class Summary {
+    constructor() {
+        this._buffer = '';
+    }
+    /**
+     * Finds the summary file path from the environment, rejects if env var is not found or file does not exist
+     * Also checks r/w permissions.
+     *
+     * @returns step summary file path
+     */
+    filePath() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._filePath) {
+                return this._filePath;
+            }
+            const pathFromEnv = process.env[exports.SUMMARY_ENV_VAR];
+            if (!pathFromEnv) {
+                throw new Error(`Unable to find environment variable for $${exports.SUMMARY_ENV_VAR}. Check if your runtime environment supports job summaries.`);
+            }
+            try {
+                yield access(pathFromEnv, fs_1.constants.R_OK | fs_1.constants.W_OK);
+            }
+            catch (_a) {
+                throw new Error(`Unable to access summary file: '${pathFromEnv}'. Check if the file has correct read/write permissions.`);
+            }
+            this._filePath = pathFromEnv;
+            return this._filePath;
+        });
+    }
+    /**
+     * Wraps content in an HTML tag, adding any HTML attributes
+     *
+     * @param {string} tag HTML tag to wrap
+     * @param {string | null} content content within the tag
+     * @param {[attribute: string]: string} attrs key-value list of HTML attributes to add
+     *
+     * @returns {string} content wrapped in HTML element
+     */
+    wrap(tag, content, attrs = {}) {
+        const htmlAttrs = Object.entries(attrs)
+            .map(([key, value]) => ` ${key}="${value}"`)
+            .join('');
+        if (!content) {
+            return `<${tag}${htmlAttrs}>`;
+        }
+        return `<${tag}${htmlAttrs}>${content}</${tag}>`;
+    }
+    /**
+     * Writes text in the buffer to the summary buffer file and empties buffer. Will append by default.
+     *
+     * @param {SummaryWriteOptions} [options] (optional) options for write operation
+     *
+     * @returns {Promise<Summary>} summary instance
+     */
+    write(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
+            const filePath = yield this.filePath();
+            const writeFunc = overwrite ? writeFile : appendFile;
+            yield writeFunc(filePath, this._buffer, { encoding: 'utf8' });
+            return this.emptyBuffer();
+        });
+    }
+    /**
+     * Clears the summary buffer and wipes the summary file
+     *
+     * @returns {Summary} summary instance
+     */
+    clear() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.emptyBuffer().write({ overwrite: true });
+        });
+    }
+    /**
+     * Returns the current summary buffer as a string
+     *
+     * @returns {string} string of summary buffer
+     */
+    stringify() {
+        return this._buffer;
+    }
+    /**
+     * If the summary buffer is empty
+     *
+     * @returns {boolen} true if the buffer is empty
+     */
+    isEmptyBuffer() {
+        return this._buffer.length === 0;
+    }
+    /**
+     * Resets the summary buffer without writing to summary file
+     *
+     * @returns {Summary} summary instance
+     */
+    emptyBuffer() {
+        this._buffer = '';
+        return this;
+    }
+    /**
+     * Adds raw text to the summary buffer
+     *
+     * @param {string} text content to add
+     * @param {boolean} [addEOL=false] (optional) append an EOL to the raw text (default: false)
+     *
+     * @returns {Summary} summary instance
+     */
+    addRaw(text, addEOL = false) {
+        this._buffer += text;
+        return addEOL ? this.addEOL() : this;
+    }
+    /**
+     * Adds the operating system-specific end-of-line marker to the buffer
+     *
+     * @returns {Summary} summary instance
+     */
+    addEOL() {
+        return this.addRaw(os_1.EOL);
+    }
+    /**
+     * Adds an HTML codeblock to the summary buffer
+     *
+     * @param {string} code content to render within fenced code block
+     * @param {string} lang (optional) language to syntax highlight code
+     *
+     * @returns {Summary} summary instance
+     */
+    addCodeBlock(code, lang) {
+        const attrs = Object.assign({}, (lang && { lang }));
+        const element = this.wrap('pre', this.wrap('code', code), attrs);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML list to the summary buffer
+     *
+     * @param {string[]} items list of items to render
+     * @param {boolean} [ordered=false] (optional) if the rendered list should be ordered or not (default: false)
+     *
+     * @returns {Summary} summary instance
+     */
+    addList(items, ordered = false) {
+        const tag = ordered ? 'ol' : 'ul';
+        const listItems = items.map(item => this.wrap('li', item)).join('');
+        const element = this.wrap(tag, listItems);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML table to the summary buffer
+     *
+     * @param {SummaryTableCell[]} rows table rows
+     *
+     * @returns {Summary} summary instance
+     */
+    addTable(rows) {
+        const tableBody = rows
+            .map(row => {
+            const cells = row
+                .map(cell => {
+                if (typeof cell === 'string') {
+                    return this.wrap('td', cell);
+                }
+                const { header, data, colspan, rowspan } = cell;
+                const tag = header ? 'th' : 'td';
+                const attrs = Object.assign(Object.assign({}, (colspan && { colspan })), (rowspan && { rowspan }));
+                return this.wrap(tag, data, attrs);
+            })
+                .join('');
+            return this.wrap('tr', cells);
+        })
+            .join('');
+        const element = this.wrap('table', tableBody);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds a collapsable HTML details element to the summary buffer
+     *
+     * @param {string} label text for the closed state
+     * @param {string} content collapsable content
+     *
+     * @returns {Summary} summary instance
+     */
+    addDetails(label, content) {
+        const element = this.wrap('details', this.wrap('summary', label) + content);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML image tag to the summary buffer
+     *
+     * @param {string} src path to the image you to embed
+     * @param {string} alt text description of the image
+     * @param {SummaryImageOptions} options (optional) addition image attributes
+     *
+     * @returns {Summary} summary instance
+     */
+    addImage(src, alt, options) {
+        const { width, height } = options || {};
+        const attrs = Object.assign(Object.assign({}, (width && { width })), (height && { height }));
+        const element = this.wrap('img', null, Object.assign({ src, alt }, attrs));
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML section heading element
+     *
+     * @param {string} text heading text
+     * @param {number | string} [level=1] (optional) the heading level, default: 1
+     *
+     * @returns {Summary} summary instance
+     */
+    addHeading(text, level) {
+        const tag = `h${level}`;
+        const allowedTag = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tag)
+            ? tag
+            : 'h1';
+        const element = this.wrap(allowedTag, text);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML thematic break (<hr>) to the summary buffer
+     *
+     * @returns {Summary} summary instance
+     */
+    addSeparator() {
+        const element = this.wrap('hr', null);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML line break (<br>) to the summary buffer
+     *
+     * @returns {Summary} summary instance
+     */
+    addBreak() {
+        const element = this.wrap('br', null);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML blockquote to the summary buffer
+     *
+     * @param {string} text quote text
+     * @param {string} cite (optional) citation url
+     *
+     * @returns {Summary} summary instance
+     */
+    addQuote(text, cite) {
+        const attrs = Object.assign({}, (cite && { cite }));
+        const element = this.wrap('blockquote', text, attrs);
+        return this.addRaw(element).addEOL();
+    }
+    /**
+     * Adds an HTML anchor tag to the summary buffer
+     *
+     * @param {string} text link text/content
+     * @param {string} href hyperlink
+     *
+     * @returns {Summary} summary instance
+     */
+    addLink(text, href) {
+        const element = this.wrap('a', text, { href });
+        return this.addRaw(element).addEOL();
+    }
+}
+const _summary = new Summary();
+/**
+ * @deprecated use `core.summary`
+ */
+exports.markdownSummary = _summary;
+exports.summary = _summary;
+//# sourceMappingURL=summary.js.map
 
 /***/ }),
 
@@ -394,6 +972,7 @@ exports.issueCommand = issueCommand;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.toCommandProperties = exports.toCommandValue = void 0;
 /**
  * Sanitizes an input into a string so it can be passed into issueCommand safely
  * @param input input to sanitize into a string
@@ -408,59 +987,863 @@ function toCommandValue(input) {
     return JSON.stringify(input);
 }
 exports.toCommandValue = toCommandValue;
+/**
+ *
+ * @param annotationProperties
+ * @returns The command properties to send with the actual annotation command
+ * See IssueCommandProperties: https://github.com/actions/runner/blob/main/src/Runner.Worker/ActionCommandManager.cs#L646
+ */
+function toCommandProperties(annotationProperties) {
+    if (!Object.keys(annotationProperties).length) {
+        return {};
+    }
+    return {
+        title: annotationProperties.title,
+        file: annotationProperties.file,
+        line: annotationProperties.startLine,
+        endLine: annotationProperties.endLine,
+        col: annotationProperties.startColumn,
+        endColumn: annotationProperties.endColumn
+    };
+}
+exports.toCommandProperties = toCommandProperties;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
 
-/***/ 7777:
+/***/ 5526:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PersonalAccessTokenCredentialHandler = exports.BearerCredentialHandler = exports.BasicCredentialHandler = void 0;
+class BasicCredentialHandler {
+    constructor(username, password) {
+        this.username = username;
+        this.password = password;
+    }
+    prepareRequest(options) {
+        if (!options.headers) {
+            throw Error('The request has no headers');
+        }
+        options.headers['Authorization'] = `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`;
+    }
+    // This handler cannot handle 401
+    canHandleAuthentication() {
+        return false;
+    }
+    handleAuthentication() {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error('not implemented');
+        });
+    }
+}
+exports.BasicCredentialHandler = BasicCredentialHandler;
+class BearerCredentialHandler {
+    constructor(token) {
+        this.token = token;
+    }
+    // currently implements pre-authorization
+    // TODO: support preAuth = false where it hooks on 401
+    prepareRequest(options) {
+        if (!options.headers) {
+            throw Error('The request has no headers');
+        }
+        options.headers['Authorization'] = `Bearer ${this.token}`;
+    }
+    // This handler cannot handle 401
+    canHandleAuthentication() {
+        return false;
+    }
+    handleAuthentication() {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error('not implemented');
+        });
+    }
+}
+exports.BearerCredentialHandler = BearerCredentialHandler;
+class PersonalAccessTokenCredentialHandler {
+    constructor(token) {
+        this.token = token;
+    }
+    // currently implements pre-authorization
+    // TODO: support preAuth = false where it hooks on 401
+    prepareRequest(options) {
+        if (!options.headers) {
+            throw Error('The request has no headers');
+        }
+        options.headers['Authorization'] = `Basic ${Buffer.from(`PAT:${this.token}`).toString('base64')}`;
+    }
+    // This handler cannot handle 401
+    canHandleAuthentication() {
+        return false;
+    }
+    handleAuthentication() {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error('not implemented');
+        });
+    }
+}
+exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler;
+//# sourceMappingURL=auth.js.map
+
+/***/ }),
+
+/***/ 6255:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HttpClient = exports.isHttps = exports.HttpClientResponse = exports.HttpClientError = exports.getProxyUrl = exports.MediaTypes = exports.Headers = exports.HttpCodes = void 0;
+const http = __importStar(__nccwpck_require__(8605));
+const https = __importStar(__nccwpck_require__(7211));
+const pm = __importStar(__nccwpck_require__(9835));
+const tunnel = __importStar(__nccwpck_require__(4294));
+var HttpCodes;
+(function (HttpCodes) {
+    HttpCodes[HttpCodes["OK"] = 200] = "OK";
+    HttpCodes[HttpCodes["MultipleChoices"] = 300] = "MultipleChoices";
+    HttpCodes[HttpCodes["MovedPermanently"] = 301] = "MovedPermanently";
+    HttpCodes[HttpCodes["ResourceMoved"] = 302] = "ResourceMoved";
+    HttpCodes[HttpCodes["SeeOther"] = 303] = "SeeOther";
+    HttpCodes[HttpCodes["NotModified"] = 304] = "NotModified";
+    HttpCodes[HttpCodes["UseProxy"] = 305] = "UseProxy";
+    HttpCodes[HttpCodes["SwitchProxy"] = 306] = "SwitchProxy";
+    HttpCodes[HttpCodes["TemporaryRedirect"] = 307] = "TemporaryRedirect";
+    HttpCodes[HttpCodes["PermanentRedirect"] = 308] = "PermanentRedirect";
+    HttpCodes[HttpCodes["BadRequest"] = 400] = "BadRequest";
+    HttpCodes[HttpCodes["Unauthorized"] = 401] = "Unauthorized";
+    HttpCodes[HttpCodes["PaymentRequired"] = 402] = "PaymentRequired";
+    HttpCodes[HttpCodes["Forbidden"] = 403] = "Forbidden";
+    HttpCodes[HttpCodes["NotFound"] = 404] = "NotFound";
+    HttpCodes[HttpCodes["MethodNotAllowed"] = 405] = "MethodNotAllowed";
+    HttpCodes[HttpCodes["NotAcceptable"] = 406] = "NotAcceptable";
+    HttpCodes[HttpCodes["ProxyAuthenticationRequired"] = 407] = "ProxyAuthenticationRequired";
+    HttpCodes[HttpCodes["RequestTimeout"] = 408] = "RequestTimeout";
+    HttpCodes[HttpCodes["Conflict"] = 409] = "Conflict";
+    HttpCodes[HttpCodes["Gone"] = 410] = "Gone";
+    HttpCodes[HttpCodes["TooManyRequests"] = 429] = "TooManyRequests";
+    HttpCodes[HttpCodes["InternalServerError"] = 500] = "InternalServerError";
+    HttpCodes[HttpCodes["NotImplemented"] = 501] = "NotImplemented";
+    HttpCodes[HttpCodes["BadGateway"] = 502] = "BadGateway";
+    HttpCodes[HttpCodes["ServiceUnavailable"] = 503] = "ServiceUnavailable";
+    HttpCodes[HttpCodes["GatewayTimeout"] = 504] = "GatewayTimeout";
+})(HttpCodes = exports.HttpCodes || (exports.HttpCodes = {}));
+var Headers;
+(function (Headers) {
+    Headers["Accept"] = "accept";
+    Headers["ContentType"] = "content-type";
+})(Headers = exports.Headers || (exports.Headers = {}));
+var MediaTypes;
+(function (MediaTypes) {
+    MediaTypes["ApplicationJson"] = "application/json";
+})(MediaTypes = exports.MediaTypes || (exports.MediaTypes = {}));
+/**
+ * Returns the proxy URL, depending upon the supplied url and proxy environment variables.
+ * @param serverUrl  The server URL where the request will be sent. For example, https://api.github.com
+ */
+function getProxyUrl(serverUrl) {
+    const proxyUrl = pm.getProxyUrl(new URL(serverUrl));
+    return proxyUrl ? proxyUrl.href : '';
+}
+exports.getProxyUrl = getProxyUrl;
+const HttpRedirectCodes = [
+    HttpCodes.MovedPermanently,
+    HttpCodes.ResourceMoved,
+    HttpCodes.SeeOther,
+    HttpCodes.TemporaryRedirect,
+    HttpCodes.PermanentRedirect
+];
+const HttpResponseRetryCodes = [
+    HttpCodes.BadGateway,
+    HttpCodes.ServiceUnavailable,
+    HttpCodes.GatewayTimeout
+];
+const RetryableHttpVerbs = ['OPTIONS', 'GET', 'DELETE', 'HEAD'];
+const ExponentialBackoffCeiling = 10;
+const ExponentialBackoffTimeSlice = 5;
+class HttpClientError extends Error {
+    constructor(message, statusCode) {
+        super(message);
+        this.name = 'HttpClientError';
+        this.statusCode = statusCode;
+        Object.setPrototypeOf(this, HttpClientError.prototype);
+    }
+}
+exports.HttpClientError = HttpClientError;
+class HttpClientResponse {
+    constructor(message) {
+        this.message = message;
+    }
+    readBody() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                let output = Buffer.alloc(0);
+                this.message.on('data', (chunk) => {
+                    output = Buffer.concat([output, chunk]);
+                });
+                this.message.on('end', () => {
+                    resolve(output.toString());
+                });
+            }));
+        });
+    }
+}
+exports.HttpClientResponse = HttpClientResponse;
+function isHttps(requestUrl) {
+    const parsedUrl = new URL(requestUrl);
+    return parsedUrl.protocol === 'https:';
+}
+exports.isHttps = isHttps;
+class HttpClient {
+    constructor(userAgent, handlers, requestOptions) {
+        this._ignoreSslError = false;
+        this._allowRedirects = true;
+        this._allowRedirectDowngrade = false;
+        this._maxRedirects = 50;
+        this._allowRetries = false;
+        this._maxRetries = 1;
+        this._keepAlive = false;
+        this._disposed = false;
+        this.userAgent = userAgent;
+        this.handlers = handlers || [];
+        this.requestOptions = requestOptions;
+        if (requestOptions) {
+            if (requestOptions.ignoreSslError != null) {
+                this._ignoreSslError = requestOptions.ignoreSslError;
+            }
+            this._socketTimeout = requestOptions.socketTimeout;
+            if (requestOptions.allowRedirects != null) {
+                this._allowRedirects = requestOptions.allowRedirects;
+            }
+            if (requestOptions.allowRedirectDowngrade != null) {
+                this._allowRedirectDowngrade = requestOptions.allowRedirectDowngrade;
+            }
+            if (requestOptions.maxRedirects != null) {
+                this._maxRedirects = Math.max(requestOptions.maxRedirects, 0);
+            }
+            if (requestOptions.keepAlive != null) {
+                this._keepAlive = requestOptions.keepAlive;
+            }
+            if (requestOptions.allowRetries != null) {
+                this._allowRetries = requestOptions.allowRetries;
+            }
+            if (requestOptions.maxRetries != null) {
+                this._maxRetries = requestOptions.maxRetries;
+            }
+        }
+    }
+    options(requestUrl, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('OPTIONS', requestUrl, null, additionalHeaders || {});
+        });
+    }
+    get(requestUrl, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('GET', requestUrl, null, additionalHeaders || {});
+        });
+    }
+    del(requestUrl, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('DELETE', requestUrl, null, additionalHeaders || {});
+        });
+    }
+    post(requestUrl, data, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('POST', requestUrl, data, additionalHeaders || {});
+        });
+    }
+    patch(requestUrl, data, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('PATCH', requestUrl, data, additionalHeaders || {});
+        });
+    }
+    put(requestUrl, data, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('PUT', requestUrl, data, additionalHeaders || {});
+        });
+    }
+    head(requestUrl, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request('HEAD', requestUrl, null, additionalHeaders || {});
+        });
+    }
+    sendStream(verb, requestUrl, stream, additionalHeaders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.request(verb, requestUrl, stream, additionalHeaders);
+        });
+    }
+    /**
+     * Gets a typed object from an endpoint
+     * Be aware that not found returns a null.  Other errors (4xx, 5xx) reject the promise
+     */
+    getJson(requestUrl, additionalHeaders = {}) {
+        return __awaiter(this, void 0, void 0, function* () {
+            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
+            const res = yield this.get(requestUrl, additionalHeaders);
+            return this._processResponse(res, this.requestOptions);
+        });
+    }
+    postJson(requestUrl, obj, additionalHeaders = {}) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = JSON.stringify(obj, null, 2);
+            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
+            additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+            const res = yield this.post(requestUrl, data, additionalHeaders);
+            return this._processResponse(res, this.requestOptions);
+        });
+    }
+    putJson(requestUrl, obj, additionalHeaders = {}) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = JSON.stringify(obj, null, 2);
+            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
+            additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+            const res = yield this.put(requestUrl, data, additionalHeaders);
+            return this._processResponse(res, this.requestOptions);
+        });
+    }
+    patchJson(requestUrl, obj, additionalHeaders = {}) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = JSON.stringify(obj, null, 2);
+            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
+            additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+            const res = yield this.patch(requestUrl, data, additionalHeaders);
+            return this._processResponse(res, this.requestOptions);
+        });
+    }
+    /**
+     * Makes a raw http request.
+     * All other methods such as get, post, patch, and request ultimately call this.
+     * Prefer get, del, post and patch
+     */
+    request(verb, requestUrl, data, headers) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._disposed) {
+                throw new Error('Client has already been disposed.');
+            }
+            const parsedUrl = new URL(requestUrl);
+            let info = this._prepareRequest(verb, parsedUrl, headers);
+            // Only perform retries on reads since writes may not be idempotent.
+            const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb)
+                ? this._maxRetries + 1
+                : 1;
+            let numTries = 0;
+            let response;
+            do {
+                response = yield this.requestRaw(info, data);
+                // Check if it's an authentication challenge
+                if (response &&
+                    response.message &&
+                    response.message.statusCode === HttpCodes.Unauthorized) {
+                    let authenticationHandler;
+                    for (const handler of this.handlers) {
+                        if (handler.canHandleAuthentication(response)) {
+                            authenticationHandler = handler;
+                            break;
+                        }
+                    }
+                    if (authenticationHandler) {
+                        return authenticationHandler.handleAuthentication(this, info, data);
+                    }
+                    else {
+                        // We have received an unauthorized response but have no handlers to handle it.
+                        // Let the response return to the caller.
+                        return response;
+                    }
+                }
+                let redirectsRemaining = this._maxRedirects;
+                while (response.message.statusCode &&
+                    HttpRedirectCodes.includes(response.message.statusCode) &&
+                    this._allowRedirects &&
+                    redirectsRemaining > 0) {
+                    const redirectUrl = response.message.headers['location'];
+                    if (!redirectUrl) {
+                        // if there's no location to redirect to, we won't
+                        break;
+                    }
+                    const parsedRedirectUrl = new URL(redirectUrl);
+                    if (parsedUrl.protocol === 'https:' &&
+                        parsedUrl.protocol !== parsedRedirectUrl.protocol &&
+                        !this._allowRedirectDowngrade) {
+                        throw new Error('Redirect from HTTPS to HTTP protocol. This downgrade is not allowed for security reasons. If you want to allow this behavior, set the allowRedirectDowngrade option to true.');
+                    }
+                    // we need to finish reading the response before reassigning response
+                    // which will leak the open socket.
+                    yield response.readBody();
+                    // strip authorization header if redirected to a different hostname
+                    if (parsedRedirectUrl.hostname !== parsedUrl.hostname) {
+                        for (const header in headers) {
+                            // header names are case insensitive
+                            if (header.toLowerCase() === 'authorization') {
+                                delete headers[header];
+                            }
+                        }
+                    }
+                    // let's make the request with the new redirectUrl
+                    info = this._prepareRequest(verb, parsedRedirectUrl, headers);
+                    response = yield this.requestRaw(info, data);
+                    redirectsRemaining--;
+                }
+                if (!response.message.statusCode ||
+                    !HttpResponseRetryCodes.includes(response.message.statusCode)) {
+                    // If not a retry code, return immediately instead of retrying
+                    return response;
+                }
+                numTries += 1;
+                if (numTries < maxTries) {
+                    yield response.readBody();
+                    yield this._performExponentialBackoff(numTries);
+                }
+            } while (numTries < maxTries);
+            return response;
+        });
+    }
+    /**
+     * Needs to be called if keepAlive is set to true in request options.
+     */
+    dispose() {
+        if (this._agent) {
+            this._agent.destroy();
+        }
+        this._disposed = true;
+    }
+    /**
+     * Raw request.
+     * @param info
+     * @param data
+     */
+    requestRaw(info, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                function callbackForResult(err, res) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else if (!res) {
+                        // If `err` is not passed, then `res` must be passed.
+                        reject(new Error('Unknown error'));
+                    }
+                    else {
+                        resolve(res);
+                    }
+                }
+                this.requestRawWithCallback(info, data, callbackForResult);
+            });
+        });
+    }
+    /**
+     * Raw request with callback.
+     * @param info
+     * @param data
+     * @param onResult
+     */
+    requestRawWithCallback(info, data, onResult) {
+        if (typeof data === 'string') {
+            if (!info.options.headers) {
+                info.options.headers = {};
+            }
+            info.options.headers['Content-Length'] = Buffer.byteLength(data, 'utf8');
+        }
+        let callbackCalled = false;
+        function handleResult(err, res) {
+            if (!callbackCalled) {
+                callbackCalled = true;
+                onResult(err, res);
+            }
+        }
+        const req = info.httpModule.request(info.options, (msg) => {
+            const res = new HttpClientResponse(msg);
+            handleResult(undefined, res);
+        });
+        let socket;
+        req.on('socket', sock => {
+            socket = sock;
+        });
+        // If we ever get disconnected, we want the socket to timeout eventually
+        req.setTimeout(this._socketTimeout || 3 * 60000, () => {
+            if (socket) {
+                socket.end();
+            }
+            handleResult(new Error(`Request timeout: ${info.options.path}`));
+        });
+        req.on('error', function (err) {
+            // err has statusCode property
+            // res should have headers
+            handleResult(err);
+        });
+        if (data && typeof data === 'string') {
+            req.write(data, 'utf8');
+        }
+        if (data && typeof data !== 'string') {
+            data.on('close', function () {
+                req.end();
+            });
+            data.pipe(req);
+        }
+        else {
+            req.end();
+        }
+    }
+    /**
+     * Gets an http agent. This function is useful when you need an http agent that handles
+     * routing through a proxy server - depending upon the url and proxy environment variables.
+     * @param serverUrl  The server URL where the request will be sent. For example, https://api.github.com
+     */
+    getAgent(serverUrl) {
+        const parsedUrl = new URL(serverUrl);
+        return this._getAgent(parsedUrl);
+    }
+    _prepareRequest(method, requestUrl, headers) {
+        const info = {};
+        info.parsedUrl = requestUrl;
+        const usingSsl = info.parsedUrl.protocol === 'https:';
+        info.httpModule = usingSsl ? https : http;
+        const defaultPort = usingSsl ? 443 : 80;
+        info.options = {};
+        info.options.host = info.parsedUrl.hostname;
+        info.options.port = info.parsedUrl.port
+            ? parseInt(info.parsedUrl.port)
+            : defaultPort;
+        info.options.path =
+            (info.parsedUrl.pathname || '') + (info.parsedUrl.search || '');
+        info.options.method = method;
+        info.options.headers = this._mergeHeaders(headers);
+        if (this.userAgent != null) {
+            info.options.headers['user-agent'] = this.userAgent;
+        }
+        info.options.agent = this._getAgent(info.parsedUrl);
+        // gives handlers an opportunity to participate
+        if (this.handlers) {
+            for (const handler of this.handlers) {
+                handler.prepareRequest(info.options);
+            }
+        }
+        return info;
+    }
+    _mergeHeaders(headers) {
+        if (this.requestOptions && this.requestOptions.headers) {
+            return Object.assign({}, lowercaseKeys(this.requestOptions.headers), lowercaseKeys(headers || {}));
+        }
+        return lowercaseKeys(headers || {});
+    }
+    _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
+        let clientHeader;
+        if (this.requestOptions && this.requestOptions.headers) {
+            clientHeader = lowercaseKeys(this.requestOptions.headers)[header];
+        }
+        return additionalHeaders[header] || clientHeader || _default;
+    }
+    _getAgent(parsedUrl) {
+        let agent;
+        const proxyUrl = pm.getProxyUrl(parsedUrl);
+        const useProxy = proxyUrl && proxyUrl.hostname;
+        if (this._keepAlive && useProxy) {
+            agent = this._proxyAgent;
+        }
+        if (this._keepAlive && !useProxy) {
+            agent = this._agent;
+        }
+        // if agent is already assigned use that agent.
+        if (agent) {
+            return agent;
+        }
+        const usingSsl = parsedUrl.protocol === 'https:';
+        let maxSockets = 100;
+        if (this.requestOptions) {
+            maxSockets = this.requestOptions.maxSockets || http.globalAgent.maxSockets;
+        }
+        // This is `useProxy` again, but we need to check `proxyURl` directly for TypeScripts's flow analysis.
+        if (proxyUrl && proxyUrl.hostname) {
+            const agentOptions = {
+                maxSockets,
+                keepAlive: this._keepAlive,
+                proxy: Object.assign(Object.assign({}, ((proxyUrl.username || proxyUrl.password) && {
+                    proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`
+                })), { host: proxyUrl.hostname, port: proxyUrl.port })
+            };
+            let tunnelAgent;
+            const overHttps = proxyUrl.protocol === 'https:';
+            if (usingSsl) {
+                tunnelAgent = overHttps ? tunnel.httpsOverHttps : tunnel.httpsOverHttp;
+            }
+            else {
+                tunnelAgent = overHttps ? tunnel.httpOverHttps : tunnel.httpOverHttp;
+            }
+            agent = tunnelAgent(agentOptions);
+            this._proxyAgent = agent;
+        }
+        // if reusing agent across request and tunneling agent isn't assigned create a new agent
+        if (this._keepAlive && !agent) {
+            const options = { keepAlive: this._keepAlive, maxSockets };
+            agent = usingSsl ? new https.Agent(options) : new http.Agent(options);
+            this._agent = agent;
+        }
+        // if not using private agent and tunnel agent isn't setup then use global agent
+        if (!agent) {
+            agent = usingSsl ? https.globalAgent : http.globalAgent;
+        }
+        if (usingSsl && this._ignoreSslError) {
+            // we don't want to set NODE_TLS_REJECT_UNAUTHORIZED=0 since that will affect request for entire process
+            // http.RequestOptions doesn't expose a way to modify RequestOptions.agent.options
+            // we have to cast it to any and change it directly
+            agent.options = Object.assign(agent.options || {}, {
+                rejectUnauthorized: false
+            });
+        }
+        return agent;
+    }
+    _performExponentialBackoff(retryNumber) {
+        return __awaiter(this, void 0, void 0, function* () {
+            retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber);
+            const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber);
+            return new Promise(resolve => setTimeout(() => resolve(), ms));
+        });
+    }
+    _processResponse(res, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                const statusCode = res.message.statusCode || 0;
+                const response = {
+                    statusCode,
+                    result: null,
+                    headers: {}
+                };
+                // not found leads to null obj returned
+                if (statusCode === HttpCodes.NotFound) {
+                    resolve(response);
+                }
+                // get the result from the body
+                function dateTimeDeserializer(key, value) {
+                    if (typeof value === 'string') {
+                        const a = new Date(value);
+                        if (!isNaN(a.valueOf())) {
+                            return a;
+                        }
+                    }
+                    return value;
+                }
+                let obj;
+                let contents;
+                try {
+                    contents = yield res.readBody();
+                    if (contents && contents.length > 0) {
+                        if (options && options.deserializeDates) {
+                            obj = JSON.parse(contents, dateTimeDeserializer);
+                        }
+                        else {
+                            obj = JSON.parse(contents);
+                        }
+                        response.result = obj;
+                    }
+                    response.headers = res.message.headers;
+                }
+                catch (err) {
+                    // Invalid resource (contents not json);  leaving result obj null
+                }
+                // note that 3xx redirects are handled by the http layer.
+                if (statusCode > 299) {
+                    let msg;
+                    // if exception/error in body, attempt to get better error
+                    if (obj && obj.message) {
+                        msg = obj.message;
+                    }
+                    else if (contents && contents.length > 0) {
+                        // it may be the case that the exception is in the body message as string
+                        msg = contents;
+                    }
+                    else {
+                        msg = `Failed request: (${statusCode})`;
+                    }
+                    const err = new HttpClientError(msg, statusCode);
+                    err.result = response.result;
+                    reject(err);
+                }
+                else {
+                    resolve(response);
+                }
+            }));
+        });
+    }
+}
+exports.HttpClient = HttpClient;
+const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {});
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 9835:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.checkBypass = exports.getProxyUrl = void 0;
+function getProxyUrl(reqUrl) {
+    const usingSsl = reqUrl.protocol === 'https:';
+    if (checkBypass(reqUrl)) {
+        return undefined;
+    }
+    const proxyVar = (() => {
+        if (usingSsl) {
+            return process.env['https_proxy'] || process.env['HTTPS_PROXY'];
+        }
+        else {
+            return process.env['http_proxy'] || process.env['HTTP_PROXY'];
+        }
+    })();
+    if (proxyVar) {
+        return new URL(proxyVar);
+    }
+    else {
+        return undefined;
+    }
+}
+exports.getProxyUrl = getProxyUrl;
+function checkBypass(reqUrl) {
+    if (!reqUrl.hostname) {
+        return false;
+    }
+    const reqHost = reqUrl.hostname;
+    if (isLoopbackAddress(reqHost)) {
+        return true;
+    }
+    const noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || '';
+    if (!noProxy) {
+        return false;
+    }
+    // Determine the request port
+    let reqPort;
+    if (reqUrl.port) {
+        reqPort = Number(reqUrl.port);
+    }
+    else if (reqUrl.protocol === 'http:') {
+        reqPort = 80;
+    }
+    else if (reqUrl.protocol === 'https:') {
+        reqPort = 443;
+    }
+    // Format the request hostname and hostname with port
+    const upperReqHosts = [reqUrl.hostname.toUpperCase()];
+    if (typeof reqPort === 'number') {
+        upperReqHosts.push(`${upperReqHosts[0]}:${reqPort}`);
+    }
+    // Compare request host against noproxy
+    for (const upperNoProxyItem of noProxy
+        .split(',')
+        .map(x => x.trim().toUpperCase())
+        .filter(x => x)) {
+        if (upperNoProxyItem === '*' ||
+            upperReqHosts.some(x => x === upperNoProxyItem ||
+                x.endsWith(`.${upperNoProxyItem}`) ||
+                (upperNoProxyItem.startsWith('.') &&
+                    x.endsWith(`${upperNoProxyItem}`)))) {
+            return true;
+        }
+    }
+    return false;
+}
+exports.checkBypass = checkBypass;
+function isLoopbackAddress(host) {
+    const hostLower = host.toLowerCase();
+    return (hostLower === 'localhost' ||
+        hostLower.startsWith('127.') ||
+        hostLower.startsWith('[::1]') ||
+        hostLower.startsWith('[0:0:0:0:0:0:0:1]'));
+}
+//# sourceMappingURL=proxy.js.map
+
+/***/ }),
+
+/***/ 4094:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
-var __webpack_unused_export__;
 
 
-__webpack_unused_export__ = ({ value: true });
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 var lodash = __nccwpck_require__(250);
-var Ajv = __nccwpck_require__(6441);
-var uuid = __nccwpck_require__(9521);
-var yup = __nccwpck_require__(112);
+var Ajv = __nccwpck_require__(7090);
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-function _interopNamespace(e) {
-  if (e && e.__esModule) return e;
-  var n = Object.create(null);
-  if (e) {
-    Object.keys(e).forEach(function (k) {
-      if (k !== 'default') {
-        var d = Object.getOwnPropertyDescriptor(e, k);
-        Object.defineProperty(n, k, d.get ? d : {
-          enumerable: true,
-          get: function () { return e[k]; }
-        });
-      }
-    });
-  }
-  n["default"] = e;
-  return Object.freeze(n);
-}
-
 var lodash__default = /*#__PURE__*/_interopDefaultLegacy(lodash);
 var Ajv__default = /*#__PURE__*/_interopDefaultLegacy(Ajv);
-var yup__namespace = /*#__PURE__*/_interopNamespace(yup);
 
-const ENTITY_DEFAULT_NAMESPACE = "default";
-const ENTITY_META_GENERATED_FIELDS = [
-  "uid",
-  "etag",
-  "generation"
-];
-const VIEW_URL_ANNOTATION = "backstage.io/view-url";
-const EDIT_URL_ANNOTATION = "backstage.io/edit-url";
+function isApiEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "API";
+}
+function isComponentEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "COMPONENT";
+}
+function isDomainEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "DOMAIN";
+}
+function isGroupEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "GROUP";
+}
+function isLocationEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "LOCATION";
+}
+function isResourceEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "RESOURCE";
+}
+function isSystemEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "SYSTEM";
+}
+function isUserEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "USER";
+}
+
+const DEFAULT_NAMESPACE = "default";
+const ANNOTATION_VIEW_URL = "backstage.io/view-url";
+const ANNOTATION_EDIT_URL = "backstage.io/edit-url";
+const ANNOTATION_KUBERNETES_API_SERVER = "kubernetes.io/api-server";
+const ANNOTATION_KUBERNETES_API_SERVER_CA = "kubernetes.io/api-server-certificate-authority";
+const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
 
 class DefaultNamespaceEntityPolicy {
-  constructor(namespace = ENTITY_DEFAULT_NAMESPACE) {
+  constructor(namespace = DEFAULT_NAMESPACE) {
     this.namespace = namespace;
   }
   async enforce(entity) {
@@ -471,7 +1854,124 @@ class DefaultNamespaceEntityPolicy {
   }
 }
 
+function parseRefString(ref) {
+  let colonI = ref.indexOf(":");
+  const slashI = ref.indexOf("/");
+  if (slashI !== -1 && slashI < colonI) {
+    colonI = -1;
+  }
+  const kind = colonI === -1 ? void 0 : ref.slice(0, colonI);
+  const namespace = slashI === -1 ? void 0 : ref.slice(colonI + 1, slashI);
+  const name = ref.slice(Math.max(colonI + 1, slashI + 1));
+  if (kind === "" || namespace === "" || name === "") {
+    throw new TypeError(
+      `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`
+    );
+  }
+  return { kind, namespace, name };
+}
+function getCompoundEntityRef(entity) {
+  return {
+    kind: entity.kind,
+    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+    name: entity.metadata.name
+  };
+}
+function parseEntityRef(ref, context) {
+  var _a, _b, _c, _d;
+  if (!ref) {
+    throw new Error(`Entity reference must not be empty`);
+  }
+  const defaultKind = context == null ? void 0 : context.defaultKind;
+  const defaultNamespace = (context == null ? void 0 : context.defaultNamespace) || DEFAULT_NAMESPACE;
+  let kind;
+  let namespace;
+  let name;
+  if (typeof ref === "string") {
+    const parsed = parseRefString(ref);
+    kind = (_a = parsed.kind) != null ? _a : defaultKind;
+    namespace = (_b = parsed.namespace) != null ? _b : defaultNamespace;
+    name = parsed.name;
+  } else {
+    kind = (_c = ref.kind) != null ? _c : defaultKind;
+    namespace = (_d = ref.namespace) != null ? _d : defaultNamespace;
+    name = ref.name;
+  }
+  if (!kind) {
+    const textual = JSON.stringify(ref);
+    throw new Error(
+      `Entity reference ${textual} had missing or empty kind (e.g. did not start with "component:" or similar)`
+    );
+  } else if (!namespace) {
+    const textual = JSON.stringify(ref);
+    throw new Error(
+      `Entity reference ${textual} had missing or empty namespace`
+    );
+  } else if (!name) {
+    const textual = JSON.stringify(ref);
+    throw new Error(`Entity reference ${textual} had missing or empty name`);
+  }
+  return { kind, namespace, name };
+}
+function stringifyEntityRef(ref) {
+  var _a, _b;
+  let kind;
+  let namespace;
+  let name;
+  if ("metadata" in ref) {
+    kind = ref.kind;
+    namespace = (_a = ref.metadata.namespace) != null ? _a : DEFAULT_NAMESPACE;
+    name = ref.metadata.name;
+  } else {
+    kind = ref.kind;
+    namespace = (_b = ref.namespace) != null ? _b : DEFAULT_NAMESPACE;
+    name = ref.name;
+  }
+  return `${kind.toLocaleLowerCase("en-US")}:${namespace.toLocaleLowerCase(
+    "en-US"
+  )}/${name.toLocaleLowerCase("en-US")}`;
+}
+
+class GroupDefaultParentEntityPolicy {
+  constructor(parentEntityRef) {
+    const { kind, namespace, name } = parseEntityRef(parentEntityRef, {
+      defaultKind: "Group",
+      defaultNamespace: DEFAULT_NAMESPACE
+    });
+    if (kind.toLocaleUpperCase("en-US") !== "GROUP") {
+      throw new TypeError("group parent must be a group");
+    }
+    this.parentRef = stringifyEntityRef({
+      kind,
+      namespace,
+      name
+    });
+  }
+  async enforce(entity) {
+    if (entity.kind !== "Group") {
+      return entity;
+    }
+    const group = entity;
+    if (group.spec.parent) {
+      return group;
+    }
+    if (stringifyEntityRef(group) !== this.parentRef) {
+      group.spec.parent = this.parentRef;
+    }
+    return group;
+  }
+}
+
 class CommonValidatorFunctions {
+  /**
+   * Checks that the value is on the form `<suffix>` or `<prefix><separator><suffix>`, and validates
+   * those parts separately.
+   *
+   * @param value - The value to check
+   * @param separator - The separator between parts
+   * @param isValidPrefix - Checks that the part before the separator is valid, if present
+   * @param isValidSuffix - Checks that the part after the separator (or the entire value if there is no separator) is valid
+   */
   static isValidPrefixAndOrSuffix(value, separator, isValidPrefix, isValidSuffix) {
     if (typeof value !== "string") {
       return false;
@@ -484,6 +1984,11 @@ class CommonValidatorFunctions {
     }
     return false;
   }
+  /**
+   * Checks that the value can be safely transferred as JSON.
+   *
+   * @param value - The value to check
+   */
   static isJsonSafe(value) {
     try {
       return lodash__default["default"].isEqual(value, JSON.parse(JSON.stringify(value)));
@@ -491,15 +1996,38 @@ class CommonValidatorFunctions {
       return false;
     }
   }
+  /**
+   * Checks that the value is a valid DNS subdomain name.
+   *
+   * @param value - The value to check
+   * @see https://tools.ietf.org/html/rfc1123
+   */
   static isValidDnsSubdomain(value) {
     return typeof value === "string" && value.length >= 1 && value.length <= 253 && value.split(".").every(CommonValidatorFunctions.isValidDnsLabel);
   }
+  /**
+   * Checks that the value is a valid DNS label.
+   *
+   * @param value - The value to check
+   * @see https://tools.ietf.org/html/rfc1123
+   */
   static isValidDnsLabel(value) {
     return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9]+(\-[a-z0-9]+)*$/.test(value);
   }
+  /**
+   * Checks that the value is a valid tag.
+   *
+   * @deprecated This will be removed in a future release
+   * @param value - The value to check
+   */
   static isValidTag(value) {
     return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9+#]+(\-[a-z0-9+#]+)*$/.test(value);
   }
+  /**
+   * Checks that the value is a valid string URL.
+   *
+   * @param value - The value to check
+   */
   static isValidUrl(value) {
     if (typeof value !== "string") {
       return false;
@@ -511,16 +2039,31 @@ class CommonValidatorFunctions {
       return false;
     }
   }
+  /**
+   * Checks that the value is a non empty string value.
+   *
+   * @deprecated use isNonEmptyString instead
+   * @param value - The value to check
+   */
   static isValidString(value) {
+    var _a;
+    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+  }
+  /**
+   * Checks that the value is a string value that's not empty.
+   *
+   * @param value - The value to check
+   */
+  static isNonEmptyString(value) {
     var _a;
     return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
   }
 }
 
-var $schema$c = "http://json-schema.org/draft-07/schema";
-var $id$c = "EntityEnvelope";
-var description$c = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
-var examples$b = [
+var $schema$b = "http://json-schema.org/draft-07/schema";
+var $id$b = "EntityEnvelope";
+var description$b = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
+var examples$a = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Component",
@@ -592,20 +2135,20 @@ var properties$2 = {
 	}
 };
 var entityEnvelopeSchema = {
-	$schema: $schema$c,
-	$id: $id$c,
-	description: description$c,
-	examples: examples$b,
+	$schema: $schema$b,
+	$id: $id$b,
+	description: description$b,
+	examples: examples$a,
 	type: type$3,
 	required: required$2,
 	additionalProperties: additionalProperties$2,
 	properties: properties$2
 };
 
-var $schema$b = "http://json-schema.org/draft-07/schema";
-var $id$b = "Entity";
-var description$b = "The parts of the format that's common to all versions/kinds of entity.";
-var examples$a = [
+var $schema$a = "http://json-schema.org/draft-07/schema";
+var $id$a = "Entity";
+var description$a = "The parts of the format that's common to all versions/kinds of entity.";
+var examples$9 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Component",
@@ -679,24 +2222,23 @@ var properties$1 = {
 	}
 };
 var entitySchema = {
-	$schema: $schema$b,
-	$id: $id$b,
-	description: description$b,
-	examples: examples$a,
+	$schema: $schema$a,
+	$id: $id$a,
+	description: description$a,
+	examples: examples$9,
 	type: type$2,
 	required: required$1,
 	additionalProperties: additionalProperties$1,
 	properties: properties$1
 };
 
-var $schema$a = "http://json-schema.org/draft-07/schema";
-var $id$a = "EntityMeta";
-var description$a = "Metadata fields common to all versions/kinds of entity.";
-var examples$9 = [
+var $schema$9 = "http://json-schema.org/draft-07/schema";
+var $id$9 = "EntityMeta";
+var description$9 = "Metadata fields common to all versions/kinds of entity.";
+var examples$8 = [
 	{
 		uid: "e01199ab-08cc-44c2-8e19-5c29ded82521",
 		etag: "lsndfkjsndfkjnsdfkjnsd==",
-		generation: 13,
 		name: "my-component-yay",
 		namespace: "the-namespace",
 		labels: {
@@ -732,14 +2274,6 @@ var properties = {
 			"lsndfkjsndfkjnsdfkjnsd=="
 		],
 		minLength: 1
-	},
-	generation: {
-		type: "integer",
-		description: "A positive nonzero number that indicates the current generation of data for this entity; the value is incremented each time the spec changes. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations.",
-		examples: [
-			1
-		],
-		minimum: 1
 	},
 	name: {
 		type: "string",
@@ -831,26 +2365,37 @@ var properties = {
 						"dashboard"
 					],
 					minLength: 1
+				},
+				type: {
+					type: "string",
+					description: "An optional value to categorize links into specific groups.",
+					examples: [
+						"runbook",
+						"documentation",
+						"logs",
+						"dashboard"
+					],
+					minLength: 1
 				}
 			}
 		}
 	}
 };
 var entityMetaSchema = {
-	$schema: $schema$a,
-	$id: $id$a,
-	description: description$a,
-	examples: examples$9,
+	$schema: $schema$9,
+	$id: $id$9,
+	description: description$9,
+	examples: examples$8,
 	type: type$1,
 	required: required,
 	additionalProperties: additionalProperties,
 	properties: properties
 };
 
-var $schema$9 = "http://json-schema.org/draft-07/schema";
-var $id$9 = "common";
+var $schema$8 = "http://json-schema.org/draft-07/schema";
+var $id$8 = "common";
 var type = "object";
-var description$9 = "Common definitions to import from other schemas";
+var description$8 = "Common definitions to import from other schemas";
 var definitions = {
 	reference: {
 		$id: "#reference",
@@ -898,6 +2443,11 @@ var definitions = {
 			},
 			target: {
 				$ref: "#reference"
+			},
+			targetRef: {
+				type: "string",
+				minLength: 1,
+				description: "The entity ref of the target of this relation."
 			}
 		}
 	},
@@ -991,10 +2541,10 @@ var definitions = {
 	}
 };
 var commonSchema = {
-	$schema: $schema$9,
-	$id: $id$9,
+	$schema: $schema$8,
+	$id: $id$8,
 	type: type,
-	description: description$9,
+	description: description$8,
 	definitions: definitions
 };
 
@@ -1010,7 +2560,9 @@ function throwAjvError(errors) {
     throw new TypeError("Unknown error");
   }
   const error = errors[0];
-  throw new TypeError(`${error.dataPath || "<root>"} ${error.message}${error.params ? ` - ${Object.entries(error.params).map(([key, val]) => `${key}: ${val}`).join(", ")}` : ""}`);
+  throw new TypeError(
+    `${error.instancePath || "<root>"} ${error.message}${error.params ? ` - ${Object.entries(error.params).map(([key, val]) => `${key}: ${val}`).join(", ")}` : ""}`
+  );
 }
 function compileAjvSchema(schema, options = {}) {
   var _a;
@@ -1079,7 +2631,9 @@ function* getAllRefs(schema) {
 }
 
 function entityEnvelopeSchemaValidator(schema) {
-  const validate = compileAjvSchema(schema ? schema : entityEnvelopeSchema);
+  const validate = compileAjvSchema(
+    schema ? schema : entityEnvelopeSchema
+  );
   return (data) => {
     const result = validate(data);
     if (result === true) {
@@ -1097,7 +2651,9 @@ function entityKindSchemaValidator(schema) {
     if (result === true) {
       return data;
     }
-    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter((e) => ["/kind", "/apiVersion"].includes(e.dataPath));
+    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter(
+      (e) => ["/kind", "/apiVersion"].includes(e.instancePath)
+    );
     if ((softCandidates == null ? void 0 : softCandidates.length) && softCandidates.every((e) => e.keyword === "enum")) {
       return false;
     }
@@ -1118,7 +2674,12 @@ function entitySchemaValidator(schema) {
 
 class KubernetesValidatorFunctions {
   static isValidApiVersion(value) {
-    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(value, "/", CommonValidatorFunctions.isValidDnsSubdomain, (n) => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n));
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      (n) => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n)
+    );
   }
   static isValidKind(value) {
     return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-zA-Z][a-z0-9A-Z]*$/.test(value);
@@ -1130,13 +2691,23 @@ class KubernetesValidatorFunctions {
     return CommonValidatorFunctions.isValidDnsLabel(value);
   }
   static isValidLabelKey(value) {
-    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(value, "/", CommonValidatorFunctions.isValidDnsSubdomain, KubernetesValidatorFunctions.isValidObjectName);
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      KubernetesValidatorFunctions.isValidObjectName
+    );
   }
   static isValidLabelValue(value) {
     return value === "" || KubernetesValidatorFunctions.isValidObjectName(value);
   }
   static isValidAnnotationKey(value) {
-    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(value, "/", CommonValidatorFunctions.isValidDnsSubdomain, KubernetesValidatorFunctions.isValidObjectName);
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      KubernetesValidatorFunctions.isValidObjectName
+    );
   }
   static isValidAnnotationValue(value) {
     return typeof value === "string";
@@ -1152,7 +2723,9 @@ const defaultValidators = {
   isValidLabelValue: KubernetesValidatorFunctions.isValidLabelValue,
   isValidAnnotationKey: KubernetesValidatorFunctions.isValidAnnotationKey,
   isValidAnnotationValue: KubernetesValidatorFunctions.isValidAnnotationValue,
-  isValidTag: CommonValidatorFunctions.isValidTag
+  isValidTag: (value) => {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9:+#]+(\-[a-z0-9:+#]+)*$/.test(value);
+  }
 };
 function makeValidator(overrides = {}) {
   return {
@@ -1206,6 +2779,7 @@ class FieldFormatEntityPolicy {
             expectation = "a string that is a valid url";
             break;
           case "isValidString":
+          case "isNonEmptyString":
             expectation = "a non empty string";
             break;
           default:
@@ -1213,7 +2787,9 @@ class FieldFormatEntityPolicy {
             break;
         }
         const message = expectation ? ` expected ${expectation} but found "${value}".` : "";
-        throw new Error(`"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`);
+        throw new Error(
+          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`
+        );
       }
     }
     function optional(field, value, validator) {
@@ -1222,7 +2798,11 @@ class FieldFormatEntityPolicy {
     require("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
     require("kind", entity.kind, this.validators.isValidKind);
     require("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
-    optional("metadata.namespace", entity.metadata.namespace, this.validators.isValidNamespace);
+    optional(
+      "metadata.namespace",
+      entity.metadata.namespace,
+      this.validators.isValidNamespace
+    );
     for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
       require(`labels.${k}`, k, this.validators.isValidLabelKey);
       require(`labels.${k}`, v, this.validators.isValidLabelValue);
@@ -1238,8 +2818,16 @@ class FieldFormatEntityPolicy {
     const links = (_d = entity.metadata.links) != null ? _d : [];
     for (let i = 0; i < links.length; ++i) {
       require(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
-      optional(`links.${i}.title`, (_f = links[i]) == null ? void 0 : _f.title, CommonValidatorFunctions.isValidString);
-      optional(`links.${i}.icon`, (_g = links[i]) == null ? void 0 : _g.icon, KubernetesValidatorFunctions.isValidObjectName);
+      optional(
+        `links.${i}.title`,
+        (_f = links[i]) == null ? void 0 : _f.title,
+        CommonValidatorFunctions.isNonEmptyString
+      );
+      optional(
+        `links.${i}.icon`,
+        (_g = links[i]) == null ? void 0 : _g.icon,
+        KubernetesValidatorFunctions.isValidObjectName
+      );
     }
     return entity;
   }
@@ -1274,174 +2862,10 @@ class SchemaValidEntityPolicy {
     if (!error) {
       throw new Error(`Malformed envelope, Unknown error`);
     }
-    throw new Error(`Malformed envelope, ${error.dataPath || "<root>"} ${error.message}`);
+    throw new Error(
+      `Malformed envelope, ${error.instancePath || "<root>"} ${error.message}`
+    );
   }
-}
-
-function parseRefString(ref) {
-  var _a, _b;
-  const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
-  if (!match) {
-    throw new TypeError(`Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`);
-  }
-  return {
-    kind: (_a = match[1]) == null ? void 0 : _a.slice(0, -1),
-    namespace: (_b = match[2]) == null ? void 0 : _b.slice(0, -1),
-    name: match[3]
-  };
-}
-function getEntityName(entity) {
-  return {
-    kind: entity.kind,
-    namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
-    name: entity.metadata.name
-  };
-}
-function parseEntityName(ref, context = {}) {
-  const { kind, namespace, name } = parseEntityRef(ref, {
-    defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
-    ...context
-  });
-  if (!kind) {
-    throw new Error(`Entity reference ${namespace}/${name} did not contain a kind`);
-  }
-  return { kind, namespace, name };
-}
-function parseEntityRef(ref, context = {}) {
-  var _a, _b;
-  if (!ref) {
-    throw new Error(`Entity reference must not be empty`);
-  }
-  if (typeof ref === "string") {
-    const parsed = parseRefString(ref);
-    return {
-      kind: (_a = parsed.kind) != null ? _a : context.defaultKind,
-      namespace: (_b = parsed.namespace) != null ? _b : context.defaultNamespace,
-      name: parsed.name
-    };
-  }
-  const { kind, namespace, name } = ref;
-  if (kind === "") {
-    throw new Error("Entity reference kinds must not be empty");
-  } else if (namespace === "") {
-    throw new Error("Entity reference namespaces must not be empty");
-  } else if (!name) {
-    throw new Error("Entity references must contain a name");
-  }
-  return {
-    kind: kind != null ? kind : context.defaultKind,
-    namespace: namespace != null ? namespace : context.defaultNamespace,
-    name
-  };
-}
-function serializeEntityRef(ref) {
-  let kind;
-  let namespace;
-  let name;
-  if ("metadata" in ref) {
-    kind = ref.kind;
-    namespace = ref.metadata.namespace;
-    name = ref.metadata.name;
-  } else {
-    kind = ref.kind;
-    namespace = ref.namespace;
-    name = ref.name;
-  }
-  if ((kind == null ? void 0 : kind.includes(":")) || (kind == null ? void 0 : kind.includes("/")) || (namespace == null ? void 0 : namespace.includes(":")) || (namespace == null ? void 0 : namespace.includes("/")) || name.includes(":") || name.includes("/")) {
-    return { kind, namespace, name };
-  }
-  return `${kind ? `${kind}:` : ""}${namespace ? `${namespace}/` : ""}${name}`;
-}
-function stringifyEntityRef(ref) {
-  var _a, _b;
-  let kind;
-  let namespace;
-  let name;
-  if ("metadata" in ref) {
-    kind = ref.kind;
-    namespace = (_a = ref.metadata.namespace) != null ? _a : ENTITY_DEFAULT_NAMESPACE;
-    name = ref.metadata.name;
-  } else {
-    kind = ref.kind;
-    namespace = (_b = ref.namespace) != null ? _b : ENTITY_DEFAULT_NAMESPACE;
-    name = ref.name;
-  }
-  return `${kind.toLocaleLowerCase("en-US")}:${namespace.toLocaleLowerCase("en-US")}/${name.toLocaleLowerCase("en-US")}`;
-}
-function compareEntityToRef(entity, ref, context) {
-  const entityKind = entity.kind;
-  const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;
-  const entityName = entity.metadata.name;
-  let refKind;
-  let refNamespace;
-  let refName;
-  if (typeof ref === "string") {
-    const parsed = parseRefString(ref);
-    refKind = parsed.kind || (context == null ? void 0 : context.defaultKind);
-    refNamespace = parsed.namespace || (context == null ? void 0 : context.defaultNamespace) || ENTITY_DEFAULT_NAMESPACE;
-    refName = parsed.name;
-  } else {
-    refKind = ref.kind || (context == null ? void 0 : context.defaultKind);
-    refNamespace = ref.namespace || (context == null ? void 0 : context.defaultNamespace) || ENTITY_DEFAULT_NAMESPACE;
-    refName = ref.name;
-  }
-  if (!refKind || !refNamespace) {
-    throw new Error(`Entity reference or context did not contain kind and namespace`);
-  }
-  return entityKind.toLocaleLowerCase("en-US") === refKind.toLocaleLowerCase("en-US") && entityNamespace.toLocaleLowerCase("en-US") === refNamespace.toLocaleLowerCase("en-US") && entityName.toLocaleLowerCase("en-US") === refName.toLocaleLowerCase("en-US");
-}
-
-function generateEntityUid() {
-  return uuid.v4();
-}
-function generateEntityEtag() {
-  return Buffer.from(uuid.v4(), "utf8").toString("base64").replace(/[^\w]/g, "");
-}
-function entityHasChanges(previous, next) {
-  const e1 = lodash__default["default"].cloneDeep(previous);
-  const e2 = lodash__default["default"].cloneDeep(next);
-  if (!e1.metadata.labels) {
-    e1.metadata.labels = {};
-  }
-  if (!e2.metadata.labels) {
-    e2.metadata.labels = {};
-  }
-  if (!e1.metadata.annotations) {
-    e1.metadata.annotations = {};
-  }
-  if (!e2.metadata.annotations) {
-    e2.metadata.annotations = {};
-  }
-  if (!e1.metadata.tags) {
-    e1.metadata.tags = [];
-  }
-  if (!e2.metadata.tags) {
-    e2.metadata.tags = [];
-  }
-  delete e1.metadata.uid;
-  delete e1.metadata.etag;
-  delete e1.metadata.generation;
-  delete e2.metadata.uid;
-  delete e2.metadata.etag;
-  delete e2.metadata.generation;
-  delete e1.relations;
-  delete e1.status;
-  delete e2.relations;
-  delete e2.status;
-  return !lodash__default["default"].isEqual(e1, e2);
-}
-function generateUpdatedEntity(previous, next) {
-  const { uid, etag, generation } = previous.metadata;
-  if (!uid || !etag || !generation) {
-    throw new Error("Previous entity must have uid, etag and generation");
-  }
-  const result = lodash__default["default"].cloneDeep(next);
-  const bumpEtag = entityHasChanges(previous, result);
-  const bumpGeneration = !lodash__default["default"].isEqual(previous.spec, result.spec);
-  result.metadata.uid = uid;
-  result.metadata.etag = bumpEtag ? generateEntityEtag() : etag;
-  result.metadata.generation = bumpGeneration ? generation + 1 : generation;
-  return result;
 }
 
 class AllEntityPolicies {
@@ -1453,7 +2877,9 @@ class AllEntityPolicies {
     for (const policy of this.policies) {
       const output = await policy.enforce(result);
       if (!output) {
-        throw new Error(`Policy ${policy.constructor.name} did not return a result`);
+        throw new Error(
+          `Policy ${policy.constructor.name} did not return a result`
+        );
       }
       result = output;
     }
@@ -1483,10 +2909,10 @@ const EntityPolicies = {
   }
 };
 
-var $schema$8 = "http://json-schema.org/draft-07/schema";
-var $id$8 = "ApiV1alpha1";
-var description$8 = "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats.";
-var examples$8 = [
+var $schema$7 = "http://json-schema.org/draft-07/schema";
+var $id$7 = "ApiV1alpha1";
+var description$7 = "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats.";
+var examples$7 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "API",
@@ -1509,7 +2935,7 @@ var examples$8 = [
 		}
 	}
 ];
-var allOf$8 = [
+var allOf$7 = [
 	{
 		$ref: "Entity"
 	},
@@ -1546,7 +2972,8 @@ var allOf$8 = [
 							"openapi",
 							"asyncapi",
 							"graphql",
-							"grpc"
+							"grpc",
+							"trpc"
 						],
 						minLength: 1
 					},
@@ -1584,29 +3011,32 @@ var allOf$8 = [
 		}
 	}
 ];
-var schema$8 = {
-	$schema: $schema$8,
-	$id: $id$8,
-	description: description$8,
-	examples: examples$8,
-	allOf: allOf$8
+var schema$7 = {
+	$schema: $schema$7,
+	$id: $id$7,
+	description: description$7,
+	examples: examples$7,
+	allOf: allOf$7
 };
 
 function ajvCompiledJsonSchemaValidator(schema) {
-  const validator = entityKindSchemaValidator(schema);
+  let validator;
   return {
     async check(data) {
+      if (!validator) {
+        validator = entityKindSchemaValidator(schema);
+      }
       return validator(data) === data;
     }
   };
 }
 
-const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$8);
+const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$7);
 
-var $schema$7 = "http://json-schema.org/draft-07/schema";
-var $id$7 = "ComponentV1alpha1";
-var description$7 = "A Component describes a software component. It is typically intimately linked to the source code that constitutes the component, and should be what a developer may regard a \"unit of software\", usually with a distinct deployable or linkable artifact.";
-var examples$7 = [
+var $schema$6 = "http://json-schema.org/draft-07/schema";
+var $id$6 = "ComponentV1alpha1";
+var description$6 = "A Component describes a software component. It is typically intimately linked to the source code that constitutes the component, and should be what a developer may regard a \"unit of software\", usually with a distinct deployable or linkable artifact.";
+var examples$6 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Component",
@@ -1627,7 +3057,7 @@ var examples$7 = [
 		}
 	}
 ];
-var allOf$7 = [
+var allOf$6 = [
 	{
 		$ref: "Entity"
 	},
@@ -1724,20 +3154,20 @@ var allOf$7 = [
 		}
 	}
 ];
-var schema$7 = {
-	$schema: $schema$7,
-	$id: $id$7,
-	description: description$7,
-	examples: examples$7,
-	allOf: allOf$7
+var schema$6 = {
+	$schema: $schema$6,
+	$id: $id$6,
+	description: description$6,
+	examples: examples$6,
+	allOf: allOf$6
 };
 
-const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$7);
+const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$6);
 
-var $schema$6 = "http://json-schema.org/draft-07/schema";
-var $id$6 = "DomainV1alpha1";
-var description$6 = "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.";
-var examples$6 = [
+var $schema$5 = "http://json-schema.org/draft-07/schema";
+var $id$5 = "DomainV1alpha1";
+var description$5 = "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.";
+var examples$5 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Domain",
@@ -1750,7 +3180,7 @@ var examples$6 = [
 		}
 	}
 ];
-var allOf$6 = [
+var allOf$5 = [
 	{
 		$ref: "Entity"
 	},
@@ -1791,20 +3221,20 @@ var allOf$6 = [
 		}
 	}
 ];
-var schema$6 = {
-	$schema: $schema$6,
-	$id: $id$6,
-	description: description$6,
-	examples: examples$6,
-	allOf: allOf$6
+var schema$5 = {
+	$schema: $schema$5,
+	$id: $id$5,
+	description: description$5,
+	examples: examples$5,
+	allOf: allOf$5
 };
 
-const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$6);
+const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$5);
 
-var $schema$5 = "http://json-schema.org/draft-07/schema";
-var $id$5 = "GroupV1alpha1";
-var description$5 = "A group describes an organizational entity, such as for example a team, a business unit, or a loose collection of people in an interest group. Members of these groups are modeled in the catalog as kind User.";
-var examples$5 = [
+var $schema$4 = "http://json-schema.org/draft-07/schema";
+var $id$4 = "GroupV1alpha1";
+var description$4 = "A group describes an organizational entity, such as for example a team, a business unit, or a loose collection of people in an interest group. Members of these groups are modeled in the catalog as kind User.";
+var examples$4 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Group",
@@ -1827,7 +3257,7 @@ var examples$5 = [
 		}
 	}
 ];
-var allOf$5 = [
+var allOf$4 = [
 	{
 		$ref: "Entity"
 	},
@@ -1932,20 +3362,20 @@ var allOf$5 = [
 		}
 	}
 ];
-var schema$5 = {
-	$schema: $schema$5,
-	$id: $id$5,
-	description: description$5,
-	examples: examples$5,
-	allOf: allOf$5
+var schema$4 = {
+	$schema: $schema$4,
+	$id: $id$4,
+	description: description$4,
+	examples: examples$4,
+	allOf: allOf$4
 };
 
-const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$5);
+const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$4);
 
-var $schema$4 = "http://json-schema.org/draft-07/schema";
-var $id$4 = "LocationV1alpha1";
-var description$4 = "A location is a marker that references other places to look for catalog data.";
-var examples$4 = [
+var $schema$3 = "http://json-schema.org/draft-07/schema";
+var $id$3 = "LocationV1alpha1";
+var description$3 = "A location is a marker that references other places to look for catalog data.";
+var examples$3 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Location",
@@ -1961,7 +3391,7 @@ var examples$4 = [
 		}
 	}
 ];
-var allOf$4 = [
+var allOf$3 = [
 	{
 		$ref: "Entity"
 	},
@@ -2032,15 +3462,15 @@ var allOf$4 = [
 		}
 	}
 ];
-var schema$4 = {
-	$schema: $schema$4,
-	$id: $id$4,
-	description: description$4,
-	examples: examples$4,
-	allOf: allOf$4
+var schema$3 = {
+	$schema: $schema$3,
+	$id: $id$3,
+	description: description$3,
+	examples: examples$3,
+	allOf: allOf$3
 };
 
-const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$4);
+const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$3);
 
 const RELATION_OWNED_BY = "ownedBy";
 const RELATION_OWNER_OF = "ownerOf";
@@ -2057,10 +3487,10 @@ const RELATION_HAS_MEMBER = "hasMember";
 const RELATION_PART_OF = "partOf";
 const RELATION_HAS_PART = "hasPart";
 
-var $schema$3 = "http://json-schema.org/draft-07/schema";
-var $id$3 = "ResourceV1alpha1";
-var description$3 = "A resource describes the infrastructure a system needs to operate, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with components and systems allows to visualize resource footprint, and create tooling around them.";
-var examples$3 = [
+var $schema$2 = "http://json-schema.org/draft-07/schema";
+var $id$2 = "ResourceV1alpha1";
+var description$2 = "A resource describes the infrastructure a system needs to operate, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with components and systems allows to visualize resource footprint, and create tooling around them.";
+var examples$2 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Resource",
@@ -2075,7 +3505,7 @@ var examples$3 = [
 		}
 	}
 ];
-var allOf$3 = [
+var allOf$2 = [
 	{
 		$ref: "Entity"
 	},
@@ -2140,20 +3570,20 @@ var allOf$3 = [
 		}
 	}
 ];
-var schema$3 = {
-	$schema: $schema$3,
-	$id: $id$3,
-	description: description$3,
-	examples: examples$3,
-	allOf: allOf$3
+var schema$2 = {
+	$schema: $schema$2,
+	$id: $id$2,
+	description: description$2,
+	examples: examples$2,
+	allOf: allOf$2
 };
 
-const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$3);
+const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$2);
 
-var $schema$2 = "http://json-schema.org/draft-07/schema";
-var $id$2 = "SystemV1alpha1";
-var description$2 = "A system is a collection of resources and components. The system may expose or consume one or several APIs. It is viewed as abstraction level that provides potential consumers insights into exposed features without needing a too detailed view into the details of all components. This also gives the owning team the possibility to decide about published artifacts and APIs.";
-var examples$2 = [
+var $schema$1 = "http://json-schema.org/draft-07/schema";
+var $id$1 = "SystemV1alpha1";
+var description$1 = "A system is a collection of resources and components. The system may expose or consume one or several APIs. It is viewed as abstraction level that provides potential consumers insights into exposed features without needing a too detailed view into the details of all components. This also gives the owning team the possibility to decide about published artifacts and APIs.";
+var examples$1 = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "System",
@@ -2167,7 +3597,7 @@ var examples$2 = [
 		}
 	}
 ];
-var allOf$2 = [
+var allOf$1 = [
 	{
 		$ref: "Entity"
 	},
@@ -2216,229 +3646,6 @@ var allOf$2 = [
 		}
 	}
 ];
-var schema$2 = {
-	$schema: $schema$2,
-	$id: $id$2,
-	description: description$2,
-	examples: examples$2,
-	allOf: allOf$2
-};
-
-const systemEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$2);
-
-var $schema$1 = "http://json-schema.org/draft-07/schema";
-var $id$1 = "TemplateV1beta2";
-var description$1 = "A Template describes a scaffolding task for use with the Scaffolder. It describes the required parameters as well as a series of steps that will be taken to execute the scaffolding task.";
-var examples$1 = [
-	{
-		apiVersion: "backstage.io/v1beta2",
-		kind: "Template",
-		metadata: {
-			name: "react-ssr-template",
-			title: "React SSR Template",
-			description: "Next.js application skeleton for creating isomorphic web applications.",
-			tags: [
-				"recommended",
-				"react"
-			]
-		},
-		spec: {
-			owner: "artist-relations-team",
-			type: "website",
-			parameters: {
-				required: [
-					"name",
-					"description"
-				],
-				properties: {
-					name: {
-						title: "Name",
-						type: "string",
-						description: "Unique name of the component"
-					},
-					description: {
-						title: "Description",
-						type: "string",
-						description: "Description of the component"
-					}
-				}
-			},
-			steps: [
-				{
-					id: "fetch",
-					name: "Fetch",
-					action: "fetch:plain",
-					parameters: {
-						url: "./template"
-					}
-				},
-				{
-					id: "publish",
-					name: "Publish to GitHub",
-					action: "publish:github",
-					parameters: {
-						repoUrl: "{{ parameters.repoUrl }}"
-					},
-					"if": "{{ parameters.repoUrl }}"
-				}
-			],
-			output: {
-				catalogInfoUrl: "{{ steps.publish.output.catalogInfoUrl }}"
-			}
-		}
-	}
-];
-var allOf$1 = [
-	{
-		$ref: "Entity"
-	},
-	{
-		type: "object",
-		required: [
-			"spec"
-		],
-		properties: {
-			apiVersion: {
-				"enum": [
-					"backstage.io/v1beta2"
-				]
-			},
-			kind: {
-				"enum": [
-					"Template"
-				]
-			},
-			spec: {
-				type: "object",
-				required: [
-					"type",
-					"steps"
-				],
-				properties: {
-					type: {
-						type: "string",
-						description: "The type of component created by the template. The software catalog accepts any type value, but an organization should take great care to establish a proper taxonomy for these. Tools including Backstage itself may read this field and behave differently depending on its value. For example, a website type component may present tooling in the Backstage interface that is specific to just websites.",
-						examples: [
-							"service",
-							"website",
-							"library"
-						],
-						minLength: 1
-					},
-					parameters: {
-						oneOf: [
-							{
-								type: "object",
-								description: "The JSONSchema describing the inputs for the template."
-							},
-							{
-								type: "array",
-								description: "A list of separate forms to collect parameters.",
-								items: {
-									type: "object",
-									description: "The JSONSchema describing the inputs for the template."
-								}
-							}
-						]
-					},
-					steps: {
-						type: "array",
-						description: "A list of steps to execute.",
-						items: {
-							type: "object",
-							description: "A description of the step to execute.",
-							required: [
-								"action"
-							],
-							properties: {
-								id: {
-									type: "string",
-									description: "The ID of the step, which can be used to refer to its outputs."
-								},
-								name: {
-									type: "string",
-									description: "The name of the step, which will be displayed in the UI during the scaffolding process."
-								},
-								action: {
-									type: "string",
-									description: "The name of the action to execute."
-								},
-								input: {
-									type: "object",
-									description: "A templated object describing the inputs to the action."
-								},
-								"if": {
-									type: [
-										"string",
-										"boolean"
-									],
-									description: "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
-								}
-							}
-						}
-					},
-					output: {
-						type: "object",
-						description: "A templated object describing the outputs of the scaffolding task.",
-						properties: {
-							links: {
-								type: "array",
-								description: "A list of external hyperlinks, typically pointing to resources created or updated by the template",
-								items: {
-									type: "object",
-									required: [
-									],
-									properties: {
-										url: {
-											type: "string",
-											description: "A url in a standard uri format.",
-											examples: [
-												"https://github.com/my-org/my-new-repo"
-											],
-											minLength: 1
-										},
-										entityRef: {
-											type: "string",
-											description: "An entity reference to an entity in the catalog.",
-											examples: [
-												"Component:default/my-app"
-											],
-											minLength: 1
-										},
-										title: {
-											type: "string",
-											description: "A user friendly display name for the link.",
-											examples: [
-												"View new repo"
-											],
-											minLength: 1
-										},
-										icon: {
-											type: "string",
-											description: "A key representing a visual icon to be displayed in the UI.",
-											examples: [
-												"dashboard"
-											],
-											minLength: 1
-										}
-									}
-								}
-							}
-						},
-						additionalProperties: {
-							type: "string"
-						}
-					},
-					owner: {
-						type: "string",
-						description: "The user (or group) owner of the template",
-						minLength: 1
-					}
-				}
-			}
-		}
-	}
-];
 var schema$1 = {
 	$schema: $schema$1,
 	$id: $id$1,
@@ -2447,7 +3654,7 @@ var schema$1 = {
 	allOf: allOf$1
 };
 
-const templateEntityV1beta2Validator = ajvCompiledJsonSchemaValidator(schema$1);
+const systemEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$1);
 
 var $schema = "http://json-schema.org/draft-07/schema";
 var $id = "UserV1alpha1";
@@ -2556,148 +3763,151 @@ var schema = {
 
 const userEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema);
 
-const LOCATION_ANNOTATION = "backstage.io/managed-by-location";
-const ORIGIN_LOCATION_ANNOTATION = "backstage.io/managed-by-origin-location";
-const SOURCE_LOCATION_ANNOTATION = "backstage.io/source-location";
+const ANNOTATION_LOCATION = "backstage.io/managed-by-location";
+const ANNOTATION_ORIGIN_LOCATION = "backstage.io/managed-by-origin-location";
+const ANNOTATION_SOURCE_LOCATION = "backstage.io/source-location";
 
-function parseLocationReference(ref) {
+const scriptProtocolPattern = (
+  // eslint-disable-next-line no-control-regex
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i
+);
+function parseLocationRef(ref) {
   if (typeof ref !== "string") {
-    throw new TypeError(`Unable to parse location reference '${ref}', unexpected argument ${typeof ref}`);
+    throw new TypeError(
+      `Unable to parse location ref '${ref}', unexpected argument ${typeof ref}`
+    );
   }
   const splitIndex = ref.indexOf(":");
   if (splitIndex < 0) {
-    throw new TypeError(`Unable to parse location reference '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`);
+    throw new TypeError(
+      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`
+    );
   }
-  const type = ref.substr(0, splitIndex).trim();
-  const target = ref.substr(splitIndex + 1).trim();
+  const type = ref.substring(0, splitIndex).trim();
+  const target = ref.substring(splitIndex + 1).trim();
   if (!type || !target) {
-    throw new TypeError(`Unable to parse location reference '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`);
+    throw new TypeError(
+      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`
+    );
   }
   if (type === "http" || type === "https") {
-    throw new TypeError(`Invalid location reference '${ref}', please prefix it with 'url:', e.g. 'url:${ref}'`);
+    throw new TypeError(
+      `Invalid location ref '${ref}', please prefix it with 'url:', e.g. 'url:${ref}'`
+    );
+  }
+  if (scriptProtocolPattern.test(target)) {
+    throw new TypeError(
+      `Invalid location ref '${ref}', target is a javascript: URL`
+    );
   }
   return { type, target };
 }
-function stringifyLocationReference(ref) {
+function stringifyLocationRef(ref) {
   const { type, target } = ref;
   if (!type) {
-    throw new TypeError(`Unable to stringify location reference, empty type`);
+    throw new TypeError(`Unable to stringify location ref, empty type`);
   } else if (!target) {
-    throw new TypeError(`Unable to stringify location reference, empty target`);
+    throw new TypeError(`Unable to stringify location ref, empty target`);
+  }
+  if (scriptProtocolPattern.test(target)) {
+    throw new TypeError(
+      `Invalid location ref '${type}:${target}', target is a javascript: URL`
+    );
   }
   return `${type}:${target}`;
 }
 function getEntitySourceLocation(entity) {
   var _a, _b, _c, _d, _e;
-  const locationRef = (_e = (_b = (_a = entity.metadata) == null ? void 0 : _a.annotations) == null ? void 0 : _b[SOURCE_LOCATION_ANNOTATION]) != null ? _e : (_d = (_c = entity.metadata) == null ? void 0 : _c.annotations) == null ? void 0 : _d[LOCATION_ANNOTATION];
+  const locationRef = (_e = (_b = (_a = entity.metadata) == null ? void 0 : _a.annotations) == null ? void 0 : _b[ANNOTATION_SOURCE_LOCATION]) != null ? _e : (_d = (_c = entity.metadata) == null ? void 0 : _c.annotations) == null ? void 0 : _d[ANNOTATION_LOCATION];
   if (!locationRef) {
-    throw new Error(`Entity '${stringifyEntityRef(entity)}' is missing location`);
+    throw new Error(
+      `Entity '${stringifyEntityRef(entity)}' is missing location`
+    );
   }
-  return parseLocationReference(locationRef);
+  return parseLocationRef(locationRef);
 }
 
-const locationSpecSchema = yup__namespace.object({
-  type: yup__namespace.string().required(),
-  target: yup__namespace.string().required(),
-  presence: yup__namespace.mixed().oneOf(["required", "optional"])
-}).noUnknown().required();
-const locationSchema = yup__namespace.object({
-  id: yup__namespace.string().required(),
-  type: yup__namespace.string().required(),
-  target: yup__namespace.string().required(),
-  presence: yup__namespace.mixed().oneOf(["required", "optional"])
-}).noUnknown().required();
-const analyzeLocationSchema = yup__namespace.object({
-  location: locationSpecSchema
-}).noUnknown().required();
-
-__webpack_unused_export__ = CommonValidatorFunctions;
-exports.z3 = DefaultNamespaceEntityPolicy;
-__webpack_unused_export__ = EDIT_URL_ANNOTATION;
-__webpack_unused_export__ = ENTITY_DEFAULT_NAMESPACE;
-__webpack_unused_export__ = ENTITY_META_GENERATED_FIELDS;
-exports.nW = EntityPolicies;
-exports.ze = FieldFormatEntityPolicy;
-__webpack_unused_export__ = KubernetesValidatorFunctions;
-__webpack_unused_export__ = LOCATION_ANNOTATION;
-exports.Qp = NoForeignRootFieldsEntityPolicy;
-__webpack_unused_export__ = ORIGIN_LOCATION_ANNOTATION;
-__webpack_unused_export__ = RELATION_API_CONSUMED_BY;
-__webpack_unused_export__ = RELATION_API_PROVIDED_BY;
-__webpack_unused_export__ = RELATION_CHILD_OF;
-__webpack_unused_export__ = RELATION_CONSUMES_API;
-__webpack_unused_export__ = RELATION_DEPENDENCY_OF;
-__webpack_unused_export__ = RELATION_DEPENDS_ON;
-__webpack_unused_export__ = RELATION_HAS_MEMBER;
-__webpack_unused_export__ = RELATION_HAS_PART;
-__webpack_unused_export__ = RELATION_MEMBER_OF;
-__webpack_unused_export__ = RELATION_OWNED_BY;
-__webpack_unused_export__ = RELATION_OWNER_OF;
-__webpack_unused_export__ = RELATION_PARENT_OF;
-__webpack_unused_export__ = RELATION_PART_OF;
-__webpack_unused_export__ = RELATION_PROVIDES_API;
-__webpack_unused_export__ = SOURCE_LOCATION_ANNOTATION;
-exports.PG = SchemaValidEntityPolicy;
-__webpack_unused_export__ = VIEW_URL_ANNOTATION;
-__webpack_unused_export__ = analyzeLocationSchema;
-exports.q_ = apiEntityV1alpha1Validator;
-__webpack_unused_export__ = compareEntityToRef;
-exports.Mw = componentEntityV1alpha1Validator;
-exports._I = domainEntityV1alpha1Validator;
-__webpack_unused_export__ = entityEnvelopeSchemaValidator;
-__webpack_unused_export__ = entityHasChanges;
-__webpack_unused_export__ = entityKindSchemaValidator;
-__webpack_unused_export__ = entitySchemaValidator;
-__webpack_unused_export__ = generateEntityEtag;
-__webpack_unused_export__ = generateEntityUid;
-__webpack_unused_export__ = generateUpdatedEntity;
-__webpack_unused_export__ = getEntityName;
-__webpack_unused_export__ = getEntitySourceLocation;
-exports.pv = groupEntityV1alpha1Validator;
-exports._y = locationEntityV1alpha1Validator;
-__webpack_unused_export__ = locationSchema;
-__webpack_unused_export__ = locationSpecSchema;
-__webpack_unused_export__ = makeValidator;
-__webpack_unused_export__ = parseEntityName;
-__webpack_unused_export__ = parseEntityRef;
-__webpack_unused_export__ = parseLocationReference;
-exports.Ij = resourceEntityV1alpha1Validator;
-__webpack_unused_export__ = serializeEntityRef;
-__webpack_unused_export__ = stringifyEntityRef;
-__webpack_unused_export__ = stringifyLocationReference;
-exports.nh = systemEntityV1alpha1Validator;
-exports.wO = templateEntityV1beta2Validator;
-exports.HU = userEntityV1alpha1Validator;
+exports.ANNOTATION_EDIT_URL = ANNOTATION_EDIT_URL;
+exports.ANNOTATION_KUBERNETES_API_SERVER = ANNOTATION_KUBERNETES_API_SERVER;
+exports.ANNOTATION_KUBERNETES_API_SERVER_CA = ANNOTATION_KUBERNETES_API_SERVER_CA;
+exports.ANNOTATION_KUBERNETES_AUTH_PROVIDER = ANNOTATION_KUBERNETES_AUTH_PROVIDER;
+exports.ANNOTATION_LOCATION = ANNOTATION_LOCATION;
+exports.ANNOTATION_ORIGIN_LOCATION = ANNOTATION_ORIGIN_LOCATION;
+exports.ANNOTATION_SOURCE_LOCATION = ANNOTATION_SOURCE_LOCATION;
+exports.ANNOTATION_VIEW_URL = ANNOTATION_VIEW_URL;
+exports.CommonValidatorFunctions = CommonValidatorFunctions;
+exports.DEFAULT_NAMESPACE = DEFAULT_NAMESPACE;
+exports.DefaultNamespaceEntityPolicy = DefaultNamespaceEntityPolicy;
+exports.EntityPolicies = EntityPolicies;
+exports.FieldFormatEntityPolicy = FieldFormatEntityPolicy;
+exports.GroupDefaultParentEntityPolicy = GroupDefaultParentEntityPolicy;
+exports.KubernetesValidatorFunctions = KubernetesValidatorFunctions;
+exports.NoForeignRootFieldsEntityPolicy = NoForeignRootFieldsEntityPolicy;
+exports.RELATION_API_CONSUMED_BY = RELATION_API_CONSUMED_BY;
+exports.RELATION_API_PROVIDED_BY = RELATION_API_PROVIDED_BY;
+exports.RELATION_CHILD_OF = RELATION_CHILD_OF;
+exports.RELATION_CONSUMES_API = RELATION_CONSUMES_API;
+exports.RELATION_DEPENDENCY_OF = RELATION_DEPENDENCY_OF;
+exports.RELATION_DEPENDS_ON = RELATION_DEPENDS_ON;
+exports.RELATION_HAS_MEMBER = RELATION_HAS_MEMBER;
+exports.RELATION_HAS_PART = RELATION_HAS_PART;
+exports.RELATION_MEMBER_OF = RELATION_MEMBER_OF;
+exports.RELATION_OWNED_BY = RELATION_OWNED_BY;
+exports.RELATION_OWNER_OF = RELATION_OWNER_OF;
+exports.RELATION_PARENT_OF = RELATION_PARENT_OF;
+exports.RELATION_PART_OF = RELATION_PART_OF;
+exports.RELATION_PROVIDES_API = RELATION_PROVIDES_API;
+exports.SchemaValidEntityPolicy = SchemaValidEntityPolicy;
+exports.apiEntityV1alpha1Validator = apiEntityV1alpha1Validator;
+exports.componentEntityV1alpha1Validator = componentEntityV1alpha1Validator;
+exports.domainEntityV1alpha1Validator = domainEntityV1alpha1Validator;
+exports.entityEnvelopeSchemaValidator = entityEnvelopeSchemaValidator;
+exports.entityKindSchemaValidator = entityKindSchemaValidator;
+exports.entitySchemaValidator = entitySchemaValidator;
+exports.getCompoundEntityRef = getCompoundEntityRef;
+exports.getEntitySourceLocation = getEntitySourceLocation;
+exports.groupEntityV1alpha1Validator = groupEntityV1alpha1Validator;
+exports.isApiEntity = isApiEntity;
+exports.isComponentEntity = isComponentEntity;
+exports.isDomainEntity = isDomainEntity;
+exports.isGroupEntity = isGroupEntity;
+exports.isLocationEntity = isLocationEntity;
+exports.isResourceEntity = isResourceEntity;
+exports.isSystemEntity = isSystemEntity;
+exports.isUserEntity = isUserEntity;
+exports.locationEntityV1alpha1Validator = locationEntityV1alpha1Validator;
+exports.makeValidator = makeValidator;
+exports.parseEntityRef = parseEntityRef;
+exports.parseLocationRef = parseLocationRef;
+exports.resourceEntityV1alpha1Validator = resourceEntityV1alpha1Validator;
+exports.stringifyEntityRef = stringifyEntityRef;
+exports.stringifyLocationRef = stringifyLocationRef;
+exports.systemEntityV1alpha1Validator = systemEntityV1alpha1Validator;
+exports.userEntityV1alpha1Validator = userEntityV1alpha1Validator;
 //# sourceMappingURL=index.cjs.js.map
 
 
 /***/ }),
 
-/***/ 6441:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ 7090:
+/***/ ((module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
-const context_1 = __nccwpck_require__(8709);
-exports.KeywordCxt = context_1.default;
-var codegen_1 = __nccwpck_require__(4016);
-Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return codegen_1._; } }));
-Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return codegen_1.str; } }));
-Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return codegen_1.stringify; } }));
-Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return codegen_1.nil; } }));
-Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return codegen_1.Name; } }));
-Object.defineProperty(exports, "CodeGen", ({ enumerable: true, get: function () { return codegen_1.CodeGen; } }));
-const core_1 = __nccwpck_require__(3797);
-const draft7_1 = __nccwpck_require__(9180);
-const draft7MetaSchema = __nccwpck_require__(4777);
+exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
+const core_1 = __nccwpck_require__(7941);
+const draft7_1 = __nccwpck_require__(2752);
+const discriminator_1 = __nccwpck_require__(885);
+const draft7MetaSchema = __nccwpck_require__(2474);
 const META_SUPPORT_DATA = ["/properties"];
 const META_SCHEMA_ID = "http://json-schema.org/draft-07/schema";
 class Ajv extends core_1.default {
     _addVocabularies() {
         super._addVocabularies();
         draft7_1.default.forEach((v) => this.addVocabulary(v));
+        if (this.opts.discriminator)
+            this.addKeyword(discriminator_1.default);
     }
     _addDefaultMetaSchema() {
         super._addDefaultMetaSchema();
@@ -2714,18 +3924,33 @@ class Ajv extends core_1.default {
             super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : undefined));
     }
 }
+module.exports = exports = Ajv;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.default = Ajv;
+var validate_1 = __nccwpck_require__(4977);
+Object.defineProperty(exports, "KeywordCxt", ({ enumerable: true, get: function () { return validate_1.KeywordCxt; } }));
+var codegen_1 = __nccwpck_require__(232);
+Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return codegen_1._; } }));
+Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return codegen_1.str; } }));
+Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return codegen_1.stringify; } }));
+Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return codegen_1.nil; } }));
+Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return codegen_1.Name; } }));
+Object.defineProperty(exports, "CodeGen", ({ enumerable: true, get: function () { return codegen_1.CodeGen; } }));
+var validation_error_1 = __nccwpck_require__(8249);
+Object.defineProperty(exports, "ValidationError", ({ enumerable: true, get: function () { return validation_error_1.default; } }));
+var ref_error_1 = __nccwpck_require__(280);
+Object.defineProperty(exports, "MissingRefError", ({ enumerable: true, get: function () { return ref_error_1.default; } }));
 //# sourceMappingURL=ajv.js.map
 
 /***/ }),
 
-/***/ 8815:
+/***/ 9123:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
+exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
 class _CodeOrName {
 }
 exports._CodeOrName = _CodeOrName;
@@ -2865,28 +4090,41 @@ function getProperty(key) {
     return typeof key == "string" && exports.IDENTIFIER.test(key) ? new _Code(`.${key}`) : _ `[${key}]`;
 }
 exports.getProperty = getProperty;
+//Does best effort to format the name properly
+function getEsmExportName(key) {
+    if (typeof key == "string" && exports.IDENTIFIER.test(key)) {
+        return new _Code(`${key}`);
+    }
+    throw new Error(`CodeGen: invalid export name: ${key}, use explicit $id name mapping`);
+}
+exports.getEsmExportName = getEsmExportName;
+function regexpCode(rx) {
+    return new _Code(rx.toString());
+}
+exports.regexpCode = regexpCode;
 //# sourceMappingURL=code.js.map
 
 /***/ }),
 
-/***/ 4016:
+/***/ 232:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
-const code_1 = __nccwpck_require__(8815);
-const scope_1 = __nccwpck_require__(194);
-var code_2 = __nccwpck_require__(8815);
+exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
+const code_1 = __nccwpck_require__(9123);
+const scope_1 = __nccwpck_require__(1605);
+var code_2 = __nccwpck_require__(9123);
 Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return code_2._; } }));
 Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return code_2.str; } }));
 Object.defineProperty(exports, "strConcat", ({ enumerable: true, get: function () { return code_2.strConcat; } }));
 Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return code_2.nil; } }));
 Object.defineProperty(exports, "getProperty", ({ enumerable: true, get: function () { return code_2.getProperty; } }));
 Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return code_2.stringify; } }));
+Object.defineProperty(exports, "regexpCode", ({ enumerable: true, get: function () { return code_2.regexpCode; } }));
 Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return code_2.Name; } }));
-var scope_2 = __nccwpck_require__(194);
+var scope_2 = __nccwpck_require__(1605);
 Object.defineProperty(exports, "Scope", ({ enumerable: true, get: function () { return scope_2.Scope; } }));
 Object.defineProperty(exports, "ValueScope", ({ enumerable: true, get: function () { return scope_2.ValueScope; } }));
 Object.defineProperty(exports, "ValueScopeName", ({ enumerable: true, get: function () { return scope_2.ValueScopeName; } }));
@@ -3324,7 +4562,7 @@ class CodeGen {
             code.push(key);
             if (key !== value || this.opts.es5) {
                 code.push(":");
-                code_1.addCodeArg(code, value);
+                (0, code_1.addCodeArg)(code, value);
             }
         }
         code.push("}");
@@ -3376,8 +4614,8 @@ class CodeGen {
         const name = this._scope.toName(nameOrPrefix);
         if (this.opts.es5) {
             const arr = iterable instanceof code_1.Name ? iterable : this.var("_arr", iterable);
-            return this.forRange("_i", 0, code_1._ `${arr}.length`, (i) => {
-                this.var(name, code_1._ `${arr}[${i}]`);
+            return this.forRange("_i", 0, (0, code_1._) `${arr}.length`, (i) => {
+                this.var(name, (0, code_1._) `${arr}[${i}]`);
                 forBody(name);
             });
         }
@@ -3387,7 +4625,7 @@ class CodeGen {
     // With option `ownProperties` replaced with a `for-of` loop for object keys
     forIn(nameOrPrefix, obj, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
         if (this.opts.ownProperties) {
-            return this.forOf(nameOrPrefix, code_1._ `Object.keys(${obj})`, forBody);
+            return this.forOf(nameOrPrefix, (0, code_1._) `Object.keys(${obj})`, forBody);
         }
         const name = this._scope.toName(nameOrPrefix);
         return this._for(new ForIter("in", varKind, name, obj), () => forBody(name));
@@ -3547,7 +4785,7 @@ function subtractNames(names, from) {
         names[n] = (names[n] || 0) - (from[n] || 0);
 }
 function not(x) {
-    return typeof x == "boolean" || typeof x == "number" || x === null ? !x : code_1._ `!${par(x)}`;
+    return typeof x == "boolean" || typeof x == "number" || x === null ? !x : (0, code_1._) `!${par(x)}`;
 }
 exports.not = not;
 const andCode = mappend(exports.operators.AND);
@@ -3563,23 +4801,23 @@ function or(...args) {
 }
 exports.or = or;
 function mappend(op) {
-    return (x, y) => (x === code_1.nil ? y : y === code_1.nil ? x : code_1._ `${par(x)} ${op} ${par(y)}`);
+    return (x, y) => (x === code_1.nil ? y : y === code_1.nil ? x : (0, code_1._) `${par(x)} ${op} ${par(y)}`);
 }
 function par(x) {
-    return x instanceof code_1.Name ? x : code_1._ `(${x})`;
+    return x instanceof code_1.Name ? x : (0, code_1._) `(${x})`;
 }
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 
-/***/ 194:
+/***/ 1605:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
-const code_1 = __nccwpck_require__(8815);
+const code_1 = __nccwpck_require__(9123);
 class ValueError extends Error {
     constructor(name) {
         super(`CodeGen: "code" for ${name} not defined`);
@@ -3628,11 +4866,11 @@ class ValueScopeName extends code_1.Name {
     }
     setValue(value, { property, itemIndex }) {
         this.value = value;
-        this.scopePath = code_1._ `.${new code_1.Name(property)}[${itemIndex}]`;
+        this.scopePath = (0, code_1._) `.${new code_1.Name(property)}[${itemIndex}]`;
     }
 }
 exports.ValueScopeName = ValueScopeName;
-const line = code_1._ `\n`;
+const line = (0, code_1._) `\n`;
 class ValueScope extends Scope {
     constructor(opts) {
         super(opts);
@@ -3679,7 +4917,7 @@ class ValueScope extends Scope {
         return this._reduceValues(values, (name) => {
             if (name.scopePath === undefined)
                 throw new Error(`CodeGen: name "${name}" has no value`);
-            return code_1._ `${scopeName}${name.scopePath}`;
+            return (0, code_1._) `${scopeName}${name.scopePath}`;
         });
     }
     scopeCode(values = this._values, usedValues, getCode) {
@@ -3703,10 +4941,10 @@ class ValueScope extends Scope {
                 let c = valueCode(name);
                 if (c) {
                     const def = this.opts.es5 ? exports.varKinds.var : exports.varKinds.const;
-                    code = code_1._ `${code}${def} ${name} = ${c};${this.opts._n}`;
+                    code = (0, code_1._) `${code}${def} ${name} = ${c};${this.opts._n}`;
                 }
                 else if ((c = getCode === null || getCode === void 0 ? void 0 : getCode(name))) {
-                    code = code_1._ `${code}${c}${this.opts._n}`;
+                    code = (0, code_1._) `${code}${c}${this.opts._n}`;
                 }
                 else {
                     throw new ValueError(name);
@@ -3722,318 +4960,40 @@ exports.ValueScope = ValueScope;
 
 /***/ }),
 
-/***/ 8709:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getData = void 0;
-const dataType_1 = __nccwpck_require__(8950);
-const util_1 = __nccwpck_require__(3582);
-const errors_1 = __nccwpck_require__(276);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
-const subschema_1 = __nccwpck_require__(9902);
-class KeywordCxt {
-    constructor(it, def, keyword) {
-        validateKeywordUsage(it, def, keyword);
-        this.gen = it.gen;
-        this.allErrors = it.allErrors;
-        this.keyword = keyword;
-        this.data = it.data;
-        this.schema = it.schema[keyword];
-        this.$data = def.$data && it.opts.$data && this.schema && this.schema.$data;
-        this.schemaValue = util_1.schemaRefOrVal(it, this.schema, keyword, this.$data);
-        this.schemaType = def.schemaType;
-        this.parentSchema = it.schema;
-        this.params = {};
-        this.it = it;
-        this.def = def;
-        if (this.$data) {
-            this.schemaCode = it.gen.const("vSchema", getData(this.$data, it));
-        }
-        else {
-            this.schemaCode = this.schemaValue;
-            if (!validSchemaType(this.schema, def.schemaType, def.allowUndefined)) {
-                throw new Error(`${keyword} value must be ${JSON.stringify(def.schemaType)}`);
-            }
-        }
-        if ("code" in def ? def.trackErrors : def.errors !== false) {
-            this.errsCount = it.gen.const("_errs", names_1.default.errors);
-        }
-    }
-    result(condition, successAction, failAction) {
-        this.gen.if(codegen_1.not(condition));
-        if (failAction)
-            failAction();
-        else
-            this.error();
-        if (successAction) {
-            this.gen.else();
-            successAction();
-            if (this.allErrors)
-                this.gen.endIf();
-        }
-        else {
-            if (this.allErrors)
-                this.gen.endIf();
-            else
-                this.gen.else();
-        }
-    }
-    pass(condition, failAction) {
-        this.result(condition, undefined, failAction);
-    }
-    fail(condition) {
-        if (condition === undefined) {
-            this.error();
-            if (!this.allErrors)
-                this.gen.if(false); // this branch will be removed by gen.optimize
-            return;
-        }
-        this.gen.if(condition);
-        this.error();
-        if (this.allErrors)
-            this.gen.endIf();
-        else
-            this.gen.else();
-    }
-    fail$data(condition) {
-        if (!this.$data)
-            return this.fail(condition);
-        const { schemaCode } = this;
-        this.fail(codegen_1._ `${schemaCode} !== undefined && (${codegen_1.or(this.invalid$data(), condition)})`);
-    }
-    error(append) {
-        ;
-        (append ? errors_1.reportExtraError : errors_1.reportError)(this, this.def.error);
-    }
-    $dataError() {
-        errors_1.reportError(this, this.def.$dataError || errors_1.keyword$DataError);
-    }
-    reset() {
-        if (this.errsCount === undefined)
-            throw new Error('add "trackErrors" to keyword definition');
-        errors_1.resetErrorsCount(this.gen, this.errsCount);
-    }
-    ok(cond) {
-        if (!this.allErrors)
-            this.gen.if(cond);
-    }
-    setParams(obj, assign) {
-        if (assign)
-            Object.assign(this.params, obj);
-        else
-            this.params = obj;
-    }
-    block$data(valid, codeBlock, $dataValid = codegen_1.nil) {
-        this.gen.block(() => {
-            this.check$data(valid, $dataValid);
-            codeBlock();
-        });
-    }
-    check$data(valid = codegen_1.nil, $dataValid = codegen_1.nil) {
-        if (!this.$data)
-            return;
-        const { gen, schemaCode, schemaType, def } = this;
-        gen.if(codegen_1.or(codegen_1._ `${schemaCode} === undefined`, $dataValid));
-        if (valid !== codegen_1.nil)
-            gen.assign(valid, true);
-        if (schemaType.length || def.validateSchema) {
-            gen.elseIf(this.invalid$data());
-            this.$dataError();
-            if (valid !== codegen_1.nil)
-                gen.assign(valid, false);
-        }
-        gen.else();
-    }
-    invalid$data() {
-        const { gen, schemaCode, schemaType, def, it } = this;
-        return codegen_1.or(wrong$DataType(), invalid$DataSchema());
-        function wrong$DataType() {
-            if (schemaType.length) {
-                /* istanbul ignore if */
-                if (!(schemaCode instanceof codegen_1.Name))
-                    throw new Error("ajv implementation error");
-                const st = Array.isArray(schemaType) ? schemaType : [schemaType];
-                return codegen_1._ `${dataType_1.checkDataTypes(st, schemaCode, it.opts.strict, dataType_1.DataType.Wrong)}`;
-            }
-            return codegen_1.nil;
-        }
-        function invalid$DataSchema() {
-            if (def.validateSchema) {
-                const validateSchemaRef = gen.scopeValue("validate$data", { ref: def.validateSchema }); // TODO value.code for standalone
-                return codegen_1._ `!${validateSchemaRef}(${schemaCode})`;
-            }
-            return codegen_1.nil;
-        }
-    }
-    subschema(appl, valid) {
-        return subschema_1.applySubschema(this.it, appl, valid);
-    }
-    mergeEvaluated(schemaCxt, toName) {
-        const { it, gen } = this;
-        if (!it.opts.unevaluated)
-            return;
-        if (it.props !== true && schemaCxt.props !== undefined) {
-            it.props = util_1.mergeEvaluated.props(gen, schemaCxt.props, it.props, toName);
-        }
-        if (it.items !== true && schemaCxt.items !== undefined) {
-            it.items = util_1.mergeEvaluated.items(gen, schemaCxt.items, it.items, toName);
-        }
-    }
-    mergeValidEvaluated(schemaCxt, valid) {
-        const { it, gen } = this;
-        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
-            gen.if(valid, () => this.mergeEvaluated(schemaCxt, codegen_1.Name));
-            return true;
-        }
-    }
-}
-exports.default = KeywordCxt;
-function validSchemaType(schema, schemaType, allowUndefined = false) {
-    // TODO add tests
-    return (!schemaType.length ||
-        schemaType.some((st) => st === "array"
-            ? Array.isArray(schema)
-            : st === "object"
-                ? schema && typeof schema == "object" && !Array.isArray(schema)
-                : typeof schema == st || (allowUndefined && typeof schema == "undefined")));
-}
-function validateKeywordUsage({ schema, opts, self }, def, keyword) {
-    /* istanbul ignore if */
-    if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
-        throw new Error("ajv implementation error");
-    }
-    const deps = def.dependencies;
-    if (deps === null || deps === void 0 ? void 0 : deps.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
-        throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`);
-    }
-    if (def.validateSchema) {
-        const valid = def.validateSchema(schema[keyword]);
-        if (!valid) {
-            const msg = "keyword value is invalid: " + self.errorsText(def.validateSchema.errors);
-            if (opts.validateSchema === "log")
-                self.logger.error(msg);
-            else
-                throw new Error(msg);
-        }
-    }
-}
-const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
-const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
-function getData($data, { dataLevel, dataNames, dataPathArr }) {
-    let jsonPointer;
-    let data;
-    if ($data === "")
-        return names_1.default.rootData;
-    if ($data[0] === "/") {
-        if (!JSON_POINTER.test($data))
-            throw new Error(`Invalid JSON-pointer: ${$data}`);
-        jsonPointer = $data;
-        data = names_1.default.rootData;
-    }
-    else {
-        const matches = RELATIVE_JSON_POINTER.exec($data);
-        if (!matches)
-            throw new Error(`Invalid JSON-pointer: ${$data}`);
-        const up = +matches[1];
-        jsonPointer = matches[2];
-        if (jsonPointer === "#") {
-            if (up >= dataLevel)
-                throw new Error(errorMsg("property/index", up));
-            return dataPathArr[dataLevel - up];
-        }
-        if (up > dataLevel)
-            throw new Error(errorMsg("data", up));
-        data = dataNames[dataLevel - up];
-        if (!jsonPointer)
-            return data;
-    }
-    let expr = data;
-    const segments = jsonPointer.split("/");
-    for (const segment of segments) {
-        if (segment) {
-            data = codegen_1._ `${data}${codegen_1.getProperty(util_1.unescapeJsonPointer(segment))}`;
-            expr = codegen_1._ `${expr} && ${data}`;
-        }
-    }
-    return expr;
-    function errorMsg(pointerType, up) {
-        return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`;
-    }
-}
-exports.getData = getData;
-//# sourceMappingURL=context.js.map
-
-/***/ }),
-
-/***/ 2118:
-/***/ ((module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MissingRefError = exports.ValidationError = void 0;
-const resolve_1 = __nccwpck_require__(9673);
-class ValidationError extends Error {
-    constructor(errors) {
-        super("validation failed");
-        this.errors = errors;
-        this.ajv = this.validation = true;
-    }
-}
-exports.ValidationError = ValidationError;
-class MissingRefError extends Error {
-    constructor(baseId, ref, msg) {
-        super(msg || `can't resolve reference ${ref} from id ${baseId}`);
-        this.missingRef = resolve_1.resolveUrl(baseId, ref);
-        this.missingSchema = resolve_1.normalizeId(resolve_1.getFullPath(this.missingRef));
-    }
-}
-exports.MissingRefError = MissingRefError;
-module.exports = {
-    ValidationError,
-    MissingRefError,
-};
-//# sourceMappingURL=error_classes.js.map
-
-/***/ }),
-
-/***/ 276:
+/***/ 4699:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const names_1 = __nccwpck_require__(8780);
 exports.keywordError = {
-    message: ({ keyword }) => codegen_1.str `should pass "${keyword}" keyword validation`,
+    message: ({ keyword }) => (0, codegen_1.str) `must pass "${keyword}" keyword validation`,
 };
 exports.keyword$DataError = {
     message: ({ keyword, schemaType }) => schemaType
-        ? codegen_1.str `"${keyword}" keyword must be ${schemaType} ($data)`
-        : codegen_1.str `"${keyword}" keyword is invalid ($data)`,
+        ? (0, codegen_1.str) `"${keyword}" keyword must be ${schemaType} ($data)`
+        : (0, codegen_1.str) `"${keyword}" keyword is invalid ($data)`,
 };
-function reportError(cxt, error = exports.keywordError, overrideAllErrors) {
+function reportError(cxt, error = exports.keywordError, errorPaths, overrideAllErrors) {
     const { it } = cxt;
     const { gen, compositeRule, allErrors } = it;
-    const errObj = errorObjectCode(cxt, error);
+    const errObj = errorObjectCode(cxt, error, errorPaths);
     if (overrideAllErrors !== null && overrideAllErrors !== void 0 ? overrideAllErrors : (compositeRule || allErrors)) {
         addError(gen, errObj);
     }
     else {
-        returnErrors(it, codegen_1._ `[${errObj}]`);
+        returnErrors(it, (0, codegen_1._) `[${errObj}]`);
     }
 }
 exports.reportError = reportError;
-function reportExtraError(cxt, error = exports.keywordError) {
+function reportExtraError(cxt, error = exports.keywordError, errorPaths) {
     const { it } = cxt;
     const { gen, compositeRule, allErrors } = it;
-    const errObj = errorObjectCode(cxt, error);
+    const errObj = errorObjectCode(cxt, error, errorPaths);
     addError(gen, errObj);
     if (!(compositeRule || allErrors)) {
         returnErrors(it, names_1.default.vErrors);
@@ -4042,7 +5002,7 @@ function reportExtraError(cxt, error = exports.keywordError) {
 exports.reportExtraError = reportExtraError;
 function resetErrorsCount(gen, errsCount) {
     gen.assign(names_1.default.errors, errsCount);
-    gen.if(codegen_1._ `${names_1.default.vErrors} !== null`, () => gen.if(errsCount, () => gen.assign(codegen_1._ `${names_1.default.vErrors}.length`, errsCount), () => gen.assign(names_1.default.vErrors, null)));
+    gen.if((0, codegen_1._) `${names_1.default.vErrors} !== null`, () => gen.if(errsCount, () => gen.assign((0, codegen_1._) `${names_1.default.vErrors}.length`, errsCount), () => gen.assign(names_1.default.vErrors, null)));
 }
 exports.resetErrorsCount = resetErrorsCount;
 function extendErrors({ gen, keyword, schemaValue, data, errsCount, it, }) {
@@ -4051,28 +5011,28 @@ function extendErrors({ gen, keyword, schemaValue, data, errsCount, it, }) {
         throw new Error("ajv implementation error");
     const err = gen.name("err");
     gen.forRange("i", errsCount, names_1.default.errors, (i) => {
-        gen.const(err, codegen_1._ `${names_1.default.vErrors}[${i}]`);
-        gen.if(codegen_1._ `${err}.dataPath === undefined`, () => gen.assign(codegen_1._ `${err}.dataPath`, codegen_1.strConcat(names_1.default.dataPath, it.errorPath)));
-        gen.assign(codegen_1._ `${err}.schemaPath`, codegen_1.str `${it.errSchemaPath}/${keyword}`);
+        gen.const(err, (0, codegen_1._) `${names_1.default.vErrors}[${i}]`);
+        gen.if((0, codegen_1._) `${err}.instancePath === undefined`, () => gen.assign((0, codegen_1._) `${err}.instancePath`, (0, codegen_1.strConcat)(names_1.default.instancePath, it.errorPath)));
+        gen.assign((0, codegen_1._) `${err}.schemaPath`, (0, codegen_1.str) `${it.errSchemaPath}/${keyword}`);
         if (it.opts.verbose) {
-            gen.assign(codegen_1._ `${err}.schema`, schemaValue);
-            gen.assign(codegen_1._ `${err}.data`, data);
+            gen.assign((0, codegen_1._) `${err}.schema`, schemaValue);
+            gen.assign((0, codegen_1._) `${err}.data`, data);
         }
     });
 }
 exports.extendErrors = extendErrors;
 function addError(gen, errObj) {
     const err = gen.const("err", errObj);
-    gen.if(codegen_1._ `${names_1.default.vErrors} === null`, () => gen.assign(names_1.default.vErrors, codegen_1._ `[${err}]`), codegen_1._ `${names_1.default.vErrors}.push(${err})`);
-    gen.code(codegen_1._ `${names_1.default.errors}++`);
+    gen.if((0, codegen_1._) `${names_1.default.vErrors} === null`, () => gen.assign(names_1.default.vErrors, (0, codegen_1._) `[${err}]`), (0, codegen_1._) `${names_1.default.vErrors}.push(${err})`);
+    gen.code((0, codegen_1._) `${names_1.default.errors}++`);
 }
 function returnErrors(it, errs) {
     const { gen, validateName, schemaEnv } = it;
     if (schemaEnv.$async) {
-        gen.throw(codegen_1._ `new ${it.ValidationError}(${errs})`);
+        gen.throw((0, codegen_1._) `new ${it.ValidationError}(${errs})`);
     }
     else {
-        gen.assign(codegen_1._ `${validateName}.errors`, errs);
+        gen.assign((0, codegen_1._) `${validateName}.errors`, errs);
         gen.return(false);
     }
 }
@@ -4084,65 +5044,65 @@ const E = {
     message: new codegen_1.Name("message"),
     schema: new codegen_1.Name("schema"),
     parentSchema: new codegen_1.Name("parentSchema"),
-    // JTD error properties
-    instancePath: new codegen_1.Name("instancePath"),
 };
-function errorObjectCode(cxt, error) {
-    const { createErrors, opts } = cxt.it;
+function errorObjectCode(cxt, error, errorPaths) {
+    const { createErrors } = cxt.it;
     if (createErrors === false)
-        return codegen_1._ `{}`;
-    return (opts.jtd && !opts.ajvErrors ? jtdErrorObject : ajvErrorObject)(cxt, error);
+        return (0, codegen_1._) `{}`;
+    return errorObject(cxt, error, errorPaths);
 }
-function jtdErrorObject(cxt, { message }) {
-    const { gen, keyword, it } = cxt;
-    const { errorPath, errSchemaPath, opts } = it;
+function errorObject(cxt, error, errorPaths = {}) {
+    const { gen, it } = cxt;
     const keyValues = [
-        [E.instancePath, codegen_1.strConcat(names_1.default.dataPath, errorPath)],
-        [E.schemaPath, codegen_1.str `${errSchemaPath}/${keyword}`],
+        errorInstancePath(it, errorPaths),
+        errorSchemaPath(cxt, errorPaths),
     ];
-    if (opts.messages) {
-        keyValues.push([E.message, typeof message == "function" ? message(cxt) : message]);
-    }
+    extraErrorProps(cxt, error, keyValues);
     return gen.object(...keyValues);
 }
-function ajvErrorObject(cxt, error) {
-    const { gen, keyword, data, schemaValue, it } = cxt;
-    const { topSchemaRef, schemaPath, errorPath, errSchemaPath, propertyName, opts } = it;
-    const { params, message } = error;
-    const keyValues = [
-        [E.keyword, keyword],
-        [names_1.default.dataPath, codegen_1.strConcat(names_1.default.dataPath, errorPath)],
-        [E.schemaPath, codegen_1.str `${errSchemaPath}/${keyword}`],
-        [E.params, typeof params == "function" ? params(cxt) : params || codegen_1._ `{}`],
-    ];
-    if (propertyName)
-        keyValues.push([E.propertyName, propertyName]);
+function errorInstancePath({ errorPath }, { instancePath }) {
+    const instPath = instancePath
+        ? (0, codegen_1.str) `${errorPath}${(0, util_1.getErrorPath)(instancePath, util_1.Type.Str)}`
+        : errorPath;
+    return [names_1.default.instancePath, (0, codegen_1.strConcat)(names_1.default.instancePath, instPath)];
+}
+function errorSchemaPath({ keyword, it: { errSchemaPath } }, { schemaPath, parentSchema }) {
+    let schPath = parentSchema ? errSchemaPath : (0, codegen_1.str) `${errSchemaPath}/${keyword}`;
+    if (schemaPath) {
+        schPath = (0, codegen_1.str) `${schPath}${(0, util_1.getErrorPath)(schemaPath, util_1.Type.Str)}`;
+    }
+    return [E.schemaPath, schPath];
+}
+function extraErrorProps(cxt, { params, message }, keyValues) {
+    const { keyword, data, schemaValue, it } = cxt;
+    const { opts, propertyName, topSchemaRef, schemaPath } = it;
+    keyValues.push([E.keyword, keyword], [E.params, typeof params == "function" ? params(cxt) : params || (0, codegen_1._) `{}`]);
     if (opts.messages) {
         keyValues.push([E.message, typeof message == "function" ? message(cxt) : message]);
     }
     if (opts.verbose) {
-        keyValues.push([E.schema, schemaValue], [E.parentSchema, codegen_1._ `${topSchemaRef}${schemaPath}`], [names_1.default.data, data]);
+        keyValues.push([E.schema, schemaValue], [E.parentSchema, (0, codegen_1._) `${topSchemaRef}${schemaPath}`], [names_1.default.data, data]);
     }
-    return gen.object(...keyValues);
+    if (propertyName)
+        keyValues.push([E.propertyName, propertyName]);
 }
 //# sourceMappingURL=errors.js.map
 
 /***/ }),
 
-/***/ 9303:
+/***/ 2205:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
-const codegen_1 = __nccwpck_require__(4016);
-const error_classes_1 = __nccwpck_require__(2118);
-const names_1 = __nccwpck_require__(6873);
-const resolve_1 = __nccwpck_require__(9673);
-const util_1 = __nccwpck_require__(3582);
-const validate_1 = __nccwpck_require__(1262);
-const URI = __nccwpck_require__(20);
+const codegen_1 = __nccwpck_require__(232);
+const validation_error_1 = __nccwpck_require__(8249);
+const names_1 = __nccwpck_require__(8780);
+const resolve_1 = __nccwpck_require__(5603);
+const util_1 = __nccwpck_require__(1212);
+const validate_1 = __nccwpck_require__(4977);
 class SchemaEnv {
     constructor(env) {
         var _a;
@@ -4152,8 +5112,10 @@ class SchemaEnv {
         if (typeof env.schema == "object")
             schema = env.schema;
         this.schema = env.schema;
+        this.schemaId = env.schemaId;
         this.root = env.root || this;
-        this.baseId = (_a = env.baseId) !== null && _a !== void 0 ? _a : resolve_1.normalizeId(schema === null || schema === void 0 ? void 0 : schema.$id);
+        this.baseId = (_a = env.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env.schemaId || "$id"]);
+        this.schemaPath = env.schemaPath;
         this.localRefs = env.localRefs;
         this.meta = env.meta;
         this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
@@ -4169,15 +5131,15 @@ function compileSchema(sch) {
     const _sch = getCompilingSchema.call(this, sch);
     if (_sch)
         return _sch;
-    const rootId = resolve_1.getFullPath(sch.root.baseId); // TODO if getFullPath removed 1 tests fails
+    const rootId = (0, resolve_1.getFullPath)(this.opts.uriResolver, sch.root.baseId); // TODO if getFullPath removed 1 tests fails
     const { es5, lines } = this.opts.code;
     const { ownProperties } = this.opts;
     const gen = new codegen_1.CodeGen(this.scope, { es5, lines, ownProperties });
     let _ValidationError;
     if (sch.$async) {
         _ValidationError = gen.scopeValue("Error", {
-            ref: error_classes_1.ValidationError,
-            code: codegen_1._ `require("ajv/dist/compile/error_classes").ValidationError`,
+            ref: validation_error_1.default,
+            code: (0, codegen_1._) `require("ajv/dist/runtime/validation_error").default`,
         });
     }
     const validateName = gen.scopeName("validate");
@@ -4194,7 +5156,7 @@ function compileSchema(sch) {
         dataTypes: [],
         definedProperties: new Set(),
         topSchemaRef: gen.scopeValue("schema", this.opts.code.source === true
-            ? { ref: sch.schema, code: codegen_1.stringify(sch.schema) }
+            ? { ref: sch.schema, code: (0, codegen_1.stringify)(sch.schema) }
             : { ref: sch.schema }),
         validateName,
         ValidationError: _ValidationError,
@@ -4203,15 +5165,15 @@ function compileSchema(sch) {
         rootId,
         baseId: sch.baseId || rootId,
         schemaPath: codegen_1.nil,
-        errSchemaPath: this.opts.jtd ? "" : "#",
-        errorPath: codegen_1._ `""`,
+        errSchemaPath: sch.schemaPath || (this.opts.jtd ? "" : "#"),
+        errorPath: (0, codegen_1._) `""`,
         opts: this.opts,
         self: this,
     };
     let sourceCode;
     try {
         this._compilations.add(sch);
-        validate_1.validateFunctionCode(schemaCxt);
+        (0, validate_1.validateFunctionCode)(schemaCxt);
         gen.optimize(this.opts.code.optimize);
         // gen.optimize(1)
         const validateCode = gen.toString();
@@ -4240,7 +5202,7 @@ function compileSchema(sch) {
                 dynamicItems: items instanceof codegen_1.Name,
             };
             if (validate.source)
-                validate.source.evaluated = codegen_1.stringify(validate.evaluated);
+                validate.source.evaluated = (0, codegen_1.stringify)(validate.evaluated);
         }
         sch.validate = validate;
         return sch;
@@ -4260,15 +5222,16 @@ function compileSchema(sch) {
 exports.compileSchema = compileSchema;
 function resolveRef(root, baseId, ref) {
     var _a;
-    ref = resolve_1.resolveUrl(baseId, ref);
+    ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, ref);
     const schOrFunc = root.refs[ref];
     if (schOrFunc)
         return schOrFunc;
     let _sch = resolve.call(this, root, ref);
     if (_sch === undefined) {
         const schema = (_a = root.localRefs) === null || _a === void 0 ? void 0 : _a[ref]; // TODO maybe localRefs should hold SchemaEnv
+        const { schemaId } = this.opts;
         if (schema)
-            _sch = new SchemaEnv({ schema, root, baseId });
+            _sch = new SchemaEnv({ schema, schemaId, root, baseId });
     }
     if (_sch === undefined)
         return;
@@ -4276,7 +5239,7 @@ function resolveRef(root, baseId, ref) {
 }
 exports.resolveRef = resolveRef;
 function inlineOrCompile(sch) {
-    if (resolve_1.inlineRef(sch.schema, this.opts.inlineRefs))
+    if ((0, resolve_1.inlineRef)(sch.schema, this.opts.inlineRefs))
         return sch.schema;
     return sch.validate ? sch : compileSchema.call(this, sch);
 }
@@ -4305,14 +5268,14 @@ ref // reference to resolve
 function resolveSchema(root, // root object with properties schema, refs TODO below SchemaEnv is assigned to it
 ref // reference to resolve
 ) {
-    const p = URI.parse(ref);
-    const refPath = resolve_1._getFullPath(p);
-    let baseId = resolve_1.getFullPath(root.baseId);
+    const p = this.opts.uriResolver.parse(ref);
+    const refPath = (0, resolve_1._getFullPath)(this.opts.uriResolver, p);
+    let baseId = (0, resolve_1.getFullPath)(this.opts.uriResolver, root.baseId, undefined);
     // TODO `Object.keys(root.schema).length > 0` should not be needed - but removing breaks 2 tests
     if (Object.keys(root.schema).length > 0 && refPath === baseId) {
         return getJsonPointer.call(this, p, root);
     }
-    const id = resolve_1.normalizeId(refPath);
+    const id = (0, resolve_1.normalizeId)(refPath);
     const schOrRef = this.refs[id] || this.schemas[id];
     if (typeof schOrRef == "string") {
         const sch = resolveSchema.call(this, root, schOrRef);
@@ -4324,11 +5287,13 @@ ref // reference to resolve
         return;
     if (!schOrRef.validate)
         compileSchema.call(this, schOrRef);
-    if (id === resolve_1.normalizeId(ref)) {
+    if (id === (0, resolve_1.normalizeId)(ref)) {
         const { schema } = schOrRef;
-        if (schema.$id)
-            baseId = resolve_1.resolveUrl(baseId, schema.$id);
-        return new SchemaEnv({ schema, root, baseId });
+        const { schemaId } = this.opts;
+        const schId = schema[schemaId];
+        if (schId)
+            baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
+        return new SchemaEnv({ schema, schemaId, root, baseId });
     }
     return getJsonPointer.call(this, p, schOrRef);
 }
@@ -4345,24 +5310,27 @@ function getJsonPointer(parsedRef, { baseId, schema, root }) {
     if (((_a = parsedRef.fragment) === null || _a === void 0 ? void 0 : _a[0]) !== "/")
         return;
     for (const part of parsedRef.fragment.slice(1).split("/")) {
-        if (typeof schema == "boolean")
+        if (typeof schema === "boolean")
             return;
-        schema = schema[util_1.unescapeFragment(part)];
-        if (schema === undefined)
+        const partSchema = schema[(0, util_1.unescapeFragment)(part)];
+        if (partSchema === undefined)
             return;
+        schema = partSchema;
         // TODO PREVENT_SCOPE_CHANGE could be defined in keyword def?
-        if (!PREVENT_SCOPE_CHANGE.has(part) && typeof schema == "object" && schema.$id) {
-            baseId = resolve_1.resolveUrl(baseId, schema.$id);
+        const schId = typeof schema === "object" && schema[this.opts.schemaId];
+        if (!PREVENT_SCOPE_CHANGE.has(part) && schId) {
+            baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
         }
     }
     let env;
-    if (typeof schema != "boolean" && schema.$ref && !util_1.schemaHasRulesButRef(schema, this.RULES)) {
-        const $ref = resolve_1.resolveUrl(baseId, schema.$ref);
+    if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
+        const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
         env = resolveSchema.call(this, root, $ref);
     }
     // even though resolution failed we need to return SchemaEnv to throw exception
     // so that compileAsync loads missing schema.
-    env = env || new SchemaEnv({ schema, root, baseId });
+    const { schemaId } = this.opts;
+    env = env || new SchemaEnv({ schema, schemaId, root, baseId });
     if (env.schema !== env.root.schema)
         return env;
     return undefined;
@@ -4371,19 +5339,19 @@ function getJsonPointer(parsedRef, { baseId, schema, root }) {
 
 /***/ }),
 
-/***/ 6873:
+/***/ 8780:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
+const codegen_1 = __nccwpck_require__(232);
 const names = {
     // validation function arguments
     data: new codegen_1.Name("data"),
     // args passed from referencing schema
     valCxt: new codegen_1.Name("valCxt"),
-    dataPath: new codegen_1.Name("dataPath"),
+    instancePath: new codegen_1.Name("instancePath"),
     parentData: new codegen_1.Name("parentData"),
     parentDataProperty: new codegen_1.Name("parentDataProperty"),
     rootData: new codegen_1.Name("rootData"),
@@ -4406,17 +5374,35 @@ exports.default = names;
 
 /***/ }),
 
-/***/ 9673:
+/***/ 280:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const resolve_1 = __nccwpck_require__(5603);
+class MissingRefError extends Error {
+    constructor(resolver, baseId, ref, msg) {
+        super(msg || `can't resolve reference ${ref} from id ${baseId}`);
+        this.missingRef = (0, resolve_1.resolveUrl)(resolver, baseId, ref);
+        this.missingSchema = (0, resolve_1.normalizeId)((0, resolve_1.getFullPath)(resolver, this.missingRef));
+    }
+}
+exports.default = MissingRefError;
+//# sourceMappingURL=ref_error.js.map
+
+/***/ }),
+
+/***/ 5603:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
-const util_1 = __nccwpck_require__(3582);
+const util_1 = __nccwpck_require__(1212);
 const equal = __nccwpck_require__(8206);
 const traverse = __nccwpck_require__(2533);
-const URI = __nccwpck_require__(20);
 // TODO refactor to use keyword definitions
 const SIMPLE_INLINED = new Set([
     "type",
@@ -4474,22 +5460,23 @@ function countKeys(schema) {
         if (SIMPLE_INLINED.has(key))
             continue;
         if (typeof schema[key] == "object") {
-            util_1.eachItem(schema[key], (sch) => (count += countKeys(sch)));
+            (0, util_1.eachItem)(schema[key], (sch) => (count += countKeys(sch)));
         }
         if (count === Infinity)
             return Infinity;
     }
     return count;
 }
-function getFullPath(id = "", normalize) {
+function getFullPath(resolver, id = "", normalize) {
     if (normalize !== false)
         id = normalizeId(id);
-    const p = URI.parse(id);
-    return _getFullPath(p);
+    const p = resolver.parse(id);
+    return _getFullPath(resolver, p);
 }
 exports.getFullPath = getFullPath;
-function _getFullPath(p) {
-    return URI.serialize(p).split("#")[0] + "#";
+function _getFullPath(resolver, p) {
+    const serialized = resolver.serialize(p);
+    return serialized.split("#")[0] + "#";
 }
 exports._getFullPath = _getFullPath;
 const TRAILING_SLASH_HASH = /#\/?$/;
@@ -4497,18 +5484,19 @@ function normalizeId(id) {
     return id ? id.replace(TRAILING_SLASH_HASH, "") : "";
 }
 exports.normalizeId = normalizeId;
-function resolveUrl(baseId, id) {
+function resolveUrl(resolver, baseId, id) {
     id = normalizeId(id);
-    return URI.resolve(baseId, id);
+    return resolver.resolve(baseId, id);
 }
 exports.resolveUrl = resolveUrl;
 const ANCHOR = /^[a-z_][-a-z0-9._]*$/i;
-function getSchemaRefs(schema) {
+function getSchemaRefs(schema, baseId) {
     if (typeof schema == "boolean")
         return {};
-    const schemaId = normalizeId(schema.$id);
-    const baseIds = { "": schemaId };
-    const pathPrefix = getFullPath(schemaId, false);
+    const { schemaId, uriResolver } = this.opts;
+    const schId = normalizeId(schema[schemaId] || baseId);
+    const baseIds = { "": schId };
+    const pathPrefix = getFullPath(uriResolver, schId, false);
     const localRefs = {};
     const schemaRefs = new Set();
     traverse(schema, { allKeys: true }, (sch, jsonPtr, _, parentJsonPtr) => {
@@ -4516,13 +5504,15 @@ function getSchemaRefs(schema) {
             return;
         const fullPath = pathPrefix + jsonPtr;
         let baseId = baseIds[parentJsonPtr];
-        if (typeof sch.$id == "string")
-            baseId = addRef.call(this, sch.$id);
+        if (typeof sch[schemaId] == "string")
+            baseId = addRef.call(this, sch[schemaId]);
         addAnchor.call(this, sch.$anchor);
         addAnchor.call(this, sch.$dynamicAnchor);
         baseIds[jsonPtr] = baseId;
         function addRef(ref) {
-            ref = normalizeId(baseId ? URI.resolve(baseId, ref) : ref);
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const _resolve = this.opts.uriResolver.resolve;
+            ref = normalizeId(baseId ? _resolve(baseId, ref) : ref);
             if (schemaRefs.has(ref))
                 throw ambiguos(ref);
             schemaRefs.add(ref);
@@ -4565,7 +5555,7 @@ exports.getSchemaRefs = getSchemaRefs;
 
 /***/ }),
 
-/***/ 7992:
+/***/ 6188:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -4598,159 +5588,15 @@ exports.getRules = getRules;
 
 /***/ }),
 
-/***/ 9902:
+/***/ 1212:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.applySubschema = exports.Type = void 0;
-const validate_1 = __nccwpck_require__(1262);
-const util_1 = __nccwpck_require__(3582);
-const codegen_1 = __nccwpck_require__(4016);
-var Type;
-(function (Type) {
-    Type[Type["Num"] = 0] = "Num";
-    Type[Type["Str"] = 1] = "Str";
-})(Type = exports.Type || (exports.Type = {}));
-function applySubschema(it, appl, valid) {
-    const subschema = getSubschema(it, appl);
-    extendSubschemaData(subschema, it, appl);
-    extendSubschemaMode(subschema, appl);
-    const nextContext = { ...it, ...subschema, items: undefined, props: undefined };
-    validate_1.subschemaCode(nextContext, valid);
-    return nextContext;
-}
-exports.applySubschema = applySubschema;
-function getSubschema(it, { keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef }) {
-    if (keyword !== undefined && schema !== undefined) {
-        throw new Error('both "keyword" and "schema" passed, only one allowed');
-    }
-    if (keyword !== undefined) {
-        const sch = it.schema[keyword];
-        return schemaProp === undefined
-            ? {
-                schema: sch,
-                schemaPath: codegen_1._ `${it.schemaPath}${codegen_1.getProperty(keyword)}`,
-                errSchemaPath: `${it.errSchemaPath}/${keyword}`,
-            }
-            : {
-                schema: sch[schemaProp],
-                schemaPath: codegen_1._ `${it.schemaPath}${codegen_1.getProperty(keyword)}${codegen_1.getProperty(schemaProp)}`,
-                errSchemaPath: `${it.errSchemaPath}/${keyword}/${util_1.escapeFragment(schemaProp)}`,
-            };
-    }
-    if (schema !== undefined) {
-        if (schemaPath === undefined || errSchemaPath === undefined || topSchemaRef === undefined) {
-            throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"');
-        }
-        return {
-            schema,
-            schemaPath,
-            topSchemaRef,
-            errSchemaPath,
-        };
-    }
-    throw new Error('either "keyword" or "schema" must be passed');
-}
-function extendSubschemaData(subschema, it, { dataProp, dataPropType: dpType, data, dataTypes, propertyName }) {
-    if (data !== undefined && dataProp !== undefined) {
-        throw new Error('both "data" and "dataProp" passed, only one allowed');
-    }
-    const { gen } = it;
-    if (dataProp !== undefined) {
-        const { errorPath, dataPathArr, opts } = it;
-        const nextData = gen.let("data", codegen_1._ `${it.data}${codegen_1.getProperty(dataProp)}`, true);
-        dataContextProps(nextData);
-        subschema.errorPath = codegen_1.str `${errorPath}${getErrorPath(dataProp, dpType, opts.jsPropertySyntax)}`;
-        subschema.parentDataProperty = codegen_1._ `${dataProp}`;
-        subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty];
-    }
-    if (data !== undefined) {
-        const nextData = data instanceof codegen_1.Name ? data : gen.let("data", data, true); // replaceable if used once?
-        dataContextProps(nextData);
-        if (propertyName !== undefined)
-            subschema.propertyName = propertyName;
-        // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr
-    }
-    if (dataTypes)
-        subschema.dataTypes = dataTypes;
-    function dataContextProps(_nextData) {
-        subschema.data = _nextData;
-        subschema.dataLevel = it.dataLevel + 1;
-        subschema.dataTypes = [];
-        it.definedProperties = new Set();
-        subschema.parentData = it.data;
-        subschema.dataNames = [...it.dataNames, _nextData];
-    }
-}
-function extendSubschemaMode(subschema, { jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors }) {
-    if (compositeRule !== undefined)
-        subschema.compositeRule = compositeRule;
-    if (createErrors !== undefined)
-        subschema.createErrors = createErrors;
-    if (allErrors !== undefined)
-        subschema.allErrors = allErrors;
-    subschema.jtdDiscriminator = jtdDiscriminator; // not inherited
-    subschema.jtdMetadata = jtdMetadata; // not inherited
-}
-function getErrorPath(dataProp, dataPropType, jsPropertySyntax) {
-    // let path
-    if (dataProp instanceof codegen_1.Name) {
-        const isNumber = dataPropType === Type.Num;
-        return jsPropertySyntax
-            ? isNumber
-                ? codegen_1._ `"[" + ${dataProp} + "]"`
-                : codegen_1._ `"['" + ${dataProp} + "']"`
-            : isNumber
-                ? codegen_1._ `"/" + ${dataProp}`
-                : codegen_1._ `"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")`; // TODO maybe use global escapePointer
-    }
-    return jsPropertySyntax ? codegen_1.getProperty(dataProp).toString() : "/" + util_1.escapeJsonPointer(dataProp);
-}
-//# sourceMappingURL=subschema.js.map
-
-/***/ }),
-
-/***/ 2923:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-// https://mathiasbynens.be/notes/javascript-encoding
-// https://github.com/bestiejs/punycode.js - punycode.ucs2.decode
-function ucs2length(str) {
-    const len = str.length;
-    let length = 0;
-    let pos = 0;
-    let value;
-    while (pos < len) {
-        length++;
-        value = str.charCodeAt(pos++);
-        if (value >= 0xd800 && value <= 0xdbff && pos < len) {
-            // high surrogate, and there is a next character
-            value = str.charCodeAt(pos);
-            if ((value & 0xfc00) === 0xdc00)
-                pos++; // low surrogate
-        }
-    }
-    return length;
-}
-exports.default = ucs2length;
-//# sourceMappingURL=ucs2length.js.map
-
-/***/ }),
-
-/***/ 3582:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.func = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
-const codegen_1 = __nccwpck_require__(4016);
-const validate_1 = __nccwpck_require__(1262);
+exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
+const codegen_1 = __nccwpck_require__(232);
+const code_1 = __nccwpck_require__(9123);
 // TODO refactor to use Set
 function toHash(arr) {
     const hash = {};
@@ -4770,14 +5616,14 @@ function alwaysValidSchema(it, schema) {
 exports.alwaysValidSchema = alwaysValidSchema;
 function checkUnknownRules(it, schema = it.schema) {
     const { opts, self } = it;
-    if (!opts.strict)
+    if (!opts.strictSchema)
         return;
     if (typeof schema === "boolean")
         return;
     const rules = self.RULES.keywords;
     for (const key in schema) {
         if (!rules[key])
-            validate_1.checkStrictMode(it, `unknown keyword: "${key}"`);
+            checkStrictMode(it, `unknown keyword: "${key}"`);
     }
 }
 exports.checkUnknownRules = checkUnknownRules;
@@ -4804,9 +5650,9 @@ function schemaRefOrVal({ topSchemaRef, schemaPath }, schema, keyword, $data) {
         if (typeof schema == "number" || typeof schema == "boolean")
             return schema;
         if (typeof schema == "string")
-            return codegen_1._ `${schema}`;
+            return (0, codegen_1._) `${schema}`;
     }
-    return codegen_1._ `${topSchemaRef}${schemaPath}${codegen_1.getProperty(keyword)}`;
+    return (0, codegen_1._) `${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
 }
 exports.schemaRefOrVal = schemaRefOrVal;
 function unescapeFragment(str) {
@@ -4851,15 +5697,15 @@ function makeMergeEvaluated({ mergeNames, mergeToName, mergeValues, resultToName
 }
 exports.mergeEvaluated = {
     props: makeMergeEvaluated({
-        mergeNames: (gen, from, to) => gen.if(codegen_1._ `${to} !== true && ${from} !== undefined`, () => {
-            gen.if(codegen_1._ `${from} === true`, () => gen.assign(to, true), () => gen.assign(to, codegen_1._ `${to} || {}`).code(codegen_1._ `Object.assign(${to}, ${from})`));
+        mergeNames: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true && ${from} !== undefined`, () => {
+            gen.if((0, codegen_1._) `${from} === true`, () => gen.assign(to, true), () => gen.assign(to, (0, codegen_1._) `${to} || {}`).code((0, codegen_1._) `Object.assign(${to}, ${from})`));
         }),
-        mergeToName: (gen, from, to) => gen.if(codegen_1._ `${to} !== true`, () => {
+        mergeToName: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true`, () => {
             if (from === true) {
                 gen.assign(to, true);
             }
             else {
-                gen.assign(to, codegen_1._ `${to} || {}`);
+                gen.assign(to, (0, codegen_1._) `${to} || {}`);
                 setEvaluated(gen, to, from);
             }
         }),
@@ -4867,8 +5713,8 @@ exports.mergeEvaluated = {
         resultToName: evaluatedPropsToName,
     }),
     items: makeMergeEvaluated({
-        mergeNames: (gen, from, to) => gen.if(codegen_1._ `${to} !== true && ${from} !== undefined`, () => gen.assign(to, codegen_1._ `${from} === true ? true : ${to} > ${from} ? ${to} : ${from}`)),
-        mergeToName: (gen, from, to) => gen.if(codegen_1._ `${to} !== true`, () => gen.assign(to, from === true ? true : codegen_1._ `${to} > ${from} ? ${to} : ${from}`)),
+        mergeNames: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true && ${from} !== undefined`, () => gen.assign(to, (0, codegen_1._) `${from} === true ? true : ${to} > ${from} ? ${to} : ${from}`)),
+        mergeToName: (gen, from, to) => gen.if((0, codegen_1._) `${to} !== true`, () => gen.assign(to, from === true ? true : (0, codegen_1._) `${to} > ${from} ? ${to} : ${from}`)),
         mergeValues: (from, to) => (from === true ? true : Math.max(from, to)),
         resultToName: (gen, items) => gen.var("items", items),
     }),
@@ -4876,28 +5722,58 @@ exports.mergeEvaluated = {
 function evaluatedPropsToName(gen, ps) {
     if (ps === true)
         return gen.var("props", true);
-    const props = gen.var("props", codegen_1._ `{}`);
+    const props = gen.var("props", (0, codegen_1._) `{}`);
     if (ps !== undefined)
         setEvaluated(gen, props, ps);
     return props;
 }
 exports.evaluatedPropsToName = evaluatedPropsToName;
 function setEvaluated(gen, props, ps) {
-    Object.keys(ps).forEach((p) => gen.assign(codegen_1._ `${props}${codegen_1.getProperty(p)}`, true));
+    Object.keys(ps).forEach((p) => gen.assign((0, codegen_1._) `${props}${(0, codegen_1.getProperty)(p)}`, true));
 }
 exports.setEvaluated = setEvaluated;
-function func(gen, f) {
+const snippets = {};
+function useFunc(gen, f) {
     return gen.scopeValue("func", {
         ref: f,
-        code: f.code,
+        code: snippets[f.code] || (snippets[f.code] = new code_1._Code(f.code)),
     });
 }
-exports.func = func;
+exports.useFunc = useFunc;
+var Type;
+(function (Type) {
+    Type[Type["Num"] = 0] = "Num";
+    Type[Type["Str"] = 1] = "Str";
+})(Type = exports.Type || (exports.Type = {}));
+function getErrorPath(dataProp, dataPropType, jsPropertySyntax) {
+    // let path
+    if (dataProp instanceof codegen_1.Name) {
+        const isNumber = dataPropType === Type.Num;
+        return jsPropertySyntax
+            ? isNumber
+                ? (0, codegen_1._) `"[" + ${dataProp} + "]"`
+                : (0, codegen_1._) `"['" + ${dataProp} + "']"`
+            : isNumber
+                ? (0, codegen_1._) `"/" + ${dataProp}`
+                : (0, codegen_1._) `"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")`; // TODO maybe use global escapePointer
+    }
+    return jsPropertySyntax ? (0, codegen_1.getProperty)(dataProp).toString() : "/" + escapeJsonPointer(dataProp);
+}
+exports.getErrorPath = getErrorPath;
+function checkStrictMode(it, msg, mode = it.opts.strictSchema) {
+    if (!mode)
+        return;
+    msg = `strict mode: ${msg}`;
+    if (mode === true)
+        throw new Error(msg);
+    it.self.logger.warn(msg);
+}
+exports.checkStrictMode = checkStrictMode;
 //# sourceMappingURL=util.js.map
 
 /***/ }),
 
-/***/ 9533:
+/***/ 2354:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -4923,16 +5799,16 @@ exports.shouldUseRule = shouldUseRule;
 
 /***/ }),
 
-/***/ 7296:
+/***/ 1254:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
-const errors_1 = __nccwpck_require__(276);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
+const errors_1 = __nccwpck_require__(4699);
+const codegen_1 = __nccwpck_require__(232);
+const names_1 = __nccwpck_require__(8780);
 const boolError = {
     message: "boolean schema is false",
 };
@@ -4945,7 +5821,7 @@ function topBoolOrEmptySchema(it) {
         gen.return(names_1.default.data);
     }
     else {
-        gen.assign(codegen_1._ `${validateName}.errors`, null);
+        gen.assign((0, codegen_1._) `${validateName}.errors`, null);
         gen.return(true);
     }
 }
@@ -4974,24 +5850,24 @@ function falseSchemaError(it, overrideAllErrors) {
         params: {},
         it,
     };
-    errors_1.reportError(cxt, boolError, overrideAllErrors);
+    (0, errors_1.reportError)(cxt, boolError, undefined, overrideAllErrors);
 }
 //# sourceMappingURL=boolSchema.js.map
 
 /***/ }),
 
-/***/ 8950:
+/***/ 1760:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
-const rules_1 = __nccwpck_require__(7992);
-const applicability_1 = __nccwpck_require__(9533);
-const errors_1 = __nccwpck_require__(276);
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
+const rules_1 = __nccwpck_require__(6188);
+const applicability_1 = __nccwpck_require__(2354);
+const errors_1 = __nccwpck_require__(4699);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 var DataType;
 (function (DataType) {
     DataType[DataType["Correct"] = 0] = "Correct";
@@ -5025,9 +5901,9 @@ function coerceAndCheckDataType(it, types) {
     const { gen, data, opts } = it;
     const coerceTo = coerceToTypes(types, opts.coerceTypes);
     const checkTypes = types.length > 0 &&
-        !(coerceTo.length === 0 && types.length === 1 && applicability_1.schemaHasRulesForType(it, types[0]));
+        !(coerceTo.length === 0 && types.length === 1 && (0, applicability_1.schemaHasRulesForType)(it, types[0]));
     if (checkTypes) {
-        const wrongType = checkDataTypes(types, data, opts.strict, DataType.Wrong);
+        const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong);
         gen.if(wrongType, () => {
             if (coerceTo.length)
                 coerceData(it, types, coerceTo);
@@ -5046,15 +5922,15 @@ function coerceToTypes(types, coerceTypes) {
 }
 function coerceData(it, types, coerceTo) {
     const { gen, data, opts } = it;
-    const dataType = gen.let("dataType", codegen_1._ `typeof ${data}`);
-    const coerced = gen.let("coerced", codegen_1._ `undefined`);
+    const dataType = gen.let("dataType", (0, codegen_1._) `typeof ${data}`);
+    const coerced = gen.let("coerced", (0, codegen_1._) `undefined`);
     if (opts.coerceTypes === "array") {
-        gen.if(codegen_1._ `${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () => gen
-            .assign(data, codegen_1._ `${data}[0]`)
-            .assign(dataType, codegen_1._ `typeof ${data}`)
-            .if(checkDataTypes(types, data, opts.strict), () => gen.assign(coerced, data)));
+        gen.if((0, codegen_1._) `${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () => gen
+            .assign(data, (0, codegen_1._) `${data}[0]`)
+            .assign(dataType, (0, codegen_1._) `typeof ${data}`)
+            .if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data)));
     }
-    gen.if(codegen_1._ `${coerced} !== undefined`);
+    gen.if((0, codegen_1._) `${coerced} !== undefined`);
     for (const t of coerceTo) {
         if (COERCIBLE.has(t) || (t === "array" && opts.coerceTypes === "array")) {
             coerceSpecificType(t);
@@ -5063,7 +5939,7 @@ function coerceData(it, types, coerceTo) {
     gen.else();
     reportTypeError(it);
     gen.endIf();
-    gen.if(codegen_1._ `${coerced} !== undefined`, () => {
+    gen.if((0, codegen_1._) `${coerced} !== undefined`, () => {
         gen.assign(data, coerced);
         assignParentData(it, coerced);
     });
@@ -5071,70 +5947,70 @@ function coerceData(it, types, coerceTo) {
         switch (t) {
             case "string":
                 gen
-                    .elseIf(codegen_1._ `${dataType} == "number" || ${dataType} == "boolean"`)
-                    .assign(coerced, codegen_1._ `"" + ${data}`)
-                    .elseIf(codegen_1._ `${data} === null`)
-                    .assign(coerced, codegen_1._ `""`);
+                    .elseIf((0, codegen_1._) `${dataType} == "number" || ${dataType} == "boolean"`)
+                    .assign(coerced, (0, codegen_1._) `"" + ${data}`)
+                    .elseIf((0, codegen_1._) `${data} === null`)
+                    .assign(coerced, (0, codegen_1._) `""`);
                 return;
             case "number":
                 gen
-                    .elseIf(codegen_1._ `${dataType} == "boolean" || ${data} === null
+                    .elseIf((0, codegen_1._) `${dataType} == "boolean" || ${data} === null
               || (${dataType} == "string" && ${data} && ${data} == +${data})`)
-                    .assign(coerced, codegen_1._ `+${data}`);
+                    .assign(coerced, (0, codegen_1._) `+${data}`);
                 return;
             case "integer":
                 gen
-                    .elseIf(codegen_1._ `${dataType} === "boolean" || ${data} === null
+                    .elseIf((0, codegen_1._) `${dataType} === "boolean" || ${data} === null
               || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`)
-                    .assign(coerced, codegen_1._ `+${data}`);
+                    .assign(coerced, (0, codegen_1._) `+${data}`);
                 return;
             case "boolean":
                 gen
-                    .elseIf(codegen_1._ `${data} === "false" || ${data} === 0 || ${data} === null`)
+                    .elseIf((0, codegen_1._) `${data} === "false" || ${data} === 0 || ${data} === null`)
                     .assign(coerced, false)
-                    .elseIf(codegen_1._ `${data} === "true" || ${data} === 1`)
+                    .elseIf((0, codegen_1._) `${data} === "true" || ${data} === 1`)
                     .assign(coerced, true);
                 return;
             case "null":
-                gen.elseIf(codegen_1._ `${data} === "" || ${data} === 0 || ${data} === false`);
+                gen.elseIf((0, codegen_1._) `${data} === "" || ${data} === 0 || ${data} === false`);
                 gen.assign(coerced, null);
                 return;
             case "array":
                 gen
-                    .elseIf(codegen_1._ `${dataType} === "string" || ${dataType} === "number"
+                    .elseIf((0, codegen_1._) `${dataType} === "string" || ${dataType} === "number"
               || ${dataType} === "boolean" || ${data} === null`)
-                    .assign(coerced, codegen_1._ `[${data}]`);
+                    .assign(coerced, (0, codegen_1._) `[${data}]`);
         }
     }
 }
 function assignParentData({ gen, parentData, parentDataProperty }, expr) {
     // TODO use gen.property
-    gen.if(codegen_1._ `${parentData} !== undefined`, () => gen.assign(codegen_1._ `${parentData}[${parentDataProperty}]`, expr));
+    gen.if((0, codegen_1._) `${parentData} !== undefined`, () => gen.assign((0, codegen_1._) `${parentData}[${parentDataProperty}]`, expr));
 }
 function checkDataType(dataType, data, strictNums, correct = DataType.Correct) {
     const EQ = correct === DataType.Correct ? codegen_1.operators.EQ : codegen_1.operators.NEQ;
     let cond;
     switch (dataType) {
         case "null":
-            return codegen_1._ `${data} ${EQ} null`;
+            return (0, codegen_1._) `${data} ${EQ} null`;
         case "array":
-            cond = codegen_1._ `Array.isArray(${data})`;
+            cond = (0, codegen_1._) `Array.isArray(${data})`;
             break;
         case "object":
-            cond = codegen_1._ `${data} && typeof ${data} == "object" && !Array.isArray(${data})`;
+            cond = (0, codegen_1._) `${data} && typeof ${data} == "object" && !Array.isArray(${data})`;
             break;
         case "integer":
-            cond = numCond(codegen_1._ `!(${data} % 1) && !isNaN(${data})`);
+            cond = numCond((0, codegen_1._) `!(${data} % 1) && !isNaN(${data})`);
             break;
         case "number":
             cond = numCond();
             break;
         default:
-            return codegen_1._ `typeof ${data} ${EQ} ${dataType}`;
+            return (0, codegen_1._) `typeof ${data} ${EQ} ${dataType}`;
     }
-    return correct === DataType.Correct ? cond : codegen_1.not(cond);
+    return correct === DataType.Correct ? cond : (0, codegen_1.not)(cond);
     function numCond(_cond = codegen_1.nil) {
-        return codegen_1.and(codegen_1._ `typeof ${data} == "number"`, _cond, strictNums ? codegen_1._ `isFinite(${data})` : codegen_1.nil);
+        return (0, codegen_1.and)((0, codegen_1._) `typeof ${data} == "number"`, _cond, strictNums ? (0, codegen_1._) `isFinite(${data})` : codegen_1.nil);
     }
 }
 exports.checkDataType = checkDataType;
@@ -5143,10 +6019,10 @@ function checkDataTypes(dataTypes, data, strictNums, correct) {
         return checkDataType(dataTypes[0], data, strictNums, correct);
     }
     let cond;
-    const types = util_1.toHash(dataTypes);
+    const types = (0, util_1.toHash)(dataTypes);
     if (types.array && types.object) {
-        const notObj = codegen_1._ `typeof ${data} != "object"`;
-        cond = types.null ? notObj : codegen_1._ `!${data} || ${notObj}`;
+        const notObj = (0, codegen_1._) `typeof ${data} != "object"`;
+        cond = types.null ? notObj : (0, codegen_1._) `!${data} || ${notObj}`;
         delete types.null;
         delete types.array;
         delete types.object;
@@ -5157,22 +6033,22 @@ function checkDataTypes(dataTypes, data, strictNums, correct) {
     if (types.number)
         delete types.integer;
     for (const t in types)
-        cond = codegen_1.and(cond, checkDataType(t, data, strictNums, correct));
+        cond = (0, codegen_1.and)(cond, checkDataType(t, data, strictNums, correct));
     return cond;
 }
 exports.checkDataTypes = checkDataTypes;
 const typeError = {
-    message: ({ schema }) => codegen_1.str `should be ${schema}`,
-    params: ({ schema, schemaValue }) => typeof schema == "string" ? codegen_1._ `{type: ${schema}}` : codegen_1._ `{type: ${schemaValue}}`,
+    message: ({ schema }) => `must be ${schema}`,
+    params: ({ schema, schemaValue }) => typeof schema == "string" ? (0, codegen_1._) `{type: ${schema}}` : (0, codegen_1._) `{type: ${schemaValue}}`,
 };
 function reportTypeError(it) {
     const cxt = getTypeErrorContext(it);
-    errors_1.reportError(cxt, typeError);
+    (0, errors_1.reportError)(cxt, typeError);
 }
 exports.reportTypeError = reportTypeError;
 function getTypeErrorContext(it) {
     const { gen, data, schema } = it;
-    const schemaCode = util_1.schemaRefOrVal(it, schema, "type");
+    const schemaCode = (0, util_1.schemaRefOrVal)(it, schema, "type");
     return {
         gen,
         keyword: "type",
@@ -5189,15 +6065,15 @@ function getTypeErrorContext(it) {
 
 /***/ }),
 
-/***/ 976:
+/***/ 7307:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assignDefaults = void 0;
-const codegen_1 = __nccwpck_require__(4016);
-const _1 = __nccwpck_require__(1262);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 function assignDefaults(it, ty) {
     const { properties, items } = it.schema;
     if (ty === "object" && properties) {
@@ -5214,37 +6090,42 @@ function assignDefault(it, prop, defaultValue) {
     const { gen, compositeRule, data, opts } = it;
     if (defaultValue === undefined)
         return;
-    const childData = codegen_1._ `${data}${codegen_1.getProperty(prop)}`;
+    const childData = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(prop)}`;
     if (compositeRule) {
-        _1.checkStrictMode(it, `default is ignored for: ${childData}`);
+        (0, util_1.checkStrictMode)(it, `default is ignored for: ${childData}`);
         return;
     }
-    let condition = codegen_1._ `${childData} === undefined`;
+    let condition = (0, codegen_1._) `${childData} === undefined`;
     if (opts.useDefaults === "empty") {
-        condition = codegen_1._ `${condition} || ${childData} === null || ${childData} === ""`;
+        condition = (0, codegen_1._) `${condition} || ${childData} === null || ${childData} === ""`;
     }
     // `${childData} === undefined` +
     // (opts.useDefaults === "empty" ? ` || ${childData} === null || ${childData} === ""` : "")
-    gen.if(condition, codegen_1._ `${childData} = ${codegen_1.stringify(defaultValue)}`);
+    gen.if(condition, (0, codegen_1._) `${childData} = ${(0, codegen_1.stringify)(defaultValue)}`);
 }
 //# sourceMappingURL=defaults.js.map
 
 /***/ }),
 
-/***/ 1262:
+/***/ 4977:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.checkStrictMode = exports.schemaCxtHasRules = exports.subschemaCode = exports.validateFunctionCode = void 0;
-const boolSchema_1 = __nccwpck_require__(7296);
-const dataType_1 = __nccwpck_require__(8950);
-const iterate_1 = __nccwpck_require__(2811);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
-const resolve_1 = __nccwpck_require__(9673);
-const util_1 = __nccwpck_require__(3582);
+exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
+const boolSchema_1 = __nccwpck_require__(1254);
+const dataType_1 = __nccwpck_require__(1760);
+const applicability_1 = __nccwpck_require__(2354);
+const dataType_2 = __nccwpck_require__(1760);
+const defaults_1 = __nccwpck_require__(7307);
+const keyword_1 = __nccwpck_require__(2650);
+const subschema_1 = __nccwpck_require__(8625);
+const codegen_1 = __nccwpck_require__(232);
+const names_1 = __nccwpck_require__(8780);
+const resolve_1 = __nccwpck_require__(5603);
+const util_1 = __nccwpck_require__(1212);
+const errors_1 = __nccwpck_require__(4699);
 // schema compilation - generates validation function, subschemaCode (below) is used for subschemas
 function validateFunctionCode(it) {
     if (isSchemaObj(it)) {
@@ -5254,39 +6135,39 @@ function validateFunctionCode(it) {
             return;
         }
     }
-    validateFunction(it, () => boolSchema_1.topBoolOrEmptySchema(it));
+    validateFunction(it, () => (0, boolSchema_1.topBoolOrEmptySchema)(it));
 }
 exports.validateFunctionCode = validateFunctionCode;
 function validateFunction({ gen, validateName, schema, schemaEnv, opts }, body) {
     if (opts.code.es5) {
-        gen.func(validateName, codegen_1._ `${names_1.default.data}, ${names_1.default.valCxt}`, schemaEnv.$async, () => {
-            gen.code(codegen_1._ `"use strict"; ${funcSourceUrl(schema, opts)}`);
+        gen.func(validateName, (0, codegen_1._) `${names_1.default.data}, ${names_1.default.valCxt}`, schemaEnv.$async, () => {
+            gen.code((0, codegen_1._) `"use strict"; ${funcSourceUrl(schema, opts)}`);
             destructureValCxtES5(gen, opts);
             gen.code(body);
         });
     }
     else {
-        gen.func(validateName, codegen_1._ `${names_1.default.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () => gen.code(funcSourceUrl(schema, opts)).code(body));
+        gen.func(validateName, (0, codegen_1._) `${names_1.default.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () => gen.code(funcSourceUrl(schema, opts)).code(body));
     }
 }
 function destructureValCxt(opts) {
-    return codegen_1._ `{${names_1.default.dataPath}="", ${names_1.default.parentData}, ${names_1.default.parentDataProperty}, ${names_1.default.rootData}=${names_1.default.data}${opts.dynamicRef ? codegen_1._ `, ${names_1.default.dynamicAnchors}={}` : codegen_1.nil}}={}`;
+    return (0, codegen_1._) `{${names_1.default.instancePath}="", ${names_1.default.parentData}, ${names_1.default.parentDataProperty}, ${names_1.default.rootData}=${names_1.default.data}${opts.dynamicRef ? (0, codegen_1._) `, ${names_1.default.dynamicAnchors}={}` : codegen_1.nil}}={}`;
 }
 function destructureValCxtES5(gen, opts) {
     gen.if(names_1.default.valCxt, () => {
-        gen.var(names_1.default.dataPath, codegen_1._ `${names_1.default.valCxt}.${names_1.default.dataPath}`);
-        gen.var(names_1.default.parentData, codegen_1._ `${names_1.default.valCxt}.${names_1.default.parentData}`);
-        gen.var(names_1.default.parentDataProperty, codegen_1._ `${names_1.default.valCxt}.${names_1.default.parentDataProperty}`);
-        gen.var(names_1.default.rootData, codegen_1._ `${names_1.default.valCxt}.${names_1.default.rootData}`);
+        gen.var(names_1.default.instancePath, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.instancePath}`);
+        gen.var(names_1.default.parentData, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.parentData}`);
+        gen.var(names_1.default.parentDataProperty, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.parentDataProperty}`);
+        gen.var(names_1.default.rootData, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.rootData}`);
         if (opts.dynamicRef)
-            gen.var(names_1.default.dynamicAnchors, codegen_1._ `${names_1.default.valCxt}.${names_1.default.dynamicAnchors}`);
+            gen.var(names_1.default.dynamicAnchors, (0, codegen_1._) `${names_1.default.valCxt}.${names_1.default.dynamicAnchors}`);
     }, () => {
-        gen.var(names_1.default.dataPath, codegen_1._ `""`);
-        gen.var(names_1.default.parentData, codegen_1._ `undefined`);
-        gen.var(names_1.default.parentDataProperty, codegen_1._ `undefined`);
+        gen.var(names_1.default.instancePath, (0, codegen_1._) `""`);
+        gen.var(names_1.default.parentData, (0, codegen_1._) `undefined`);
+        gen.var(names_1.default.parentDataProperty, (0, codegen_1._) `undefined`);
         gen.var(names_1.default.rootData, names_1.default.data);
         if (opts.dynamicRef)
-            gen.var(names_1.default.dynamicAnchors, codegen_1._ `{}`);
+            gen.var(names_1.default.dynamicAnchors, (0, codegen_1._) `{}`);
     });
 }
 function topSchemaObjCode(it) {
@@ -5307,14 +6188,13 @@ function topSchemaObjCode(it) {
 function resetEvaluated(it) {
     // TODO maybe some hook to execute it in the end to check whether props/items are Name, as in assignEvaluated
     const { gen, validateName } = it;
-    it.evaluated = gen.const("evaluated", codegen_1._ `${validateName}.evaluated`);
-    gen.if(codegen_1._ `${it.evaluated}.dynamicProps`, () => gen.assign(codegen_1._ `${it.evaluated}.props`, codegen_1._ `undefined`));
-    gen.if(codegen_1._ `${it.evaluated}.dynamicItems`, () => gen.assign(codegen_1._ `${it.evaluated}.items`, codegen_1._ `undefined`));
+    it.evaluated = gen.const("evaluated", (0, codegen_1._) `${validateName}.evaluated`);
+    gen.if((0, codegen_1._) `${it.evaluated}.dynamicProps`, () => gen.assign((0, codegen_1._) `${it.evaluated}.props`, (0, codegen_1._) `undefined`));
+    gen.if((0, codegen_1._) `${it.evaluated}.dynamicItems`, () => gen.assign((0, codegen_1._) `${it.evaluated}.items`, (0, codegen_1._) `undefined`));
 }
 function funcSourceUrl(schema, opts) {
-    return typeof schema == "object" && schema.$id && (opts.code.source || opts.code.process)
-        ? codegen_1._ `/*# sourceURL=${schema.$id} */`
-        : codegen_1.nil;
+    const schId = typeof schema == "object" && schema[opts.schemaId];
+    return schId && (opts.code.source || opts.code.process) ? (0, codegen_1._) `/*# sourceURL=${schId} */` : codegen_1.nil;
 }
 // schema compilation - this function is used recursively to generate code for sub-schemas
 function subschemaCode(it, valid) {
@@ -5325,9 +6205,8 @@ function subschemaCode(it, valid) {
             return;
         }
     }
-    boolSchema_1.boolOrEmptySchema(it, valid);
+    (0, boolSchema_1.boolOrEmptySchema)(it, valid);
 }
-exports.subschemaCode = subschemaCode;
 function schemaCxtHasRules({ schema, self }) {
     if (typeof schema == "boolean")
         return !schema;
@@ -5336,7 +6215,6 @@ function schemaCxtHasRules({ schema, self }) {
             return true;
     return false;
 }
-exports.schemaCxtHasRules = schemaCxtHasRules;
 function isSchemaObj(it) {
     return typeof it.schema != "boolean";
 }
@@ -5345,106 +6223,79 @@ function subSchemaObjCode(it, valid) {
     if (opts.$comment && schema.$comment)
         commentKeyword(it);
     updateContext(it);
-    checkAsync(it);
+    checkAsyncSchema(it);
     const errsCount = gen.const("_errs", names_1.default.errors);
     typeAndKeywords(it, errsCount);
     // TODO var
-    gen.var(valid, codegen_1._ `${errsCount} === ${names_1.default.errors}`);
+    gen.var(valid, (0, codegen_1._) `${errsCount} === ${names_1.default.errors}`);
 }
 function checkKeywords(it) {
-    util_1.checkUnknownRules(it);
+    (0, util_1.checkUnknownRules)(it);
     checkRefsAndKeywords(it);
 }
 function typeAndKeywords(it, errsCount) {
     if (it.opts.jtd)
-        return iterate_1.schemaKeywords(it, [], false, errsCount);
-    const types = dataType_1.getSchemaTypes(it.schema);
-    const checkedTypes = dataType_1.coerceAndCheckDataType(it, types);
-    iterate_1.schemaKeywords(it, types, !checkedTypes, errsCount);
+        return schemaKeywords(it, [], false, errsCount);
+    const types = (0, dataType_1.getSchemaTypes)(it.schema);
+    const checkedTypes = (0, dataType_1.coerceAndCheckDataType)(it, types);
+    schemaKeywords(it, types, !checkedTypes, errsCount);
 }
 function checkRefsAndKeywords(it) {
     const { schema, errSchemaPath, opts, self } = it;
-    if (schema.$ref && opts.ignoreKeywordsWithRef && util_1.schemaHasRulesButRef(schema, self.RULES)) {
+    if (schema.$ref && opts.ignoreKeywordsWithRef && (0, util_1.schemaHasRulesButRef)(schema, self.RULES)) {
         self.logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`);
     }
 }
 function checkNoDefault(it) {
     const { schema, opts } = it;
-    if (schema.default !== undefined && opts.useDefaults && opts.strict) {
-        checkStrictMode(it, "default is ignored in the schema root");
+    if (schema.default !== undefined && opts.useDefaults && opts.strictSchema) {
+        (0, util_1.checkStrictMode)(it, "default is ignored in the schema root");
     }
 }
 function updateContext(it) {
-    if (it.schema.$id)
-        it.baseId = resolve_1.resolveUrl(it.baseId, it.schema.$id);
+    const schId = it.schema[it.opts.schemaId];
+    if (schId)
+        it.baseId = (0, resolve_1.resolveUrl)(it.opts.uriResolver, it.baseId, schId);
 }
-function checkAsync(it) {
+function checkAsyncSchema(it) {
     if (it.schema.$async && !it.schemaEnv.$async)
         throw new Error("async schema in sync schema");
 }
 function commentKeyword({ gen, schemaEnv, schema, errSchemaPath, opts }) {
     const msg = schema.$comment;
     if (opts.$comment === true) {
-        gen.code(codegen_1._ `${names_1.default.self}.logger.log(${msg})`);
+        gen.code((0, codegen_1._) `${names_1.default.self}.logger.log(${msg})`);
     }
     else if (typeof opts.$comment == "function") {
-        const schemaPath = codegen_1.str `${errSchemaPath}/$comment`;
+        const schemaPath = (0, codegen_1.str) `${errSchemaPath}/$comment`;
         const rootName = gen.scopeValue("root", { ref: schemaEnv.root });
-        gen.code(codegen_1._ `${names_1.default.self}.opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`);
+        gen.code((0, codegen_1._) `${names_1.default.self}.opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`);
     }
 }
 function returnResults(it) {
     const { gen, schemaEnv, validateName, ValidationError, opts } = it;
     if (schemaEnv.$async) {
         // TODO assign unevaluated
-        gen.if(codegen_1._ `${names_1.default.errors} === 0`, () => gen.return(names_1.default.data), () => gen.throw(codegen_1._ `new ${ValidationError}(${names_1.default.vErrors})`));
+        gen.if((0, codegen_1._) `${names_1.default.errors} === 0`, () => gen.return(names_1.default.data), () => gen.throw((0, codegen_1._) `new ${ValidationError}(${names_1.default.vErrors})`));
     }
     else {
-        gen.assign(codegen_1._ `${validateName}.errors`, names_1.default.vErrors);
+        gen.assign((0, codegen_1._) `${validateName}.errors`, names_1.default.vErrors);
         if (opts.unevaluated)
             assignEvaluated(it);
-        gen.return(codegen_1._ `${names_1.default.errors} === 0`);
+        gen.return((0, codegen_1._) `${names_1.default.errors} === 0`);
     }
 }
 function assignEvaluated({ gen, evaluated, props, items }) {
     if (props instanceof codegen_1.Name)
-        gen.assign(codegen_1._ `${evaluated}.props`, props);
+        gen.assign((0, codegen_1._) `${evaluated}.props`, props);
     if (items instanceof codegen_1.Name)
-        gen.assign(codegen_1._ `${evaluated}.items`, items);
+        gen.assign((0, codegen_1._) `${evaluated}.items`, items);
 }
-function checkStrictMode(it, msg, mode = it.opts.strict) {
-    if (!mode)
-        return;
-    msg = `strict mode: ${msg}`;
-    if (mode === true)
-        throw new Error(msg);
-    it.self.logger.warn(msg);
-}
-exports.checkStrictMode = checkStrictMode;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-
-/***/ 2811:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.schemaKeywords = void 0;
-const applicability_1 = __nccwpck_require__(9533);
-const dataType_1 = __nccwpck_require__(8950);
-const defaults_1 = __nccwpck_require__(976);
-const keyword_1 = __nccwpck_require__(7637);
-const util_1 = __nccwpck_require__(3582);
-const _1 = __nccwpck_require__(1262);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
 function schemaKeywords(it, types, typeErrors, errsCount) {
     const { gen, schema, data, allErrors, opts, self } = it;
     const { RULES } = self;
-    if (schema.$ref && (opts.ignoreKeywordsWithRef || !util_1.schemaHasRulesButRef(schema, RULES))) {
-        gen.block(() => keyword_1.keywordCode(it, "$ref", RULES.all.$ref.definition)); // TODO typecast
+    if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES))) {
+        gen.block(() => keywordCode(it, "$ref", RULES.all.$ref.definition)); // TODO typecast
         return;
     }
     if (!opts.jtd)
@@ -5455,14 +6306,14 @@ function schemaKeywords(it, types, typeErrors, errsCount) {
         groupKeywords(RULES.post);
     });
     function groupKeywords(group) {
-        if (!applicability_1.shouldUseGroup(schema, group))
+        if (!(0, applicability_1.shouldUseGroup)(schema, group))
             return;
         if (group.type) {
-            gen.if(dataType_1.checkDataType(group.type, data, opts.strict));
+            gen.if((0, dataType_2.checkDataType)(group.type, data, opts.strictNumbers));
             iterateKeywords(it, group);
             if (types.length === 1 && types[0] === group.type && typeErrors) {
                 gen.else();
-                dataType_1.reportTypeError(it);
+                (0, dataType_2.reportTypeError)(it);
             }
             gen.endIf();
         }
@@ -5471,18 +6322,17 @@ function schemaKeywords(it, types, typeErrors, errsCount) {
         }
         // TODO make it "ok" call?
         if (!allErrors)
-            gen.if(codegen_1._ `${names_1.default.errors} === ${errsCount || 0}`);
+            gen.if((0, codegen_1._) `${names_1.default.errors} === ${errsCount || 0}`);
     }
 }
-exports.schemaKeywords = schemaKeywords;
 function iterateKeywords(it, group) {
     const { gen, schema, opts: { useDefaults }, } = it;
     if (useDefaults)
-        defaults_1.assignDefaults(it, group.type);
+        (0, defaults_1.assignDefaults)(it, group.type);
     gen.block(() => {
         for (const rule of group.rules) {
-            if (applicability_1.shouldUseRule(schema, rule)) {
-                keyword_1.keywordCode(it, rule.keyword, rule.definition, group.type);
+            if ((0, applicability_1.shouldUseRule)(schema, rule)) {
+                keywordCode(it, rule.keyword, rule.definition, group.type);
             }
         }
     });
@@ -5507,7 +6357,7 @@ function checkContextTypes(it, types) {
             strictTypesError(it, `type "${t}" not allowed by context "${it.dataTypes.join(",")}"`);
         }
     });
-    it.dataTypes = it.dataTypes.filter((t) => includesType(types, t));
+    narrowSchemaTypes(it, types);
 }
 function checkMultipleTypes(it, ts) {
     if (ts.length > 1 && !(ts.length === 2 && ts.includes("null"))) {
@@ -5518,7 +6368,7 @@ function checkKeywordTypes(it, ts) {
     const rules = it.self.RULES.all;
     for (const keyword in rules) {
         const rule = rules[keyword];
-        if (typeof rule == "object" && applicability_1.shouldUseRule(it.schema, rule)) {
+        if (typeof rule == "object" && (0, applicability_1.shouldUseRule)(it.schema, rule)) {
             const { type } = rule.definition;
             if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
                 strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`);
@@ -5532,43 +6382,269 @@ function hasApplicableType(schTs, kwdT) {
 function includesType(ts, t) {
     return ts.includes(t) || (t === "integer" && ts.includes("number"));
 }
+function narrowSchemaTypes(it, withTypes) {
+    const ts = [];
+    for (const t of it.dataTypes) {
+        if (includesType(withTypes, t))
+            ts.push(t);
+        else if (withTypes.includes("integer") && t === "number")
+            ts.push("integer");
+    }
+    it.dataTypes = ts;
+}
 function strictTypesError(it, msg) {
     const schemaPath = it.schemaEnv.baseId + it.errSchemaPath;
     msg += ` at "${schemaPath}" (strictTypes)`;
-    _1.checkStrictMode(it, msg, it.opts.strictTypes);
+    (0, util_1.checkStrictMode)(it, msg, it.opts.strictTypes);
 }
-//# sourceMappingURL=iterate.js.map
+class KeywordCxt {
+    constructor(it, def, keyword) {
+        (0, keyword_1.validateKeywordUsage)(it, def, keyword);
+        this.gen = it.gen;
+        this.allErrors = it.allErrors;
+        this.keyword = keyword;
+        this.data = it.data;
+        this.schema = it.schema[keyword];
+        this.$data = def.$data && it.opts.$data && this.schema && this.schema.$data;
+        this.schemaValue = (0, util_1.schemaRefOrVal)(it, this.schema, keyword, this.$data);
+        this.schemaType = def.schemaType;
+        this.parentSchema = it.schema;
+        this.params = {};
+        this.it = it;
+        this.def = def;
+        if (this.$data) {
+            this.schemaCode = it.gen.const("vSchema", getData(this.$data, it));
+        }
+        else {
+            this.schemaCode = this.schemaValue;
+            if (!(0, keyword_1.validSchemaType)(this.schema, def.schemaType, def.allowUndefined)) {
+                throw new Error(`${keyword} value must be ${JSON.stringify(def.schemaType)}`);
+            }
+        }
+        if ("code" in def ? def.trackErrors : def.errors !== false) {
+            this.errsCount = it.gen.const("_errs", names_1.default.errors);
+        }
+    }
+    result(condition, successAction, failAction) {
+        this.failResult((0, codegen_1.not)(condition), successAction, failAction);
+    }
+    failResult(condition, successAction, failAction) {
+        this.gen.if(condition);
+        if (failAction)
+            failAction();
+        else
+            this.error();
+        if (successAction) {
+            this.gen.else();
+            successAction();
+            if (this.allErrors)
+                this.gen.endIf();
+        }
+        else {
+            if (this.allErrors)
+                this.gen.endIf();
+            else
+                this.gen.else();
+        }
+    }
+    pass(condition, failAction) {
+        this.failResult((0, codegen_1.not)(condition), undefined, failAction);
+    }
+    fail(condition) {
+        if (condition === undefined) {
+            this.error();
+            if (!this.allErrors)
+                this.gen.if(false); // this branch will be removed by gen.optimize
+            return;
+        }
+        this.gen.if(condition);
+        this.error();
+        if (this.allErrors)
+            this.gen.endIf();
+        else
+            this.gen.else();
+    }
+    fail$data(condition) {
+        if (!this.$data)
+            return this.fail(condition);
+        const { schemaCode } = this;
+        this.fail((0, codegen_1._) `${schemaCode} !== undefined && (${(0, codegen_1.or)(this.invalid$data(), condition)})`);
+    }
+    error(append, errorParams, errorPaths) {
+        if (errorParams) {
+            this.setParams(errorParams);
+            this._error(append, errorPaths);
+            this.setParams({});
+            return;
+        }
+        this._error(append, errorPaths);
+    }
+    _error(append, errorPaths) {
+        ;
+        (append ? errors_1.reportExtraError : errors_1.reportError)(this, this.def.error, errorPaths);
+    }
+    $dataError() {
+        (0, errors_1.reportError)(this, this.def.$dataError || errors_1.keyword$DataError);
+    }
+    reset() {
+        if (this.errsCount === undefined)
+            throw new Error('add "trackErrors" to keyword definition');
+        (0, errors_1.resetErrorsCount)(this.gen, this.errsCount);
+    }
+    ok(cond) {
+        if (!this.allErrors)
+            this.gen.if(cond);
+    }
+    setParams(obj, assign) {
+        if (assign)
+            Object.assign(this.params, obj);
+        else
+            this.params = obj;
+    }
+    block$data(valid, codeBlock, $dataValid = codegen_1.nil) {
+        this.gen.block(() => {
+            this.check$data(valid, $dataValid);
+            codeBlock();
+        });
+    }
+    check$data(valid = codegen_1.nil, $dataValid = codegen_1.nil) {
+        if (!this.$data)
+            return;
+        const { gen, schemaCode, schemaType, def } = this;
+        gen.if((0, codegen_1.or)((0, codegen_1._) `${schemaCode} === undefined`, $dataValid));
+        if (valid !== codegen_1.nil)
+            gen.assign(valid, true);
+        if (schemaType.length || def.validateSchema) {
+            gen.elseIf(this.invalid$data());
+            this.$dataError();
+            if (valid !== codegen_1.nil)
+                gen.assign(valid, false);
+        }
+        gen.else();
+    }
+    invalid$data() {
+        const { gen, schemaCode, schemaType, def, it } = this;
+        return (0, codegen_1.or)(wrong$DataType(), invalid$DataSchema());
+        function wrong$DataType() {
+            if (schemaType.length) {
+                /* istanbul ignore if */
+                if (!(schemaCode instanceof codegen_1.Name))
+                    throw new Error("ajv implementation error");
+                const st = Array.isArray(schemaType) ? schemaType : [schemaType];
+                return (0, codegen_1._) `${(0, dataType_2.checkDataTypes)(st, schemaCode, it.opts.strictNumbers, dataType_2.DataType.Wrong)}`;
+            }
+            return codegen_1.nil;
+        }
+        function invalid$DataSchema() {
+            if (def.validateSchema) {
+                const validateSchemaRef = gen.scopeValue("validate$data", { ref: def.validateSchema }); // TODO value.code for standalone
+                return (0, codegen_1._) `!${validateSchemaRef}(${schemaCode})`;
+            }
+            return codegen_1.nil;
+        }
+    }
+    subschema(appl, valid) {
+        const subschema = (0, subschema_1.getSubschema)(this.it, appl);
+        (0, subschema_1.extendSubschemaData)(subschema, this.it, appl);
+        (0, subschema_1.extendSubschemaMode)(subschema, appl);
+        const nextContext = { ...this.it, ...subschema, items: undefined, props: undefined };
+        subschemaCode(nextContext, valid);
+        return nextContext;
+    }
+    mergeEvaluated(schemaCxt, toName) {
+        const { it, gen } = this;
+        if (!it.opts.unevaluated)
+            return;
+        if (it.props !== true && schemaCxt.props !== undefined) {
+            it.props = util_1.mergeEvaluated.props(gen, schemaCxt.props, it.props, toName);
+        }
+        if (it.items !== true && schemaCxt.items !== undefined) {
+            it.items = util_1.mergeEvaluated.items(gen, schemaCxt.items, it.items, toName);
+        }
+    }
+    mergeValidEvaluated(schemaCxt, valid) {
+        const { it, gen } = this;
+        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
+            gen.if(valid, () => this.mergeEvaluated(schemaCxt, codegen_1.Name));
+            return true;
+        }
+    }
+}
+exports.KeywordCxt = KeywordCxt;
+function keywordCode(it, keyword, def, ruleType) {
+    const cxt = new KeywordCxt(it, def, keyword);
+    if ("code" in def) {
+        def.code(cxt, ruleType);
+    }
+    else if (cxt.$data && def.validate) {
+        (0, keyword_1.funcKeywordCode)(cxt, def);
+    }
+    else if ("macro" in def) {
+        (0, keyword_1.macroKeywordCode)(cxt, def);
+    }
+    else if (def.compile || def.validate) {
+        (0, keyword_1.funcKeywordCode)(cxt, def);
+    }
+}
+const JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
+const RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
+function getData($data, { dataLevel, dataNames, dataPathArr }) {
+    let jsonPointer;
+    let data;
+    if ($data === "")
+        return names_1.default.rootData;
+    if ($data[0] === "/") {
+        if (!JSON_POINTER.test($data))
+            throw new Error(`Invalid JSON-pointer: ${$data}`);
+        jsonPointer = $data;
+        data = names_1.default.rootData;
+    }
+    else {
+        const matches = RELATIVE_JSON_POINTER.exec($data);
+        if (!matches)
+            throw new Error(`Invalid JSON-pointer: ${$data}`);
+        const up = +matches[1];
+        jsonPointer = matches[2];
+        if (jsonPointer === "#") {
+            if (up >= dataLevel)
+                throw new Error(errorMsg("property/index", up));
+            return dataPathArr[dataLevel - up];
+        }
+        if (up > dataLevel)
+            throw new Error(errorMsg("data", up));
+        data = dataNames[dataLevel - up];
+        if (!jsonPointer)
+            return data;
+    }
+    let expr = data;
+    const segments = jsonPointer.split("/");
+    for (const segment of segments) {
+        if (segment) {
+            data = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)((0, util_1.unescapeJsonPointer)(segment))}`;
+            expr = (0, codegen_1._) `${expr} && ${data}`;
+        }
+    }
+    return expr;
+    function errorMsg(pointerType, up) {
+        return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`;
+    }
+}
+exports.getData = getData;
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 
-/***/ 7637:
+/***/ 2650:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.keywordCode = void 0;
-const context_1 = __nccwpck_require__(8709);
-const errors_1 = __nccwpck_require__(276);
-const code_1 = __nccwpck_require__(3570);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
-function keywordCode(it, keyword, def, ruleType) {
-    const cxt = new context_1.default(it, def, keyword);
-    if ("code" in def) {
-        def.code(cxt, ruleType);
-    }
-    else if (cxt.$data && def.validate) {
-        funcKeywordCode(cxt, def);
-    }
-    else if ("macro" in def) {
-        macroKeywordCode(cxt, def);
-    }
-    else if (def.compile || def.validate) {
-        funcKeywordCode(cxt, def);
-    }
-}
-exports.keywordCode = keywordCode;
+exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
+const codegen_1 = __nccwpck_require__(232);
+const names_1 = __nccwpck_require__(8780);
+const code_1 = __nccwpck_require__(5481);
+const errors_1 = __nccwpck_require__(4699);
 function macroKeywordCode(cxt, def) {
     const { gen, keyword, schema, parentSchema, it } = cxt;
     const macroSchema = def.macro.call(it.self, schema, parentSchema, it);
@@ -5585,10 +6661,11 @@ function macroKeywordCode(cxt, def) {
     }, valid);
     cxt.pass(valid, () => cxt.error(true));
 }
+exports.macroKeywordCode = macroKeywordCode;
 function funcKeywordCode(cxt, def) {
     var _a;
     const { gen, keyword, schema, parentSchema, $data, it } = cxt;
-    checkAsync(it, def);
+    checkAsyncKeyword(it, def);
     const validate = !$data && def.compile ? def.compile.call(it.self, schema, parentSchema, it) : def.validate;
     const validateRef = useKeyword(gen, keyword, validate);
     const valid = gen.let("valid");
@@ -5610,75 +6687,200 @@ function funcKeywordCode(cxt, def) {
     }
     function validateAsync() {
         const ruleErrs = gen.let("ruleErrs", null);
-        gen.try(() => assignValid(codegen_1._ `await `), (e) => gen.assign(valid, false).if(codegen_1._ `${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, codegen_1._ `${e}.errors`), () => gen.throw(e)));
+        gen.try(() => assignValid((0, codegen_1._) `await `), (e) => gen.assign(valid, false).if((0, codegen_1._) `${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_1._) `${e}.errors`), () => gen.throw(e)));
         return ruleErrs;
     }
     function validateSync() {
-        const validateErrs = codegen_1._ `${validateRef}.errors`;
+        const validateErrs = (0, codegen_1._) `${validateRef}.errors`;
         gen.assign(validateErrs, null);
         assignValid(codegen_1.nil);
         return validateErrs;
     }
-    function assignValid(_await = def.async ? codegen_1._ `await ` : codegen_1.nil) {
+    function assignValid(_await = def.async ? (0, codegen_1._) `await ` : codegen_1.nil) {
         const passCxt = it.opts.passContext ? names_1.default.this : names_1.default.self;
         const passSchema = !(("compile" in def && !$data) || def.schema === false);
-        gen.assign(valid, codegen_1._ `${_await}${code_1.callValidateCode(cxt, validateRef, passCxt, passSchema)}`, def.modifying);
+        gen.assign(valid, (0, codegen_1._) `${_await}${(0, code_1.callValidateCode)(cxt, validateRef, passCxt, passSchema)}`, def.modifying);
     }
     function reportErrs(errors) {
         var _a;
-        gen.if(codegen_1.not((_a = def.valid) !== null && _a !== void 0 ? _a : valid), errors);
+        gen.if((0, codegen_1.not)((_a = def.valid) !== null && _a !== void 0 ? _a : valid), errors);
     }
 }
+exports.funcKeywordCode = funcKeywordCode;
 function modifyData(cxt) {
     const { gen, data, it } = cxt;
-    gen.if(it.parentData, () => gen.assign(data, codegen_1._ `${it.parentData}[${it.parentDataProperty}]`));
+    gen.if(it.parentData, () => gen.assign(data, (0, codegen_1._) `${it.parentData}[${it.parentDataProperty}]`));
 }
 function addErrs(cxt, errs) {
     const { gen } = cxt;
-    gen.if(codegen_1._ `Array.isArray(${errs})`, () => {
+    gen.if((0, codegen_1._) `Array.isArray(${errs})`, () => {
         gen
-            .assign(names_1.default.vErrors, codegen_1._ `${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`)
-            .assign(names_1.default.errors, codegen_1._ `${names_1.default.vErrors}.length`);
-        errors_1.extendErrors(cxt);
+            .assign(names_1.default.vErrors, (0, codegen_1._) `${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`)
+            .assign(names_1.default.errors, (0, codegen_1._) `${names_1.default.vErrors}.length`);
+        (0, errors_1.extendErrors)(cxt);
     }, () => cxt.error());
 }
-function checkAsync({ schemaEnv }, def) {
+function checkAsyncKeyword({ schemaEnv }, def) {
     if (def.async && !schemaEnv.$async)
         throw new Error("async keyword in sync schema");
 }
 function useKeyword(gen, keyword, result) {
     if (result === undefined)
         throw new Error(`keyword "${keyword}" failed to compile`);
-    return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: codegen_1.stringify(result) });
+    return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: (0, codegen_1.stringify)(result) });
 }
+function validSchemaType(schema, schemaType, allowUndefined = false) {
+    // TODO add tests
+    return (!schemaType.length ||
+        schemaType.some((st) => st === "array"
+            ? Array.isArray(schema)
+            : st === "object"
+                ? schema && typeof schema == "object" && !Array.isArray(schema)
+                : typeof schema == st || (allowUndefined && typeof schema == "undefined")));
+}
+exports.validSchemaType = validSchemaType;
+function validateKeywordUsage({ schema, opts, self, errSchemaPath }, def, keyword) {
+    /* istanbul ignore if */
+    if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
+        throw new Error("ajv implementation error");
+    }
+    const deps = def.dependencies;
+    if (deps === null || deps === void 0 ? void 0 : deps.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
+        throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`);
+    }
+    if (def.validateSchema) {
+        const valid = def.validateSchema(schema[keyword]);
+        if (!valid) {
+            const msg = `keyword "${keyword}" value is invalid at path "${errSchemaPath}": ` +
+                self.errorsText(def.validateSchema.errors);
+            if (opts.validateSchema === "log")
+                self.logger.error(msg);
+            else
+                throw new Error(msg);
+        }
+    }
+}
+exports.validateKeywordUsage = validateKeywordUsage;
 //# sourceMappingURL=keyword.js.map
 
 /***/ }),
 
-/***/ 3797:
+/***/ 8625:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+function getSubschema(it, { keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef }) {
+    if (keyword !== undefined && schema !== undefined) {
+        throw new Error('both "keyword" and "schema" passed, only one allowed');
+    }
+    if (keyword !== undefined) {
+        const sch = it.schema[keyword];
+        return schemaProp === undefined
+            ? {
+                schema: sch,
+                schemaPath: (0, codegen_1._) `${it.schemaPath}${(0, codegen_1.getProperty)(keyword)}`,
+                errSchemaPath: `${it.errSchemaPath}/${keyword}`,
+            }
+            : {
+                schema: sch[schemaProp],
+                schemaPath: (0, codegen_1._) `${it.schemaPath}${(0, codegen_1.getProperty)(keyword)}${(0, codegen_1.getProperty)(schemaProp)}`,
+                errSchemaPath: `${it.errSchemaPath}/${keyword}/${(0, util_1.escapeFragment)(schemaProp)}`,
+            };
+    }
+    if (schema !== undefined) {
+        if (schemaPath === undefined || errSchemaPath === undefined || topSchemaRef === undefined) {
+            throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"');
+        }
+        return {
+            schema,
+            schemaPath,
+            topSchemaRef,
+            errSchemaPath,
+        };
+    }
+    throw new Error('either "keyword" or "schema" must be passed');
+}
+exports.getSubschema = getSubschema;
+function extendSubschemaData(subschema, it, { dataProp, dataPropType: dpType, data, dataTypes, propertyName }) {
+    if (data !== undefined && dataProp !== undefined) {
+        throw new Error('both "data" and "dataProp" passed, only one allowed');
+    }
+    const { gen } = it;
+    if (dataProp !== undefined) {
+        const { errorPath, dataPathArr, opts } = it;
+        const nextData = gen.let("data", (0, codegen_1._) `${it.data}${(0, codegen_1.getProperty)(dataProp)}`, true);
+        dataContextProps(nextData);
+        subschema.errorPath = (0, codegen_1.str) `${errorPath}${(0, util_1.getErrorPath)(dataProp, dpType, opts.jsPropertySyntax)}`;
+        subschema.parentDataProperty = (0, codegen_1._) `${dataProp}`;
+        subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty];
+    }
+    if (data !== undefined) {
+        const nextData = data instanceof codegen_1.Name ? data : gen.let("data", data, true); // replaceable if used once?
+        dataContextProps(nextData);
+        if (propertyName !== undefined)
+            subschema.propertyName = propertyName;
+        // TODO something is possibly wrong here with not changing parentDataProperty and not appending dataPathArr
+    }
+    if (dataTypes)
+        subschema.dataTypes = dataTypes;
+    function dataContextProps(_nextData) {
+        subschema.data = _nextData;
+        subschema.dataLevel = it.dataLevel + 1;
+        subschema.dataTypes = [];
+        it.definedProperties = new Set();
+        subschema.parentData = it.data;
+        subschema.dataNames = [...it.dataNames, _nextData];
+    }
+}
+exports.extendSubschemaData = extendSubschemaData;
+function extendSubschemaMode(subschema, { jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors }) {
+    if (compositeRule !== undefined)
+        subschema.compositeRule = compositeRule;
+    if (createErrors !== undefined)
+        subschema.createErrors = createErrors;
+    if (allErrors !== undefined)
+        subschema.allErrors = allErrors;
+    subschema.jtdDiscriminator = jtdDiscriminator; // not inherited
+    subschema.jtdMetadata = jtdMetadata; // not inherited
+}
+exports.extendSubschemaMode = extendSubschemaMode;
+//# sourceMappingURL=subschema.js.map
+
+/***/ }),
+
+/***/ 7941:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
-const context_1 = __nccwpck_require__(8709);
-exports.KeywordCxt = context_1.default;
-var codegen_1 = __nccwpck_require__(4016);
+var validate_1 = __nccwpck_require__(4977);
+Object.defineProperty(exports, "KeywordCxt", ({ enumerable: true, get: function () { return validate_1.KeywordCxt; } }));
+var codegen_1 = __nccwpck_require__(232);
 Object.defineProperty(exports, "_", ({ enumerable: true, get: function () { return codegen_1._; } }));
 Object.defineProperty(exports, "str", ({ enumerable: true, get: function () { return codegen_1.str; } }));
 Object.defineProperty(exports, "stringify", ({ enumerable: true, get: function () { return codegen_1.stringify; } }));
 Object.defineProperty(exports, "nil", ({ enumerable: true, get: function () { return codegen_1.nil; } }));
 Object.defineProperty(exports, "Name", ({ enumerable: true, get: function () { return codegen_1.Name; } }));
 Object.defineProperty(exports, "CodeGen", ({ enumerable: true, get: function () { return codegen_1.CodeGen; } }));
-const error_classes_1 = __nccwpck_require__(2118);
-const rules_1 = __nccwpck_require__(7992);
-const compile_1 = __nccwpck_require__(9303);
-const codegen_2 = __nccwpck_require__(4016);
-const resolve_1 = __nccwpck_require__(9673);
-const dataType_1 = __nccwpck_require__(8950);
-const util_1 = __nccwpck_require__(3582);
-const $dataRefSchema = __nccwpck_require__(2703);
+const validation_error_1 = __nccwpck_require__(8249);
+const ref_error_1 = __nccwpck_require__(280);
+const rules_1 = __nccwpck_require__(6188);
+const compile_1 = __nccwpck_require__(2205);
+const codegen_2 = __nccwpck_require__(232);
+const resolve_1 = __nccwpck_require__(5603);
+const dataType_1 = __nccwpck_require__(1760);
+const util_1 = __nccwpck_require__(1212);
+const $dataRefSchema = __nccwpck_require__(4962);
+const uri_1 = __nccwpck_require__(6287);
+const defaultRegExp = (str, flags) => new RegExp(str, flags);
+defaultRegExp.code = "new RegExp";
 const META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
 const EXT_SCOPE_NAMES = new Set([
     "validate",
@@ -5704,39 +6906,47 @@ const removedOptions = {
     missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
     processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
     sourceCode: "Use option `code: {source: true}`",
-    schemaId: "JSON Schema draft-04 is not supported in Ajv v7.",
     strictDefaults: "It is default now, see option `strict`.",
     strictKeywords: "It is default now, see option `strict`.",
-    strictNumbers: "It is default now, see option `strict`.",
     uniqueItems: '"uniqueItems" keyword is always validated.',
     unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
     cache: "Map is used as cache, schema object as key.",
     serialize: "Map is used as cache, schema object as key.",
+    ajvErrors: "It is default now.",
 };
 const deprecatedOptions = {
     ignoreKeywordsWithRef: "",
     jsPropertySyntax: "",
     unicode: '"minLength"/"maxLength" account for unicode characters by default.',
 };
+const MAX_EXPRESSION = 200;
+// eslint-disable-next-line complexity
 function requiredOptions(o) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
-    const strict = (_a = o.strict) !== null && _a !== void 0 ? _a : true;
-    const strictLog = strict ? "log" : false;
-    const _optz = (_b = o.code) === null || _b === void 0 ? void 0 : _b.optimize;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
+    const s = o.strict;
+    const _optz = (_a = o.code) === null || _a === void 0 ? void 0 : _a.optimize;
     const optimize = _optz === true || _optz === undefined ? 1 : _optz || 0;
+    const regExp = (_c = (_b = o.code) === null || _b === void 0 ? void 0 : _b.regExp) !== null && _c !== void 0 ? _c : defaultRegExp;
+    const uriResolver = (_d = o.uriResolver) !== null && _d !== void 0 ? _d : uri_1.default;
     return {
-        strict,
-        strictTypes: (_c = o.strictTypes) !== null && _c !== void 0 ? _c : strictLog,
-        strictTuples: (_d = o.strictTuples) !== null && _d !== void 0 ? _d : strictLog,
-        code: o.code ? { ...o.code, optimize } : { optimize },
-        loopRequired: (_e = o.loopRequired) !== null && _e !== void 0 ? _e : Infinity,
-        loopEnum: (_f = o.loopEnum) !== null && _f !== void 0 ? _f : Infinity,
-        meta: (_g = o.meta) !== null && _g !== void 0 ? _g : true,
-        messages: (_h = o.messages) !== null && _h !== void 0 ? _h : true,
-        inlineRefs: (_j = o.inlineRefs) !== null && _j !== void 0 ? _j : true,
-        addUsedSchema: (_k = o.addUsedSchema) !== null && _k !== void 0 ? _k : true,
-        validateSchema: (_l = o.validateSchema) !== null && _l !== void 0 ? _l : true,
-        validateFormats: (_m = o.validateFormats) !== null && _m !== void 0 ? _m : true,
+        strictSchema: (_f = (_e = o.strictSchema) !== null && _e !== void 0 ? _e : s) !== null && _f !== void 0 ? _f : true,
+        strictNumbers: (_h = (_g = o.strictNumbers) !== null && _g !== void 0 ? _g : s) !== null && _h !== void 0 ? _h : true,
+        strictTypes: (_k = (_j = o.strictTypes) !== null && _j !== void 0 ? _j : s) !== null && _k !== void 0 ? _k : "log",
+        strictTuples: (_m = (_l = o.strictTuples) !== null && _l !== void 0 ? _l : s) !== null && _m !== void 0 ? _m : "log",
+        strictRequired: (_p = (_o = o.strictRequired) !== null && _o !== void 0 ? _o : s) !== null && _p !== void 0 ? _p : false,
+        code: o.code ? { ...o.code, optimize, regExp } : { optimize, regExp },
+        loopRequired: (_q = o.loopRequired) !== null && _q !== void 0 ? _q : MAX_EXPRESSION,
+        loopEnum: (_r = o.loopEnum) !== null && _r !== void 0 ? _r : MAX_EXPRESSION,
+        meta: (_s = o.meta) !== null && _s !== void 0 ? _s : true,
+        messages: (_t = o.messages) !== null && _t !== void 0 ? _t : true,
+        inlineRefs: (_u = o.inlineRefs) !== null && _u !== void 0 ? _u : true,
+        schemaId: (_v = o.schemaId) !== null && _v !== void 0 ? _v : "$id",
+        addUsedSchema: (_w = o.addUsedSchema) !== null && _w !== void 0 ? _w : true,
+        validateSchema: (_x = o.validateSchema) !== null && _x !== void 0 ? _x : true,
+        validateFormats: (_y = o.validateFormats) !== null && _y !== void 0 ? _y : true,
+        unicodeRegExp: (_z = o.unicodeRegExp) !== null && _z !== void 0 ? _z : true,
+        int32range: (_0 = o.int32range) !== null && _0 !== void 0 ? _0 : true,
+        uriResolver: uriResolver,
     };
 }
 class Ajv {
@@ -5753,7 +6963,7 @@ class Ajv {
         this.logger = getLogger(opts.logger);
         const formatOpt = opts.validateFormats;
         opts.validateFormats = false;
-        this.RULES = rules_1.getRules();
+        this.RULES = (0, rules_1.getRules)();
         checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED");
         checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn");
         this._metaOpts = getMetaSchemaOptions.call(this);
@@ -5772,13 +6982,19 @@ class Ajv {
         this.addKeyword("$async");
     }
     _addDefaultMetaSchema() {
-        const { $data, meta } = this.opts;
+        const { $data, meta, schemaId } = this.opts;
+        let _dataRefSchema = $dataRefSchema;
+        if (schemaId === "id") {
+            _dataRefSchema = { ...$dataRefSchema };
+            _dataRefSchema.id = _dataRefSchema.$id;
+            delete _dataRefSchema.$id;
+        }
         if (meta && $data)
-            this.addMetaSchema($dataRefSchema, $dataRefSchema.$id, false);
+            this.addMetaSchema(_dataRefSchema, _dataRefSchema[schemaId], false);
     }
     defaultMeta() {
-        const { meta } = this.opts;
-        return (this.opts.defaultMeta = typeof meta == "object" ? meta.$id || meta : undefined);
+        const { meta, schemaId } = this.opts;
+        return (this.opts.defaultMeta = typeof meta == "object" ? meta[schemaId] || meta : undefined);
     }
     validate(schemaKeyRef, // key, ref or schema object
     data // to be validated
@@ -5822,7 +7038,7 @@ class Ajv {
                 return this._compileSchemaEnv(sch);
             }
             catch (e) {
-                if (!(e instanceof error_classes_1.MissingRefError))
+                if (!(e instanceof ref_error_1.default))
                     throw e;
                 checkLoaded.call(this, e);
                 await loadMissingSchema.call(this, e.missingSchema);
@@ -5866,13 +7082,15 @@ class Ajv {
         }
         let id;
         if (typeof schema === "object") {
-            id = schema.$id;
-            if (id !== undefined && typeof id != "string")
-                throw new Error("schema id must be string");
+            const { schemaId } = this.opts;
+            id = schema[schemaId];
+            if (id !== undefined && typeof id != "string") {
+                throw new Error(`schema ${schemaId} must be string`);
+            }
         }
-        key = resolve_1.normalizeId(key || id);
+        key = (0, resolve_1.normalizeId)(key || id);
         this._checkUnique(key);
-        this.schemas[key] = this._addSchema(schema, _meta, _validateSchema, true);
+        this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true);
         return this;
     }
     // Add schema that will be used to validate other schemas
@@ -5915,7 +7133,8 @@ class Ajv {
         while (typeof (sch = getSchEnv.call(this, keyRef)) == "string")
             keyRef = sch;
         if (sch === undefined) {
-            const root = new compile_1.SchemaEnv({ schema: {} });
+            const { schemaId } = this.opts;
+            const root = new compile_1.SchemaEnv({ schema: {}, schemaId });
             sch = compile_1.resolveSchema.call(this, root, keyRef);
             if (!sch)
                 return;
@@ -5950,9 +7169,9 @@ class Ajv {
             case "object": {
                 const cacheKey = schemaKeyRef;
                 this._cache.delete(cacheKey);
-                let id = schemaKeyRef.$id;
+                let id = schemaKeyRef[this.opts.schemaId];
                 if (id) {
-                    id = resolve_1.normalizeId(id);
+                    id = (0, resolve_1.normalizeId)(id);
                     delete this.schemas[id];
                     delete this.refs[id];
                 }
@@ -5990,16 +7209,16 @@ class Ajv {
         }
         checkKeyword.call(this, keyword, def);
         if (!def) {
-            util_1.eachItem(keyword, (kwd) => addRule.call(this, kwd));
+            (0, util_1.eachItem)(keyword, (kwd) => addRule.call(this, kwd));
             return this;
         }
         keywordMetaschema.call(this, def);
         const definition = {
             ...def,
-            type: dataType_1.getJSONTypes(def.type),
-            schemaType: dataType_1.getJSONTypes(def.schemaType),
+            type: (0, dataType_1.getJSONTypes)(def.type),
+            schemaType: (0, dataType_1.getJSONTypes)(def.schemaType),
         };
-        util_1.eachItem(keyword, definition.type.length === 0
+        (0, util_1.eachItem)(keyword, definition.type.length === 0
             ? (k) => addRule.call(this, k, definition)
             : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t)));
         return this;
@@ -6034,7 +7253,7 @@ class Ajv {
         if (!errors || errors.length === 0)
             return "No errors";
         return errors
-            .map((e) => `${dataVar}${e.dataPath} ${e.message}`)
+            .map((e) => `${dataVar}${e.instancePath} ${e.message}`)
             .reduce((text, msg) => text + separator + msg);
     }
     $dataMetaSchema(metaSchema, keywordsJsonPointers) {
@@ -6071,8 +7290,13 @@ class Ajv {
             }
         }
     }
-    _addSchema(schema, meta, validateSchema = this.opts.validateSchema, addSchema = this.opts.addUsedSchema) {
-        if (typeof schema != "object") {
+    _addSchema(schema, meta, baseId, validateSchema = this.opts.validateSchema, addSchema = this.opts.addUsedSchema) {
+        let id;
+        const { schemaId } = this.opts;
+        if (typeof schema == "object") {
+            id = schema[schemaId];
+        }
+        else {
             if (this.opts.jtd)
                 throw new Error("schema must be object");
             else if (typeof schema != "boolean")
@@ -6081,15 +7305,15 @@ class Ajv {
         let sch = this._cache.get(schema);
         if (sch !== undefined)
             return sch;
-        const localRefs = resolve_1.getSchemaRefs.call(this, schema);
-        sch = new compile_1.SchemaEnv({ schema, meta, localRefs });
+        baseId = (0, resolve_1.normalizeId)(id || baseId);
+        const localRefs = resolve_1.getSchemaRefs.call(this, schema, baseId);
+        sch = new compile_1.SchemaEnv({ schema, schemaId, meta, baseId, localRefs });
         this._cache.set(sch.schema, sch);
-        const id = sch.baseId;
-        if (addSchema && !id.startsWith("#")) {
+        if (addSchema && !baseId.startsWith("#")) {
             // TODO atm it is allowed to overwrite schemas without id (instead of not adding them)
-            if (id)
-                this._checkUnique(id);
-            this.refs[id] = sch;
+            if (baseId)
+                this._checkUnique(baseId);
+            this.refs[baseId] = sch;
         }
         if (validateSchema)
             this.validateSchema(schema, true);
@@ -6122,8 +7346,8 @@ class Ajv {
     }
 }
 exports.default = Ajv;
-Ajv.ValidationError = error_classes_1.ValidationError;
-Ajv.MissingRefError = error_classes_1.MissingRefError;
+Ajv.ValidationError = validation_error_1.default;
+Ajv.MissingRefError = ref_error_1.default;
 function checkOptions(checkOpts, options, msg, log = "error") {
     for (const key in checkOpts) {
         const opt = key;
@@ -6132,7 +7356,7 @@ function checkOptions(checkOpts, options, msg, log = "error") {
     }
 }
 function getSchEnv(keyRef) {
-    keyRef = resolve_1.normalizeId(keyRef); // TODO tests fail without this line
+    keyRef = (0, resolve_1.normalizeId)(keyRef); // TODO tests fail without this line
     return this.schemas[keyRef] || this.refs[keyRef];
 }
 function addInitialSchemas() {
@@ -6184,7 +7408,7 @@ function getLogger(logger) {
 const KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i;
 function checkKeyword(keyword, def) {
     const { RULES } = this;
-    util_1.eachItem(keyword, (kwd) => {
+    (0, util_1.eachItem)(keyword, (kwd) => {
         if (RULES.keywords[kwd])
             throw new Error(`Keyword ${kwd} is already defined`);
         if (!KEYWORD_NAME.test(kwd))
@@ -6214,8 +7438,8 @@ function addRule(keyword, definition, dataType) {
         keyword,
         definition: {
             ...definition,
-            type: dataType_1.getJSONTypes(definition.type),
-            schemaType: dataType_1.getJSONTypes(definition.schemaType),
+            type: (0, dataType_1.getJSONTypes)(definition.type),
+            schemaType: (0, dataType_1.getJSONTypes)(definition.schemaType),
         },
     };
     if (definition.before)
@@ -6253,19 +7477,94 @@ function schemaOrData(schema) {
 
 /***/ }),
 
-/***/ 5750:
+/***/ 520:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const subschema_1 = __nccwpck_require__(9902);
-const util_1 = __nccwpck_require__(3582);
-const validate_1 = __nccwpck_require__(1262);
+// https://github.com/ajv-validator/ajv/issues/889
+const equal = __nccwpck_require__(8206);
+equal.code = 'require("ajv/dist/runtime/equal").default';
+exports.default = equal;
+//# sourceMappingURL=equal.js.map
+
+/***/ }),
+
+/***/ 5651:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// https://mathiasbynens.be/notes/javascript-encoding
+// https://github.com/bestiejs/punycode.js - punycode.ucs2.decode
+function ucs2length(str) {
+    const len = str.length;
+    let length = 0;
+    let pos = 0;
+    let value;
+    while (pos < len) {
+        length++;
+        value = str.charCodeAt(pos++);
+        if (value >= 0xd800 && value <= 0xdbff && pos < len) {
+            // high surrogate, and there is a next character
+            value = str.charCodeAt(pos);
+            if ((value & 0xfc00) === 0xdc00)
+                pos++; // low surrogate
+        }
+    }
+    return length;
+}
+exports.default = ucs2length;
+ucs2length.code = 'require("ajv/dist/runtime/ucs2length").default';
+//# sourceMappingURL=ucs2length.js.map
+
+/***/ }),
+
+/***/ 6287:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const uri = __nccwpck_require__(20);
+uri.code = 'require("ajv/dist/runtime/uri").default';
+exports.default = uri;
+//# sourceMappingURL=uri.js.map
+
+/***/ }),
+
+/***/ 8249:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+class ValidationError extends Error {
+    constructor(errors) {
+        super("validation failed");
+        this.errors = errors;
+        this.ajv = this.validation = true;
+    }
+}
+exports.default = ValidationError;
+//# sourceMappingURL=validation_error.js.map
+
+/***/ }),
+
+/***/ 7858:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateAdditionalItems = void 0;
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 const error = {
-    message: ({ params: { len } }) => codegen_1.str `should NOT have more than ${len} items`,
-    params: ({ params: { len } }) => codegen_1._ `{limit: ${len}}`,
+    message: ({ params: { len } }) => (0, codegen_1.str) `must NOT have more than ${len} items`,
+    params: ({ params: { len } }) => (0, codegen_1._) `{limit: ${len}}`,
 };
 const def = {
     keyword: "additionalItems",
@@ -6274,51 +7573,55 @@ const def = {
     before: "uniqueItems",
     error,
     code(cxt) {
-        const { gen, schema, parentSchema, data, it } = cxt;
+        const { parentSchema, it } = cxt;
         const { items } = parentSchema;
         if (!Array.isArray(items)) {
-            validate_1.checkStrictMode(it, '"additionalItems" is ignored when "items" is not an array of schemas');
+            (0, util_1.checkStrictMode)(it, '"additionalItems" is ignored when "items" is not an array of schemas');
             return;
         }
-        it.items = true;
-        const len = gen.const("len", codegen_1._ `${data}.length`);
-        if (schema === false) {
-            cxt.setParams({ len: items.length });
-            cxt.pass(codegen_1._ `${len} <= ${items.length}`);
-        }
-        else if (typeof schema == "object" && !util_1.alwaysValidSchema(it, schema)) {
-            const valid = gen.var("valid", codegen_1._ `${len} <= ${items.length}`); // TODO var
-            gen.if(codegen_1.not(valid), () => validateItems(valid));
-            cxt.ok(valid);
-        }
-        function validateItems(valid) {
-            gen.forRange("i", items.length, len, (i) => {
-                cxt.subschema({ keyword: "additionalItems", dataProp: i, dataPropType: subschema_1.Type.Num }, valid);
-                if (!it.allErrors)
-                    gen.if(codegen_1.not(valid), () => gen.break());
-            });
-        }
+        validateAdditionalItems(cxt, items);
     },
 };
+function validateAdditionalItems(cxt, items) {
+    const { gen, schema, data, keyword, it } = cxt;
+    it.items = true;
+    const len = gen.const("len", (0, codegen_1._) `${data}.length`);
+    if (schema === false) {
+        cxt.setParams({ len: items.length });
+        cxt.pass((0, codegen_1._) `${len} <= ${items.length}`);
+    }
+    else if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
+        const valid = gen.var("valid", (0, codegen_1._) `${len} <= ${items.length}`); // TODO var
+        gen.if((0, codegen_1.not)(valid), () => validateItems(valid));
+        cxt.ok(valid);
+    }
+    function validateItems(valid) {
+        gen.forRange("i", items.length, len, (i) => {
+            cxt.subschema({ keyword, dataProp: i, dataPropType: util_1.Type.Num }, valid);
+            if (!it.allErrors)
+                gen.if((0, codegen_1.not)(valid), () => gen.break());
+        });
+    }
+}
+exports.validateAdditionalItems = validateAdditionalItems;
 exports.default = def;
 //# sourceMappingURL=additionalItems.js.map
 
 /***/ }),
 
-/***/ 4851:
+/***/ 5140:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const code_1 = __nccwpck_require__(3570);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
-const subschema_1 = __nccwpck_require__(9902);
-const util_1 = __nccwpck_require__(3582);
+const code_1 = __nccwpck_require__(5481);
+const codegen_1 = __nccwpck_require__(232);
+const names_1 = __nccwpck_require__(8780);
+const util_1 = __nccwpck_require__(1212);
 const error = {
-    message: "should NOT have additional properties",
-    params: ({ params }) => codegen_1._ `{additionalProperty: ${params.additionalProperty}}`,
+    message: "must NOT have additional properties",
+    params: ({ params }) => (0, codegen_1._) `{additionalProperty: ${params.additionalProperty}}`,
 };
 const def = {
     keyword: "additionalProperties",
@@ -6334,12 +7637,12 @@ const def = {
             throw new Error("ajv implementation error");
         const { allErrors, opts } = it;
         it.props = true;
-        if (opts.removeAdditional !== "all" && util_1.alwaysValidSchema(it, schema))
+        if (opts.removeAdditional !== "all" && (0, util_1.alwaysValidSchema)(it, schema))
             return;
-        const props = code_1.allSchemaProperties(parentSchema.properties);
-        const patProps = code_1.allSchemaProperties(parentSchema.patternProperties);
+        const props = (0, code_1.allSchemaProperties)(parentSchema.properties);
+        const patProps = (0, code_1.allSchemaProperties)(parentSchema.patternProperties);
         checkAdditionalProperties();
-        cxt.ok(codegen_1._ `${errsCount} === ${names_1.default.errors}`);
+        cxt.ok((0, codegen_1._) `${errsCount} === ${names_1.default.errors}`);
         function checkAdditionalProperties() {
             gen.forIn("key", data, (key) => {
                 if (!props.length && !patProps.length)
@@ -6352,22 +7655,22 @@ const def = {
             let definedProp;
             if (props.length > 8) {
                 // TODO maybe an option instead of hard-coded 8?
-                const propsSchema = util_1.schemaRefOrVal(it, parentSchema.properties, "properties");
-                definedProp = code_1.isOwnProperty(gen, propsSchema, key);
+                const propsSchema = (0, util_1.schemaRefOrVal)(it, parentSchema.properties, "properties");
+                definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key);
             }
             else if (props.length) {
-                definedProp = codegen_1.or(...props.map((p) => codegen_1._ `${key} === ${p}`));
+                definedProp = (0, codegen_1.or)(...props.map((p) => (0, codegen_1._) `${key} === ${p}`));
             }
             else {
                 definedProp = codegen_1.nil;
             }
             if (patProps.length) {
-                definedProp = codegen_1.or(definedProp, ...patProps.map((p) => codegen_1._ `${code_1.usePattern(gen, p)}.test(${key})`));
+                definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p) => (0, codegen_1._) `${(0, code_1.usePattern)(cxt, p)}.test(${key})`));
             }
-            return codegen_1.not(definedProp);
+            return (0, codegen_1.not)(definedProp);
         }
         function deleteAdditional(key) {
-            gen.code(codegen_1._ `delete ${data}[${key}]`);
+            gen.code((0, codegen_1._) `delete ${data}[${key}]`);
         }
         function additionalPropertyCode(key) {
             if (opts.removeAdditional === "all" || (opts.removeAdditional && schema === false)) {
@@ -6381,11 +7684,11 @@ const def = {
                     gen.break();
                 return;
             }
-            if (typeof schema == "object" && !util_1.alwaysValidSchema(it, schema)) {
+            if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
                 const valid = gen.name("valid");
                 if (opts.removeAdditional === "failing") {
                     applyAdditionalSchema(key, valid, false);
-                    gen.if(codegen_1.not(valid), () => {
+                    gen.if((0, codegen_1.not)(valid), () => {
                         cxt.reset();
                         deleteAdditional(key);
                     });
@@ -6393,7 +7696,7 @@ const def = {
                 else {
                     applyAdditionalSchema(key, valid);
                     if (!allErrors)
-                        gen.if(codegen_1.not(valid), () => gen.break());
+                        gen.if((0, codegen_1.not)(valid), () => gen.break());
                 }
             }
         }
@@ -6401,7 +7704,7 @@ const def = {
             const subschema = {
                 keyword: "additionalProperties",
                 dataProp: key,
-                dataPropType: subschema_1.Type.Str,
+                dataPropType: util_1.Type.Str,
             };
             if (errors === false) {
                 Object.assign(subschema, {
@@ -6419,13 +7722,13 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 9406:
+/***/ 5313:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const util_1 = __nccwpck_require__(3582);
+const util_1 = __nccwpck_require__(1212);
 const def = {
     keyword: "allOf",
     schemaType: "array",
@@ -6436,7 +7739,7 @@ const def = {
             throw new Error("ajv implementation error");
         const valid = gen.name("valid");
         schema.forEach((sch, i) => {
-            if (util_1.alwaysValidSchema(it, sch))
+            if ((0, util_1.alwaysValidSchema)(it, sch))
                 return;
             const schCxt = cxt.subschema({ keyword: "allOf", schemaProp: i }, valid);
             cxt.ok(valid);
@@ -6449,42 +7752,38 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 9286:
+/***/ 6221:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const code_1 = __nccwpck_require__(3570);
+const code_1 = __nccwpck_require__(5481);
 const def = {
     keyword: "anyOf",
     schemaType: "array",
     trackErrors: true,
     code: code_1.validateUnion,
-    error: {
-        message: "should match some schema in anyOf",
-    },
+    error: { message: "must match a schema in anyOf" },
 };
 exports.default = def;
 //# sourceMappingURL=anyOf.js.map
 
 /***/ }),
 
-/***/ 5276:
+/***/ 9800:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const subschema_1 = __nccwpck_require__(9902);
-const util_1 = __nccwpck_require__(3582);
-const validate_1 = __nccwpck_require__(1262);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 const error = {
     message: ({ params: { min, max } }) => max === undefined
-        ? codegen_1.str `should contain at least ${min} valid item(s)`
-        : codegen_1.str `should contain at least ${min} and no more than ${max} valid item(s)`,
-    params: ({ params: { min, max } }) => max === undefined ? codegen_1._ `{minContains: ${min}}` : codegen_1._ `{minContains: ${min}, maxContains: ${max}}`,
+        ? (0, codegen_1.str) `must contain at least ${min} valid item(s)`
+        : (0, codegen_1.str) `must contain at least ${min} and no more than ${max} valid item(s)`,
+    params: ({ params: { min, max } }) => max === undefined ? (0, codegen_1._) `{minContains: ${min}}` : (0, codegen_1._) `{minContains: ${min}, maxContains: ${max}}`,
 };
 const def = {
     keyword: "contains",
@@ -6505,21 +7804,21 @@ const def = {
         else {
             min = 1;
         }
-        const len = gen.const("len", codegen_1._ `${data}.length`);
+        const len = gen.const("len", (0, codegen_1._) `${data}.length`);
         cxt.setParams({ min, max });
         if (max === undefined && min === 0) {
-            validate_1.checkStrictMode(it, `"minContains" == 0 without "maxContains": "contains" keyword ignored`);
+            (0, util_1.checkStrictMode)(it, `"minContains" == 0 without "maxContains": "contains" keyword ignored`);
             return;
         }
         if (max !== undefined && min > max) {
-            validate_1.checkStrictMode(it, `"minContains" > "maxContains" is always invalid`);
+            (0, util_1.checkStrictMode)(it, `"minContains" > "maxContains" is always invalid`);
             cxt.fail();
             return;
         }
-        if (util_1.alwaysValidSchema(it, schema)) {
-            let cond = codegen_1._ `${len} >= ${min}`;
+        if ((0, util_1.alwaysValidSchema)(it, schema)) {
+            let cond = (0, codegen_1._) `${len} >= ${min}`;
             if (max !== undefined)
-                cond = codegen_1._ `${cond} && ${len} <= ${max}`;
+                cond = (0, codegen_1._) `${cond} && ${len} <= ${max}`;
             cxt.pass(cond);
             return;
         }
@@ -6528,35 +7827,43 @@ const def = {
         if (max === undefined && min === 1) {
             validateItems(valid, () => gen.if(valid, () => gen.break()));
         }
+        else if (min === 0) {
+            gen.let(valid, true);
+            if (max !== undefined)
+                gen.if((0, codegen_1._) `${data}.length > 0`, validateItemsWithCount);
+        }
         else {
             gen.let(valid, false);
+            validateItemsWithCount();
+        }
+        cxt.result(valid, () => cxt.reset());
+        function validateItemsWithCount() {
             const schValid = gen.name("_valid");
             const count = gen.let("count", 0);
             validateItems(schValid, () => gen.if(schValid, () => checkLimits(count)));
         }
-        cxt.result(valid, () => cxt.reset());
         function validateItems(_valid, block) {
             gen.forRange("i", 0, len, (i) => {
                 cxt.subschema({
                     keyword: "contains",
                     dataProp: i,
-                    dataPropType: subschema_1.Type.Num,
+                    dataPropType: util_1.Type.Num,
                     compositeRule: true,
                 }, _valid);
                 block();
             });
         }
         function checkLimits(count) {
-            gen.code(codegen_1._ `${count}++`);
+            gen.code((0, codegen_1._) `${count}++`);
             if (max === undefined) {
-                gen.if(codegen_1._ `${count} >= ${min}`, () => gen.assign(valid, true).break());
+                gen.if((0, codegen_1._) `${count} >= ${min}`, () => gen.assign(valid, true).break());
             }
             else {
-                gen.if(codegen_1._ `${count} > ${max}`, () => gen.assign(valid, false).break());
+                gen.if((0, codegen_1._) `${count} > ${max}`, () => gen.assign(valid, false).break());
                 if (min === 1)
                     gen.assign(valid, true);
                 else
-                    gen.if(codegen_1._ `${count} >= ${min}`, () => gen.assign(valid, true));
+                    gen.if((0, codegen_1._) `${count} >= ${min}`, () => gen.assign(valid, true));
             }
         }
     },
@@ -6566,22 +7873,22 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 11:
+/***/ 6875:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
-const code_1 = __nccwpck_require__(3570);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const code_1 = __nccwpck_require__(5481);
 exports.error = {
     message: ({ params: { property, depsCount, deps } }) => {
         const property_ies = depsCount === 1 ? "property" : "properties";
-        return codegen_1.str `should have ${property_ies} ${deps} when property ${property} is present`;
+        return (0, codegen_1.str) `must have ${property_ies} ${deps} when property ${property} is present`;
     },
-    params: ({ params: { property, depsCount, deps, missingProperty } }) => codegen_1._ `{property: ${property},
+    params: ({ params: { property, depsCount, deps, missingProperty } }) => (0, codegen_1._) `{property: ${property},
     missingProperty: ${missingProperty},
     depsCount: ${depsCount},
     deps: ${deps}}`, // TODO change to reference
@@ -6617,7 +7924,7 @@ function validatePropertyDeps(cxt, propertyDeps = cxt.schema) {
         const deps = propertyDeps[prop];
         if (deps.length === 0)
             continue;
-        const hasProperty = code_1.propertyInData(gen, data, prop, it.opts.ownProperties);
+        const hasProperty = (0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties);
         cxt.setParams({
             property: prop,
             depsCount: deps.length,
@@ -6626,13 +7933,13 @@ function validatePropertyDeps(cxt, propertyDeps = cxt.schema) {
         if (it.allErrors) {
             gen.if(hasProperty, () => {
                 for (const depProp of deps) {
-                    code_1.checkReportMissingProp(cxt, depProp);
+                    (0, code_1.checkReportMissingProp)(cxt, depProp);
                 }
             });
         }
         else {
-            gen.if(codegen_1._ `${hasProperty} && (${code_1.checkMissingProp(cxt, deps, missing)})`);
-            code_1.reportMissingProp(cxt, missing);
+            gen.if((0, codegen_1._) `${hasProperty} && (${(0, code_1.checkMissingProp)(cxt, deps, missing)})`);
+            (0, code_1.reportMissingProp)(cxt, missing);
             gen.else();
         }
     }
@@ -6642,9 +7949,9 @@ function validateSchemaDeps(cxt, schemaDeps = cxt.schema) {
     const { gen, data, keyword, it } = cxt;
     const valid = gen.name("valid");
     for (const prop in schemaDeps) {
-        if (util_1.alwaysValidSchema(it, schemaDeps[prop]))
+        if ((0, util_1.alwaysValidSchema)(it, schemaDeps[prop]))
             continue;
-        gen.if(code_1.propertyInData(gen, data, prop, it.opts.ownProperties), () => {
+        gen.if((0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties), () => {
             const schCxt = cxt.subschema({ keyword, schemaProp: prop }, valid);
             cxt.mergeValidEvaluated(schCxt, valid);
         }, () => gen.var(valid, true) // TODO var
@@ -6658,18 +7965,17 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 7706:
+/***/ 6414:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
-const validate_1 = __nccwpck_require__(1262);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 const error = {
-    message: ({ params }) => codegen_1.str `should match "${params.ifClause}" schema`,
-    params: ({ params }) => codegen_1._ `{failingKeyword: ${params.ifClause}}`,
+    message: ({ params }) => (0, codegen_1.str) `must match "${params.ifClause}" schema`,
+    params: ({ params }) => (0, codegen_1._) `{failingKeyword: ${params.ifClause}}`,
 };
 const def = {
     keyword: "if",
@@ -6679,7 +7985,7 @@ const def = {
     code(cxt) {
         const { gen, parentSchema, it } = cxt;
         if (parentSchema.then === undefined && parentSchema.else === undefined) {
-            validate_1.checkStrictMode(it, '"if" without "then" and "else" is ignored');
+            (0, util_1.checkStrictMode)(it, '"if" without "then" and "else" is ignored');
         }
         const hasThen = hasSchema(it, "then");
         const hasElse = hasSchema(it, "else");
@@ -6698,7 +8004,7 @@ const def = {
             gen.if(schValid, validateClause("then"));
         }
         else {
-            gen.if(codegen_1.not(schValid), validateClause("else"));
+            gen.if((0, codegen_1.not)(schValid), validateClause("else"));
         }
         cxt.pass(valid, () => cxt.error(true));
         function validateIf() {
@@ -6716,7 +8022,7 @@ const def = {
                 gen.assign(valid, schValid);
                 cxt.mergeValidEvaluated(schCxt, valid);
                 if (ifClause)
-                    gen.assign(ifClause, codegen_1._ `${keyword}`);
+                    gen.assign(ifClause, (0, codegen_1._) `${keyword}`);
                 else
                     cxt.setParams({ ifClause: keyword });
             };
@@ -6725,129 +8031,174 @@ const def = {
 };
 function hasSchema(it, keyword) {
     const schema = it.schema[keyword];
-    return schema !== undefined && !util_1.alwaysValidSchema(it, schema);
+    return schema !== undefined && !(0, util_1.alwaysValidSchema)(it, schema);
 }
 exports.default = def;
 //# sourceMappingURL=if.js.map
 
 /***/ }),
 
-/***/ 364:
+/***/ 1199:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const additionalItems_1 = __nccwpck_require__(5750);
-const items_1 = __nccwpck_require__(1270);
-const contains_1 = __nccwpck_require__(5276);
-const dependencies_1 = __nccwpck_require__(11);
-const propertyNames_1 = __nccwpck_require__(9053);
-const additionalProperties_1 = __nccwpck_require__(4851);
-const properties_1 = __nccwpck_require__(3821);
-const patternProperties_1 = __nccwpck_require__(656);
-const not_1 = __nccwpck_require__(559);
-const anyOf_1 = __nccwpck_require__(9286);
-const oneOf_1 = __nccwpck_require__(7630);
-const allOf_1 = __nccwpck_require__(9406);
-const if_1 = __nccwpck_require__(7706);
-const thenElse_1 = __nccwpck_require__(8720);
-const applicator = [
-    // any
-    not_1.default,
-    anyOf_1.default,
-    oneOf_1.default,
-    allOf_1.default,
-    if_1.default,
-    thenElse_1.default,
+const additionalItems_1 = __nccwpck_require__(7858);
+const prefixItems_1 = __nccwpck_require__(2351);
+const items_1 = __nccwpck_require__(5145);
+const items2020_1 = __nccwpck_require__(4563);
+const contains_1 = __nccwpck_require__(9800);
+const dependencies_1 = __nccwpck_require__(6875);
+const propertyNames_1 = __nccwpck_require__(9499);
+const additionalProperties_1 = __nccwpck_require__(5140);
+const properties_1 = __nccwpck_require__(9992);
+const patternProperties_1 = __nccwpck_require__(3712);
+const not_1 = __nccwpck_require__(2660);
+const anyOf_1 = __nccwpck_require__(6221);
+const oneOf_1 = __nccwpck_require__(8947);
+const allOf_1 = __nccwpck_require__(5313);
+const if_1 = __nccwpck_require__(6414);
+const thenElse_1 = __nccwpck_require__(8327);
+function getApplicator(draft2020 = false) {
+    const applicator = [
+        // any
+        not_1.default,
+        anyOf_1.default,
+        oneOf_1.default,
+        allOf_1.default,
+        if_1.default,
+        thenElse_1.default,
+        // object
+        propertyNames_1.default,
+        additionalProperties_1.default,
+        dependencies_1.default,
+        properties_1.default,
+        patternProperties_1.default,
+    ];
     // array
-    additionalItems_1.default,
-    items_1.default,
-    contains_1.default,
-    // object
-    propertyNames_1.default,
-    additionalProperties_1.default,
-    dependencies_1.default,
-    properties_1.default,
-    patternProperties_1.default,
-];
-exports.default = applicator;
+    if (draft2020)
+        applicator.push(prefixItems_1.default, items2020_1.default);
+    else
+        applicator.push(additionalItems_1.default, items_1.default);
+    applicator.push(contains_1.default);
+    return applicator;
+}
+exports.default = getApplicator;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 
-/***/ 1270:
+/***/ 5145:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
-const validate_1 = __nccwpck_require__(1262);
-const code_1 = __nccwpck_require__(3570);
+exports.validateTuple = void 0;
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const code_1 = __nccwpck_require__(5481);
 const def = {
     keyword: "items",
     type: "array",
     schemaType: ["object", "array", "boolean"],
     before: "uniqueItems",
     code(cxt) {
-        const { gen, schema, it } = cxt;
-        if (Array.isArray(schema)) {
-            if (it.opts.unevaluated && schema.length && it.items !== true) {
-                it.items = util_1.mergeEvaluated.items(gen, schema.length, it.items);
-            }
-            validateTuple(schema);
-        }
-        else {
-            it.items = true;
-            if (util_1.alwaysValidSchema(it, schema))
-                return;
-            cxt.ok(code_1.validateArray(cxt));
-        }
-        function validateTuple(schArr) {
-            const { parentSchema, data } = cxt;
-            if (it.opts.strictTuples && !fullTupleSchema(schArr.length, parentSchema)) {
-                const msg = `"items" is ${schArr.length}-tuple, but minItems or maxItems/additionalItems are not specified or different`;
-                validate_1.checkStrictMode(it, msg, it.opts.strictTuples);
-            }
-            const valid = gen.name("valid");
-            const len = gen.const("len", codegen_1._ `${data}.length`);
-            schArr.forEach((sch, i) => {
-                if (util_1.alwaysValidSchema(it, sch))
-                    return;
-                gen.if(codegen_1._ `${len} > ${i}`, () => cxt.subschema({
-                    keyword: "items",
-                    schemaProp: i,
-                    dataProp: i,
-                }, valid));
-                cxt.ok(valid);
-            });
-        }
+        const { schema, it } = cxt;
+        if (Array.isArray(schema))
+            return validateTuple(cxt, "additionalItems", schema);
+        it.items = true;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+            return;
+        cxt.ok((0, code_1.validateArray)(cxt));
     },
 };
-function fullTupleSchema(len, sch) {
-    return len === sch.minItems && (len === sch.maxItems || sch.additionalItems === false);
+function validateTuple(cxt, extraItems, schArr = cxt.schema) {
+    const { gen, parentSchema, data, keyword, it } = cxt;
+    checkStrictTuple(parentSchema);
+    if (it.opts.unevaluated && schArr.length && it.items !== true) {
+        it.items = util_1.mergeEvaluated.items(gen, schArr.length, it.items);
+    }
+    const valid = gen.name("valid");
+    const len = gen.const("len", (0, codegen_1._) `${data}.length`);
+    schArr.forEach((sch, i) => {
+        if ((0, util_1.alwaysValidSchema)(it, sch))
+            return;
+        gen.if((0, codegen_1._) `${len} > ${i}`, () => cxt.subschema({
+            keyword,
+            schemaProp: i,
+            dataProp: i,
+        }, valid));
+        cxt.ok(valid);
+    });
+    function checkStrictTuple(sch) {
+        const { opts, errSchemaPath } = it;
+        const l = schArr.length;
+        const fullTuple = l === sch.minItems && (l === sch.maxItems || sch[extraItems] === false);
+        if (opts.strictTuples && !fullTuple) {
+            const msg = `"${keyword}" is ${l}-tuple, but minItems or maxItems/${extraItems} are not specified or different at path "${errSchemaPath}"`;
+            (0, util_1.checkStrictMode)(it, msg, opts.strictTuples);
+        }
+    }
 }
+exports.validateTuple = validateTuple;
 exports.default = def;
 //# sourceMappingURL=items.js.map
 
 /***/ }),
 
-/***/ 559:
+/***/ 4563:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const util_1 = __nccwpck_require__(3582);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const code_1 = __nccwpck_require__(5481);
+const additionalItems_1 = __nccwpck_require__(7858);
+const error = {
+    message: ({ params: { len } }) => (0, codegen_1.str) `must NOT have more than ${len} items`,
+    params: ({ params: { len } }) => (0, codegen_1._) `{limit: ${len}}`,
+};
+const def = {
+    keyword: "items",
+    type: "array",
+    schemaType: ["object", "boolean"],
+    before: "uniqueItems",
+    error,
+    code(cxt) {
+        const { schema, parentSchema, it } = cxt;
+        const { prefixItems } = parentSchema;
+        it.items = true;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+            return;
+        if (prefixItems)
+            (0, additionalItems_1.validateAdditionalItems)(cxt, prefixItems);
+        else
+            cxt.ok((0, code_1.validateArray)(cxt));
+    },
+};
+exports.default = def;
+//# sourceMappingURL=items2020.js.map
+
+/***/ }),
+
+/***/ 2660:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const util_1 = __nccwpck_require__(1212);
 const def = {
     keyword: "not",
     schemaType: ["object", "boolean"],
     trackErrors: true,
     code(cxt) {
         const { gen, schema, it } = cxt;
-        if (util_1.alwaysValidSchema(it, schema)) {
+        if ((0, util_1.alwaysValidSchema)(it, schema)) {
             cxt.fail();
             return;
         }
@@ -6858,28 +8209,26 @@ const def = {
             createErrors: false,
             allErrors: false,
         }, valid);
-        cxt.result(valid, () => cxt.error(), () => cxt.reset());
+        cxt.failResult(valid, () => cxt.reset(), () => cxt.error());
     },
-    error: {
-        message: "should NOT be valid",
-    },
+    error: { message: "must NOT be valid" },
 };
 exports.default = def;
 //# sourceMappingURL=not.js.map
 
 /***/ }),
 
-/***/ 7630:
+/***/ 8947:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 const error = {
-    message: "should match exactly one schema in oneOf",
-    params: ({ params }) => codegen_1._ `{passingSchemas: ${params.passing}}`,
+    message: "must match exactly one schema in oneOf",
+    params: ({ params }) => (0, codegen_1._) `{passingSchemas: ${params.passing}}`,
 };
 const def = {
     keyword: "oneOf",
@@ -6887,10 +8236,12 @@ const def = {
     trackErrors: true,
     error,
     code(cxt) {
-        const { gen, schema, it } = cxt;
+        const { gen, schema, parentSchema, it } = cxt;
         /* istanbul ignore if */
         if (!Array.isArray(schema))
             throw new Error("ajv implementation error");
+        if (it.opts.discriminator && parentSchema.discriminator)
+            return;
         const schArr = schema;
         const valid = gen.let("valid", false);
         const passing = gen.let("passing", null);
@@ -6902,7 +8253,7 @@ const def = {
         function validateOneOf() {
             schArr.forEach((sch, i) => {
                 let schCxt;
-                if (util_1.alwaysValidSchema(it, sch)) {
+                if ((0, util_1.alwaysValidSchema)(it, sch)) {
                     gen.var(schValid, true);
                 }
                 else {
@@ -6914,9 +8265,9 @@ const def = {
                 }
                 if (i > 0) {
                     gen
-                        .if(codegen_1._ `${schValid} && ${valid}`)
+                        .if((0, codegen_1._) `${schValid} && ${valid}`)
                         .assign(valid, false)
-                        .assign(passing, codegen_1._ `[${passing}, ${i}]`)
+                        .assign(passing, (0, codegen_1._) `[${passing}, ${i}]`)
                         .else();
                 }
                 gen.if(schValid, () => {
@@ -6934,17 +8285,16 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 656:
+/***/ 3712:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const code_1 = __nccwpck_require__(3570);
-const codegen_1 = __nccwpck_require__(4016);
-const subschema_1 = __nccwpck_require__(9902);
-const validate_1 = __nccwpck_require__(1262);
-const util_1 = __nccwpck_require__(3582);
+const code_1 = __nccwpck_require__(5481);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const util_2 = __nccwpck_require__(1212);
 const def = {
     keyword: "patternProperties",
     type: "object",
@@ -6952,14 +8302,17 @@ const def = {
     code(cxt) {
         const { gen, schema, data, parentSchema, it } = cxt;
         const { opts } = it;
-        const patterns = code_1.schemaProperties(it, schema);
-        // TODO mark properties matching patterns with always valid schemas as evaluated
-        if (patterns.length === 0)
+        const patterns = (0, code_1.allSchemaProperties)(schema);
+        const alwaysValidPatterns = patterns.filter((p) => (0, util_1.alwaysValidSchema)(it, schema[p]));
+        if (patterns.length === 0 ||
+            (alwaysValidPatterns.length === patterns.length &&
+                (!it.opts.unevaluated || it.props === true))) {
             return;
-        const checkProperties = opts.strict && !opts.allowMatchingProperties && parentSchema.properties;
+        }
+        const checkProperties = opts.strictSchema && !opts.allowMatchingProperties && parentSchema.properties;
         const valid = gen.name("valid");
         if (it.props !== true && !(it.props instanceof codegen_1.Name)) {
-            it.props = util_1.evaluatedPropsToName(gen, it.props);
+            it.props = (0, util_2.evaluatedPropsToName)(gen, it.props);
         }
         const { props } = it;
         validatePatternProperties();
@@ -6980,26 +8333,29 @@ const def = {
         function checkMatchingProperties(pat) {
             for (const prop in checkProperties) {
                 if (new RegExp(pat).test(prop)) {
-                    validate_1.checkStrictMode(it, `property ${prop} matches pattern ${pat} (use allowMatchingProperties)`);
+                    (0, util_1.checkStrictMode)(it, `property ${prop} matches pattern ${pat} (use allowMatchingProperties)`);
                 }
             }
         }
         function validateProperties(pat) {
             gen.forIn("key", data, (key) => {
-                gen.if(codegen_1._ `${code_1.usePattern(gen, pat)}.test(${key})`, () => {
-                    cxt.subschema({
-                        keyword: "patternProperties",
-                        schemaProp: pat,
-                        dataProp: key,
-                        dataPropType: subschema_1.Type.Str,
-                    }, valid);
-                    if (it.opts.unevaluated && props !== true) {
-                        gen.assign(codegen_1._ `${props}[${key}]`, true);
+                gen.if((0, codegen_1._) `${(0, code_1.usePattern)(cxt, pat)}.test(${key})`, () => {
+                    const alwaysValid = alwaysValidPatterns.includes(pat);
+                    if (!alwaysValid) {
+                        cxt.subschema({
+                            keyword: "patternProperties",
+                            schemaProp: pat,
+                            dataProp: key,
+                            dataPropType: util_2.Type.Str,
+                        }, valid);
                     }
-                    else if (!it.allErrors) {
+                    if (it.opts.unevaluated && props !== true) {
+                        gen.assign((0, codegen_1._) `${props}[${key}]`, true);
+                    }
+                    else if (!alwaysValid && !it.allErrors) {
                         // can short-circuit if `unevaluatedProperties` is not supported (opts.next === false)
                         // or if all properties were evaluated (props === true)
-                        gen.if(codegen_1.not(valid), () => gen.break());
+                        gen.if((0, codegen_1.not)(valid), () => gen.break());
                     }
                 });
             });
@@ -7011,16 +8367,35 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 3821:
+/***/ 2351:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const context_1 = __nccwpck_require__(8709);
-const code_1 = __nccwpck_require__(3570);
-const util_1 = __nccwpck_require__(3582);
-const additionalProperties_1 = __nccwpck_require__(4851);
+const items_1 = __nccwpck_require__(5145);
+const def = {
+    keyword: "prefixItems",
+    type: "array",
+    schemaType: ["array"],
+    before: "uniqueItems",
+    code: (cxt) => (0, items_1.validateTuple)(cxt, "items"),
+};
+exports.default = def;
+//# sourceMappingURL=prefixItems.js.map
+
+/***/ }),
+
+/***/ 9992:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const validate_1 = __nccwpck_require__(4977);
+const code_1 = __nccwpck_require__(5481);
+const util_1 = __nccwpck_require__(1212);
+const additionalProperties_1 = __nccwpck_require__(5140);
 const def = {
     keyword: "properties",
     type: "object",
@@ -7028,16 +8403,16 @@ const def = {
     code(cxt) {
         const { gen, schema, parentSchema, data, it } = cxt;
         if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === undefined) {
-            additionalProperties_1.default.code(new context_1.default(it, additionalProperties_1.default, "additionalProperties"));
+            additionalProperties_1.default.code(new validate_1.KeywordCxt(it, additionalProperties_1.default, "additionalProperties"));
         }
-        const allProps = code_1.allSchemaProperties(schema);
+        const allProps = (0, code_1.allSchemaProperties)(schema);
         for (const prop of allProps) {
             it.definedProperties.add(prop);
         }
         if (it.opts.unevaluated && allProps.length && it.props !== true) {
-            it.props = util_1.mergeEvaluated.props(gen, util_1.toHash(allProps), it.props);
+            it.props = util_1.mergeEvaluated.props(gen, (0, util_1.toHash)(allProps), it.props);
         }
-        const properties = allProps.filter((p) => !util_1.alwaysValidSchema(it, schema[p]));
+        const properties = allProps.filter((p) => !(0, util_1.alwaysValidSchema)(it, schema[p]));
         if (properties.length === 0)
             return;
         const valid = gen.name("valid");
@@ -7046,7 +8421,7 @@ const def = {
                 applyPropertySchema(prop);
             }
             else {
-                gen.if(code_1.propertyInData(gen, data, prop, it.opts.ownProperties));
+                gen.if((0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties));
                 applyPropertySchema(prop);
                 if (!it.allErrors)
                     gen.else().var(valid, true);
@@ -7072,17 +8447,17 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 9053:
+/***/ 9499:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 const error = {
-    message: ({ params }) => codegen_1.str `property name '${params.propertyName}' is invalid`,
-    params: ({ params }) => codegen_1._ `{propertyName: ${params.propertyName}}`,
+    message: "property name must be valid",
+    params: ({ params }) => (0, codegen_1._) `{propertyName: ${params.propertyName}}`,
 };
 const def = {
     keyword: "propertyNames",
@@ -7091,7 +8466,7 @@ const def = {
     error,
     code(cxt) {
         const { gen, schema, data, it } = cxt;
-        if (util_1.alwaysValidSchema(it, schema))
+        if ((0, util_1.alwaysValidSchema)(it, schema))
             return;
         const valid = gen.name("valid");
         gen.forIn("key", data, (key) => {
@@ -7103,7 +8478,7 @@ const def = {
                 propertyName: key,
                 compositeRule: true,
             }, valid);
-            gen.if(codegen_1.not(valid), () => {
+            gen.if((0, codegen_1.not)(valid), () => {
                 cxt.error(true);
                 if (!it.allErrors)
                     gen.break();
@@ -7117,19 +8492,19 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 8720:
+/***/ 8327:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const validate_1 = __nccwpck_require__(1262);
+const util_1 = __nccwpck_require__(1212);
 const def = {
     keyword: ["then", "else"],
     schemaType: ["object", "boolean"],
     code({ keyword, parentSchema, it }) {
         if (parentSchema.if === undefined)
-            validate_1.checkStrictMode(it, `"${keyword}" without "if" is ignored`);
+            (0, util_1.checkStrictMode)(it, `"${keyword}" without "if" is ignored`);
     },
 };
 exports.default = def;
@@ -7137,27 +8512,27 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 3570:
+/***/ 5481:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
-const codegen_1 = __nccwpck_require__(4016);
-const util_1 = __nccwpck_require__(3582);
-const subschema_1 = __nccwpck_require__(9902);
-const names_1 = __nccwpck_require__(6873);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const names_1 = __nccwpck_require__(8780);
+const util_2 = __nccwpck_require__(1212);
 function checkReportMissingProp(cxt, prop) {
     const { gen, data, it } = cxt;
     gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
-        cxt.setParams({ missingProperty: codegen_1._ `${prop}` }, true);
+        cxt.setParams({ missingProperty: (0, codegen_1._) `${prop}` }, true);
         cxt.error();
     });
 }
 exports.checkReportMissingProp = checkReportMissingProp;
 function checkMissingProp({ gen, data, it: { opts } }, properties, missing) {
-    return codegen_1.or(...properties.map((prop) => codegen_1.and(noPropertyInData(gen, data, prop, opts.ownProperties), codegen_1._ `${missing} = ${prop}`)));
+    return (0, codegen_1.or)(...properties.map((prop) => (0, codegen_1.and)(noPropertyInData(gen, data, prop, opts.ownProperties), (0, codegen_1._) `${missing} = ${prop}`)));
 }
 exports.checkMissingProp = checkMissingProp;
 function reportMissingProp(cxt, missing) {
@@ -7169,22 +8544,22 @@ function hasPropFunc(gen) {
     return gen.scopeValue("func", {
         // eslint-disable-next-line @typescript-eslint/unbound-method
         ref: Object.prototype.hasOwnProperty,
-        code: codegen_1._ `Object.prototype.hasOwnProperty`,
+        code: (0, codegen_1._) `Object.prototype.hasOwnProperty`,
     });
 }
 exports.hasPropFunc = hasPropFunc;
 function isOwnProperty(gen, data, property) {
-    return codegen_1._ `${hasPropFunc(gen)}.call(${data}, ${property})`;
+    return (0, codegen_1._) `${hasPropFunc(gen)}.call(${data}, ${property})`;
 }
 exports.isOwnProperty = isOwnProperty;
 function propertyInData(gen, data, property, ownProperties) {
-    const cond = codegen_1._ `${data}${codegen_1.getProperty(property)} !== undefined`;
-    return ownProperties ? codegen_1._ `${cond} && ${isOwnProperty(gen, data, property)}` : cond;
+    const cond = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(property)} !== undefined`;
+    return ownProperties ? (0, codegen_1._) `${cond} && ${isOwnProperty(gen, data, property)}` : cond;
 }
 exports.propertyInData = propertyInData;
 function noPropertyInData(gen, data, property, ownProperties) {
-    const cond = codegen_1._ `${data}${codegen_1.getProperty(property)} === undefined`;
-    return ownProperties ? codegen_1.or(cond, codegen_1.not(isOwnProperty(gen, data, property))) : cond;
+    const cond = (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(property)} === undefined`;
+    return ownProperties ? (0, codegen_1.or)(cond, (0, codegen_1.not)(isOwnProperty(gen, data, property))) : cond;
 }
 exports.noPropertyInData = noPropertyInData;
 function allSchemaProperties(schemaMap) {
@@ -7192,28 +8567,32 @@ function allSchemaProperties(schemaMap) {
 }
 exports.allSchemaProperties = allSchemaProperties;
 function schemaProperties(it, schemaMap) {
-    return allSchemaProperties(schemaMap).filter((p) => !util_1.alwaysValidSchema(it, schemaMap[p]));
+    return allSchemaProperties(schemaMap).filter((p) => !(0, util_1.alwaysValidSchema)(it, schemaMap[p]));
 }
 exports.schemaProperties = schemaProperties;
 function callValidateCode({ schemaCode, data, it: { gen, topSchemaRef, schemaPath, errorPath }, it }, func, context, passSchema) {
-    const dataAndSchema = passSchema ? codegen_1._ `${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data;
+    const dataAndSchema = passSchema ? (0, codegen_1._) `${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data;
     const valCxt = [
-        [names_1.default.dataPath, codegen_1.strConcat(names_1.default.dataPath, errorPath)],
+        [names_1.default.instancePath, (0, codegen_1.strConcat)(names_1.default.instancePath, errorPath)],
         [names_1.default.parentData, it.parentData],
         [names_1.default.parentDataProperty, it.parentDataProperty],
         [names_1.default.rootData, names_1.default.rootData],
     ];
     if (it.opts.dynamicRef)
         valCxt.push([names_1.default.dynamicAnchors, names_1.default.dynamicAnchors]);
-    const args = codegen_1._ `${dataAndSchema}, ${gen.object(...valCxt)}`;
-    return context !== codegen_1.nil ? codegen_1._ `${func}.call(${context}, ${args})` : codegen_1._ `${func}(${args})`;
+    const args = (0, codegen_1._) `${dataAndSchema}, ${gen.object(...valCxt)}`;
+    return context !== codegen_1.nil ? (0, codegen_1._) `${func}.call(${context}, ${args})` : (0, codegen_1._) `${func}(${args})`;
 }
 exports.callValidateCode = callValidateCode;
-function usePattern(gen, pattern) {
+const newRegExp = (0, codegen_1._) `new RegExp`;
+function usePattern({ gen, it: { opts } }, pattern) {
+    const u = opts.unicodeRegExp ? "u" : "";
+    const { regExp } = opts.code;
+    const rx = regExp(pattern, u);
     return gen.scopeValue("pattern", {
-        key: pattern,
-        ref: new RegExp(pattern, "u"),
-        code: codegen_1._ `new RegExp(${pattern}, "u")`,
+        key: rx.toString(),
+        ref: rx,
+        code: (0, codegen_1._) `${regExp.code === "new RegExp" ? newRegExp : (0, util_2.useFunc)(gen, regExp)}(${pattern}, ${u})`,
     });
 }
 exports.usePattern = usePattern;
@@ -7229,14 +8608,14 @@ function validateArray(cxt) {
     validateItems(() => gen.break());
     return valid;
     function validateItems(notValid) {
-        const len = gen.const("len", codegen_1._ `${data}.length`);
+        const len = gen.const("len", (0, codegen_1._) `${data}.length`);
         gen.forRange("i", 0, len, (i) => {
             cxt.subschema({
                 keyword,
                 dataProp: i,
-                dataPropType: subschema_1.Type.Num,
+                dataPropType: util_1.Type.Num,
             }, valid);
-            gen.if(codegen_1.not(valid), notValid);
+            gen.if((0, codegen_1.not)(valid), notValid);
         });
     }
 }
@@ -7246,7 +8625,7 @@ function validateUnion(cxt) {
     /* istanbul ignore if */
     if (!Array.isArray(schema))
         throw new Error("ajv implementation error");
-    const alwaysValid = schema.some((sch) => util_1.alwaysValidSchema(it, sch));
+    const alwaysValid = schema.some((sch) => (0, util_1.alwaysValidSchema)(it, sch));
     if (alwaysValid && !it.opts.unevaluated)
         return;
     const valid = gen.let("valid", false);
@@ -7257,12 +8636,12 @@ function validateUnion(cxt) {
             schemaProp: i,
             compositeRule: true,
         }, schValid);
-        gen.assign(valid, codegen_1._ `${valid} || ${schValid}`);
+        gen.assign(valid, (0, codegen_1._) `${valid} || ${schValid}`);
         const merged = cxt.mergeValidEvaluated(schCxt, schValid);
         // can short-circuit if `unevaluatedProperties/Items` not supported (opts.unevaluated !== true)
         // or if all properties and items were evaluated (it.props === true && it.items === true)
         if (!merged)
-            gen.if(codegen_1.not(valid));
+            gen.if((0, codegen_1.not)(valid));
     }));
     cxt.result(valid, () => cxt.reset(), () => cxt.error(true));
 }
@@ -7271,7 +8650,7 @@ exports.validateUnion = validateUnion;
 
 /***/ }),
 
-/***/ 1213:
+/***/ 8598:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -7288,14 +8667,14 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 7805:
+/***/ 7173:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const id_1 = __nccwpck_require__(1213);
-const ref_1 = __nccwpck_require__(4513);
+const id_1 = __nccwpck_require__(8598);
+const ref_1 = __nccwpck_require__(1125);
 const core = [
     "$schema",
     "$id",
@@ -7311,54 +8690,53 @@ exports.default = core;
 
 /***/ }),
 
-/***/ 4513:
+/***/ 1125:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.callRef = exports.getValidate = void 0;
-const error_classes_1 = __nccwpck_require__(2118);
-const code_1 = __nccwpck_require__(3570);
-const codegen_1 = __nccwpck_require__(4016);
-const names_1 = __nccwpck_require__(6873);
-const compile_1 = __nccwpck_require__(9303);
-const util_1 = __nccwpck_require__(3582);
+const ref_error_1 = __nccwpck_require__(280);
+const code_1 = __nccwpck_require__(5481);
+const codegen_1 = __nccwpck_require__(232);
+const names_1 = __nccwpck_require__(8780);
+const compile_1 = __nccwpck_require__(2205);
+const util_1 = __nccwpck_require__(1212);
 const def = {
     keyword: "$ref",
     schemaType: "string",
     code(cxt) {
-        const { gen, schema, it } = cxt;
+        const { gen, schema: $ref, it } = cxt;
         const { baseId, schemaEnv: env, validateName, opts, self } = it;
-        // TODO See comment in dynamicRef.ts
-        // This has to be improved to resolve #815.
-        if (schema === "#" || schema === "#/")
+        const { root } = env;
+        if (($ref === "#" || $ref === "#/") && baseId === root.baseId)
             return callRootRef();
-        const schOrEnv = compile_1.resolveRef.call(self, env.root, baseId, schema);
+        const schOrEnv = compile_1.resolveRef.call(self, root, baseId, $ref);
         if (schOrEnv === undefined)
-            throw new error_classes_1.MissingRefError(baseId, schema);
+            throw new ref_error_1.default(it.opts.uriResolver, baseId, $ref);
         if (schOrEnv instanceof compile_1.SchemaEnv)
             return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-            if (env === env.root)
+            if (env === root)
                 return callRef(cxt, validateName, env, env.$async);
-            const rootName = gen.scopeValue("root", { ref: env.root });
-            return callRef(cxt, codegen_1._ `${rootName}.validate`, env.root, env.root.$async);
+            const rootName = gen.scopeValue("root", { ref: root });
+            return callRef(cxt, (0, codegen_1._) `${rootName}.validate`, root, root.$async);
         }
         function callValidate(sch) {
             const v = getValidate(cxt, sch);
             callRef(cxt, v, sch, sch.$async);
         }
         function inlineRefSchema(sch) {
-            const schName = gen.scopeValue("schema", opts.code.source === true ? { ref: sch, code: codegen_1.stringify(sch) } : { ref: sch });
+            const schName = gen.scopeValue("schema", opts.code.source === true ? { ref: sch, code: (0, codegen_1.stringify)(sch) } : { ref: sch });
             const valid = gen.name("valid");
             const schCxt = cxt.subschema({
                 schema: sch,
                 dataTypes: [],
                 schemaPath: codegen_1.nil,
                 topSchemaRef: schName,
-                errSchemaPath: schema,
+                errSchemaPath: $ref,
             }, valid);
             cxt.mergeEvaluated(schCxt);
             cxt.ok(valid);
@@ -7369,7 +8747,7 @@ function getValidate(cxt, sch) {
     const { gen } = cxt;
     return sch.validate
         ? gen.scopeValue("validate", { ref: sch.validate })
-        : codegen_1._ `${gen.scopeValue("wrapper", { ref: sch })}.validate`;
+        : (0, codegen_1._) `${gen.scopeValue("wrapper", { ref: sch })}.validate`;
 }
 exports.getValidate = getValidate;
 function callRef(cxt, v, sch, $async) {
@@ -7385,12 +8763,12 @@ function callRef(cxt, v, sch, $async) {
             throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
-            gen.code(codegen_1._ `await ${code_1.callValidateCode(cxt, v, passCxt)}`);
+            gen.code((0, codegen_1._) `await ${(0, code_1.callValidateCode)(cxt, v, passCxt)}`);
             addEvaluatedFrom(v); // TODO will not work with async, it has to be returned with the result
             if (!allErrors)
                 gen.assign(valid, true);
         }, (e) => {
-            gen.if(codegen_1._ `!(${e} instanceof ${it.ValidationError})`, () => gen.throw(e));
+            gen.if((0, codegen_1._) `!(${e} instanceof ${it.ValidationError})`, () => gen.throw(e));
             addErrorsFrom(e);
             if (!allErrors)
                 gen.assign(valid, false);
@@ -7398,12 +8776,12 @@ function callRef(cxt, v, sch, $async) {
         cxt.ok(valid);
     }
     function callSyncRef() {
-        cxt.result(code_1.callValidateCode(cxt, v, passCxt), () => addEvaluatedFrom(v), () => addErrorsFrom(v));
+        cxt.result((0, code_1.callValidateCode)(cxt, v, passCxt), () => addEvaluatedFrom(v), () => addErrorsFrom(v));
     }
     function addErrorsFrom(source) {
-        const errs = codegen_1._ `${source}.errors`;
-        gen.assign(names_1.default.vErrors, codegen_1._ `${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`); // TODO tagged
-        gen.assign(names_1.default.errors, codegen_1._ `${names_1.default.vErrors}.length`);
+        const errs = (0, codegen_1._) `${source}.errors`;
+        gen.assign(names_1.default.vErrors, (0, codegen_1._) `${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`); // TODO tagged
+        gen.assign(names_1.default.errors, (0, codegen_1._) `${names_1.default.vErrors}.length`);
     }
     function addEvaluatedFrom(source) {
         var _a;
@@ -7418,7 +8796,7 @@ function callRef(cxt, v, sch, $async) {
                 }
             }
             else {
-                const props = gen.var("props", codegen_1._ `${source}.evaluated.props`);
+                const props = gen.var("props", (0, codegen_1._) `${source}.evaluated.props`);
                 it.props = util_1.mergeEvaluated.props(gen, props, it.props, codegen_1.Name);
             }
         }
@@ -7429,7 +8807,7 @@ function callRef(cxt, v, sch, $async) {
                 }
             }
             else {
-                const items = gen.var("items", codegen_1._ `${source}.evaluated.items`);
+                const items = gen.var("items", (0, codegen_1._) `${source}.evaluated.items`);
                 it.items = util_1.mergeEvaluated.items(gen, items, it.items, codegen_1.Name);
             }
         }
@@ -7441,21 +8819,144 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 9180:
+/***/ 885:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nccwpck_require__(7805);
-const validation_1 = __nccwpck_require__(1250);
-const applicator_1 = __nccwpck_require__(364);
-const format_1 = __nccwpck_require__(4653);
-const metadata_1 = __nccwpck_require__(411);
+const codegen_1 = __nccwpck_require__(232);
+const types_1 = __nccwpck_require__(1452);
+const compile_1 = __nccwpck_require__(2205);
+const util_1 = __nccwpck_require__(1212);
+const error = {
+    message: ({ params: { discrError, tagName } }) => discrError === types_1.DiscrError.Tag
+        ? `tag "${tagName}" must be string`
+        : `value of tag "${tagName}" must be in oneOf`,
+    params: ({ params: { discrError, tag, tagName } }) => (0, codegen_1._) `{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`,
+};
+const def = {
+    keyword: "discriminator",
+    type: "object",
+    schemaType: "object",
+    error,
+    code(cxt) {
+        const { gen, data, schema, parentSchema, it } = cxt;
+        const { oneOf } = parentSchema;
+        if (!it.opts.discriminator) {
+            throw new Error("discriminator: requires discriminator option");
+        }
+        const tagName = schema.propertyName;
+        if (typeof tagName != "string")
+            throw new Error("discriminator: requires propertyName");
+        if (schema.mapping)
+            throw new Error("discriminator: mapping is not supported");
+        if (!oneOf)
+            throw new Error("discriminator: requires oneOf keyword");
+        const valid = gen.let("valid", false);
+        const tag = gen.const("tag", (0, codegen_1._) `${data}${(0, codegen_1.getProperty)(tagName)}`);
+        gen.if((0, codegen_1._) `typeof ${tag} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag, tagName }));
+        cxt.ok(valid);
+        function validateMapping() {
+            const mapping = getMapping();
+            gen.if(false);
+            for (const tagValue in mapping) {
+                gen.elseIf((0, codegen_1._) `${tag} === ${tagValue}`);
+                gen.assign(valid, applyTagSchema(mapping[tagValue]));
+            }
+            gen.else();
+            cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag, tagName });
+            gen.endIf();
+        }
+        function applyTagSchema(schemaProp) {
+            const _valid = gen.name("valid");
+            const schCxt = cxt.subschema({ keyword: "oneOf", schemaProp }, _valid);
+            cxt.mergeEvaluated(schCxt, codegen_1.Name);
+            return _valid;
+        }
+        function getMapping() {
+            var _a;
+            const oneOfMapping = {};
+            const topRequired = hasRequired(parentSchema);
+            let tagRequired = true;
+            for (let i = 0; i < oneOf.length; i++) {
+                let sch = oneOf[i];
+                if ((sch === null || sch === void 0 ? void 0 : sch.$ref) && !(0, util_1.schemaHasRulesButRef)(sch, it.self.RULES)) {
+                    sch = compile_1.resolveRef.call(it.self, it.schemaEnv.root, it.baseId, sch === null || sch === void 0 ? void 0 : sch.$ref);
+                    if (sch instanceof compile_1.SchemaEnv)
+                        sch = sch.schema;
+                }
+                const propSch = (_a = sch === null || sch === void 0 ? void 0 : sch.properties) === null || _a === void 0 ? void 0 : _a[tagName];
+                if (typeof propSch != "object") {
+                    throw new Error(`discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName}"`);
+                }
+                tagRequired = tagRequired && (topRequired || hasRequired(sch));
+                addMappings(propSch, i);
+            }
+            if (!tagRequired)
+                throw new Error(`discriminator: "${tagName}" must be required`);
+            return oneOfMapping;
+            function hasRequired({ required }) {
+                return Array.isArray(required) && required.includes(tagName);
+            }
+            function addMappings(sch, i) {
+                if (sch.const) {
+                    addMapping(sch.const, i);
+                }
+                else if (sch.enum) {
+                    for (const tagValue of sch.enum) {
+                        addMapping(tagValue, i);
+                    }
+                }
+                else {
+                    throw new Error(`discriminator: "properties/${tagName}" must have "const" or "enum"`);
+                }
+            }
+            function addMapping(tagValue, i) {
+                if (typeof tagValue != "string" || tagValue in oneOfMapping) {
+                    throw new Error(`discriminator: "${tagName}" values must be unique strings`);
+                }
+                oneOfMapping[tagValue] = i;
+            }
+        }
+    },
+};
+exports.default = def;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 1452:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiscrError = void 0;
+var DiscrError;
+(function (DiscrError) {
+    DiscrError["Tag"] = "tag";
+    DiscrError["Mapping"] = "mapping";
+})(DiscrError = exports.DiscrError || (exports.DiscrError = {}));
+//# sourceMappingURL=types.js.map
+
+/***/ }),
+
+/***/ 2752:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(7173);
+const validation_1 = __nccwpck_require__(4277);
+const applicator_1 = __nccwpck_require__(1199);
+const format_1 = __nccwpck_require__(4251);
+const metadata_1 = __nccwpck_require__(678);
 const draft7Vocabularies = [
     core_1.default,
     validation_1.default,
-    applicator_1.default,
+    (0, applicator_1.default)(),
     format_1.default,
     metadata_1.metadataVocabulary,
     metadata_1.contentVocabulary,
@@ -7465,16 +8966,16 @@ exports.default = draft7Vocabularies;
 
 /***/ }),
 
-/***/ 9785:
+/***/ 2621:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
+const codegen_1 = __nccwpck_require__(232);
 const error = {
-    message: ({ schemaCode }) => codegen_1.str `should match format "${schemaCode}"`,
-    params: ({ schemaCode }) => codegen_1._ `{format: ${schemaCode}}`,
+    message: ({ schemaCode }) => (0, codegen_1.str) `must match format "${schemaCode}"`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{format: ${schemaCode}}`,
 };
 const def = {
     keyword: "format",
@@ -7496,23 +8997,23 @@ const def = {
                 ref: self.formats,
                 code: opts.code.formats,
             });
-            const fDef = gen.const("fDef", codegen_1._ `${fmts}[${schemaCode}]`);
+            const fDef = gen.const("fDef", (0, codegen_1._) `${fmts}[${schemaCode}]`);
             const fType = gen.let("fType");
             const format = gen.let("format");
             // TODO simplify
-            gen.if(codegen_1._ `typeof ${fDef} == "object" && !(${fDef} instanceof RegExp)`, () => gen.assign(fType, codegen_1._ `${fDef}.type || "string"`).assign(format, codegen_1._ `${fDef}.validate`), () => gen.assign(fType, codegen_1._ `"string"`).assign(format, fDef));
-            cxt.fail$data(codegen_1.or(unknownFmt(), invalidFmt()));
+            gen.if((0, codegen_1._) `typeof ${fDef} == "object" && !(${fDef} instanceof RegExp)`, () => gen.assign(fType, (0, codegen_1._) `${fDef}.type || "string"`).assign(format, (0, codegen_1._) `${fDef}.validate`), () => gen.assign(fType, (0, codegen_1._) `"string"`).assign(format, fDef));
+            cxt.fail$data((0, codegen_1.or)(unknownFmt(), invalidFmt()));
             function unknownFmt() {
-                if (opts.strict === false)
+                if (opts.strictSchema === false)
                     return codegen_1.nil;
-                return codegen_1._ `${schemaCode} && !${format}`;
+                return (0, codegen_1._) `${schemaCode} && !${format}`;
             }
             function invalidFmt() {
                 const callFormat = schemaEnv.$async
-                    ? codegen_1._ `(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))`
-                    : codegen_1._ `${format}(${data})`;
-                const validData = codegen_1._ `(typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data}))`;
-                return codegen_1._ `${format} && ${format} !== true && ${fType} === ${ruleType} && !${validData}`;
+                    ? (0, codegen_1._) `(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))`
+                    : (0, codegen_1._) `${format}(${data})`;
+                const validData = (0, codegen_1._) `(typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data}))`;
+                return (0, codegen_1._) `${format} && ${format} !== true && ${fType} === ${ruleType} && !${validData}`;
             }
         }
         function validateFormat() {
@@ -7527,7 +9028,7 @@ const def = {
             if (fmtType === ruleType)
                 cxt.pass(validCondition());
             function unknownFormat() {
-                if (opts.strict === false) {
+                if (opts.strictSchema === false) {
                     self.logger.warn(unknownMsg());
                     return;
                 }
@@ -7537,13 +9038,14 @@ const def = {
                 }
             }
             function getFormat(fmtDef) {
-                const fmt = gen.scopeValue("formats", {
-                    key: schema,
-                    ref: fmtDef,
-                    code: opts.code.formats ? codegen_1._ `${opts.code.formats}${codegen_1.getProperty(schema)}` : undefined,
-                });
+                const code = fmtDef instanceof RegExp
+                    ? (0, codegen_1.regexpCode)(fmtDef)
+                    : opts.code.formats
+                        ? (0, codegen_1._) `${opts.code.formats}${(0, codegen_1.getProperty)(schema)}`
+                        : undefined;
+                const fmt = gen.scopeValue("formats", { key: schema, ref: fmtDef, code });
                 if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
-                    return [fmtDef.type || "string", fmtDef.validate, codegen_1._ `${fmt}.validate`];
+                    return [fmtDef.type || "string", fmtDef.validate, (0, codegen_1._) `${fmt}.validate`];
                 }
                 return ["string", fmtDef, fmt];
             }
@@ -7551,9 +9053,9 @@ const def = {
                 if (typeof formatDef == "object" && !(formatDef instanceof RegExp) && formatDef.async) {
                     if (!schemaEnv.$async)
                         throw new Error("async format in sync schema");
-                    return codegen_1._ `await ${fmtRef}(${data})`;
+                    return (0, codegen_1._) `await ${fmtRef}(${data})`;
                 }
-                return typeof format == "function" ? codegen_1._ `${fmtRef}(${data})` : codegen_1._ `${fmtRef}.test(${data})`;
+                return typeof format == "function" ? (0, codegen_1._) `${fmtRef}(${data})` : (0, codegen_1._) `${fmtRef}.test(${data})`;
             }
         }
     },
@@ -7563,20 +9065,20 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 4653:
+/***/ 4251:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const format_1 = __nccwpck_require__(9785);
+const format_1 = __nccwpck_require__(2621);
 const format = [format_1.default];
 exports.default = format;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 
-/***/ 411:
+/***/ 678:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -7601,29 +9103,31 @@ exports.contentVocabulary = [
 
 /***/ }),
 
-/***/ 6447:
+/***/ 6704:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const equal = __nccwpck_require__(8206);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const equal_1 = __nccwpck_require__(520);
 const error = {
-    message: "should be equal to constant",
-    params: ({ schemaCode }) => codegen_1._ `{allowedValue: ${schemaCode}}`,
+    message: "must be equal to constant",
+    params: ({ schemaCode }) => (0, codegen_1._) `{allowedValue: ${schemaCode}}`,
 };
 const def = {
     keyword: "const",
     $data: true,
     error,
     code(cxt) {
-        const eql = cxt.gen.scopeValue("func", {
-            ref: equal,
-            code: codegen_1._ `require("ajv/dist/compile/equal")`,
-        });
-        // TODO optimize for scalar values in schema
-        cxt.fail$data(codegen_1._ `!${eql}(${cxt.data}, ${cxt.schemaCode})`);
+        const { gen, data, $data, schemaCode, schema } = cxt;
+        if ($data || (schema && typeof schema == "object")) {
+            cxt.fail$data((0, codegen_1._) `!${(0, util_1.useFunc)(gen, equal_1.default)}(${data}, ${schemaCode})`);
+        }
+        else {
+            cxt.fail((0, codegen_1._) `${schema} !== ${data}`);
+        }
     },
 };
 exports.default = def;
@@ -7631,17 +9135,18 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 2606:
+/***/ 5846:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const equal = __nccwpck_require__(8206);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const equal_1 = __nccwpck_require__(520);
 const error = {
-    message: "should be equal to one of the allowed values",
-    params: ({ schemaCode }) => codegen_1._ `{allowedValues: ${schemaCode}}`,
+    message: "must be equal to one of the allowed values",
+    params: ({ schemaCode }) => (0, codegen_1._) `{allowedValues: ${schemaCode}}`,
 };
 const def = {
     keyword: "enum",
@@ -7653,10 +9158,8 @@ const def = {
         if (!$data && schema.length === 0)
             throw new Error("enum must have non-empty array");
         const useLoop = schema.length >= it.opts.loopEnum;
-        const eql = cxt.gen.scopeValue("func", {
-            ref: equal,
-            code: codegen_1._ `require("ajv/dist/compile/equal")`,
-        });
+        let eql;
+        const getEql = () => (eql !== null && eql !== void 0 ? eql : (eql = (0, util_1.useFunc)(gen, equal_1.default)));
         let valid;
         if (useLoop || $data) {
             valid = gen.let("valid");
@@ -7667,18 +9170,18 @@ const def = {
             if (!Array.isArray(schema))
                 throw new Error("ajv implementation error");
             const vSchema = gen.const("vSchema", schemaCode);
-            valid = codegen_1.or(...schema.map((_x, i) => equalCode(vSchema, i)));
+            valid = (0, codegen_1.or)(...schema.map((_x, i) => equalCode(vSchema, i)));
         }
         cxt.pass(valid);
         function loopEnum() {
             gen.assign(valid, false);
-            gen.forOf("v", schemaCode, (v) => gen.if(codegen_1._ `${eql}(${data}, ${v})`, () => gen.assign(valid, true).break()));
+            gen.forOf("v", schemaCode, (v) => gen.if((0, codegen_1._) `${getEql()}(${data}, ${v})`, () => gen.assign(valid, true).break()));
         }
         function equalCode(vSchema, i) {
             const sch = schema[i];
-            return sch && typeof sch === "object"
-                ? codegen_1._ `${eql}(${data}, ${vSchema}[${i}])`
-                : codegen_1._ `${data} === ${sch}`;
+            return typeof sch === "object" && sch !== null
+                ? (0, codegen_1._) `${getEql()}(${data}, ${vSchema}[${i}])`
+                : (0, codegen_1._) `${data} === ${sch}`;
         }
     },
 };
@@ -7687,22 +9190,22 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 1250:
+/***/ 4277:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const limitNumber_1 = __nccwpck_require__(1998);
-const multipleOf_1 = __nccwpck_require__(6932);
-const limitLength_1 = __nccwpck_require__(709);
-const pattern_1 = __nccwpck_require__(6389);
-const limitProperties_1 = __nccwpck_require__(9293);
-const required_1 = __nccwpck_require__(3038);
-const limitItems_1 = __nccwpck_require__(2226);
-const uniqueItems_1 = __nccwpck_require__(721);
-const const_1 = __nccwpck_require__(6447);
-const enum_1 = __nccwpck_require__(2606);
+const limitNumber_1 = __nccwpck_require__(9059);
+const multipleOf_1 = __nccwpck_require__(823);
+const limitLength_1 = __nccwpck_require__(3670);
+const pattern_1 = __nccwpck_require__(6110);
+const limitProperties_1 = __nccwpck_require__(1210);
+const required_1 = __nccwpck_require__(235);
+const limitItems_1 = __nccwpck_require__(8579);
+const uniqueItems_1 = __nccwpck_require__(5312);
+const const_1 = __nccwpck_require__(6704);
+const enum_1 = __nccwpck_require__(5846);
 const validation = [
     // number
     limitNumber_1.default,
@@ -7727,19 +9230,19 @@ exports.default = validation;
 
 /***/ }),
 
-/***/ 2226:
+/***/ 8579:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
+const codegen_1 = __nccwpck_require__(232);
 const error = {
     message({ keyword, schemaCode }) {
         const comp = keyword === "maxItems" ? "more" : "fewer";
-        return codegen_1.str `should NOT have ${comp} than ${schemaCode} items`;
+        return (0, codegen_1.str) `must NOT have ${comp} than ${schemaCode} items`;
     },
-    params: ({ schemaCode }) => codegen_1._ `{limit: ${schemaCode}}`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{limit: ${schemaCode}}`,
 };
 const def = {
     keyword: ["maxItems", "minItems"],
@@ -7750,7 +9253,7 @@ const def = {
     code(cxt) {
         const { keyword, data, schemaCode } = cxt;
         const op = keyword === "maxItems" ? codegen_1.operators.GT : codegen_1.operators.LT;
-        cxt.fail$data(codegen_1._ `${data}.length ${op} ${schemaCode}`);
+        cxt.fail$data((0, codegen_1._) `${data}.length ${op} ${schemaCode}`);
     },
 };
 exports.default = def;
@@ -7758,20 +9261,21 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 709:
+/***/ 3670:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
-const ucs2length_1 = __nccwpck_require__(2923);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const ucs2length_1 = __nccwpck_require__(5651);
 const error = {
     message({ keyword, schemaCode }) {
         const comp = keyword === "maxLength" ? "more" : "fewer";
-        return codegen_1.str `should NOT have ${comp} than ${schemaCode} characters`;
+        return (0, codegen_1.str) `must NOT have ${comp} than ${schemaCode} characters`;
     },
-    params: ({ schemaCode }) => codegen_1._ `{limit: ${schemaCode}}`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{limit: ${schemaCode}}`,
 };
 const def = {
     keyword: ["maxLength", "minLength"],
@@ -7782,18 +9286,8 @@ const def = {
     code(cxt) {
         const { keyword, data, schemaCode, it } = cxt;
         const op = keyword === "maxLength" ? codegen_1.operators.GT : codegen_1.operators.LT;
-        let len;
-        if (it.opts.unicode === false) {
-            len = codegen_1._ `${data}.length`;
-        }
-        else {
-            const u2l = cxt.gen.scopeValue("func", {
-                ref: ucs2length_1.default,
-                code: codegen_1._ `require("ajv/dist/compile/ucs2length").default`,
-            });
-            len = codegen_1._ `${u2l}(${data})`;
-        }
-        cxt.fail$data(codegen_1._ `${len} ${op} ${schemaCode}`);
+        const len = it.opts.unicode === false ? (0, codegen_1._) `${data}.length` : (0, codegen_1._) `${(0, util_1.useFunc)(cxt.gen, ucs2length_1.default)}(${data})`;
+        cxt.fail$data((0, codegen_1._) `${len} ${op} ${schemaCode}`);
     },
 };
 exports.default = def;
@@ -7801,13 +9295,13 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 1998:
+/***/ 9059:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
+const codegen_1 = __nccwpck_require__(232);
 const ops = codegen_1.operators;
 const KWDs = {
     maximum: { okStr: "<=", ok: ops.LTE, fail: ops.GT },
@@ -7816,8 +9310,8 @@ const KWDs = {
     exclusiveMinimum: { okStr: ">", ok: ops.GT, fail: ops.LTE },
 };
 const error = {
-    message: ({ keyword, schemaCode }) => codegen_1.str `should be ${KWDs[keyword].okStr} ${schemaCode}`,
-    params: ({ keyword, schemaCode }) => codegen_1._ `{comparison: ${KWDs[keyword].okStr}, limit: ${schemaCode}}`,
+    message: ({ keyword, schemaCode }) => (0, codegen_1.str) `must be ${KWDs[keyword].okStr} ${schemaCode}`,
+    params: ({ keyword, schemaCode }) => (0, codegen_1._) `{comparison: ${KWDs[keyword].okStr}, limit: ${schemaCode}}`,
 };
 const def = {
     keyword: Object.keys(KWDs),
@@ -7827,7 +9321,7 @@ const def = {
     error,
     code(cxt) {
         const { keyword, data, schemaCode } = cxt;
-        cxt.fail$data(codegen_1._ `${data} ${KWDs[keyword].fail} ${schemaCode} || isNaN(${data})`);
+        cxt.fail$data((0, codegen_1._) `${data} ${KWDs[keyword].fail} ${schemaCode} || isNaN(${data})`);
     },
 };
 exports.default = def;
@@ -7835,19 +9329,19 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 9293:
+/***/ 1210:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
+const codegen_1 = __nccwpck_require__(232);
 const error = {
     message({ keyword, schemaCode }) {
         const comp = keyword === "maxProperties" ? "more" : "fewer";
-        return codegen_1.str `should NOT have ${comp} than ${schemaCode} items`;
+        return (0, codegen_1.str) `must NOT have ${comp} than ${schemaCode} properties`;
     },
-    params: ({ schemaCode }) => codegen_1._ `{limit: ${schemaCode}}`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{limit: ${schemaCode}}`,
 };
 const def = {
     keyword: ["maxProperties", "minProperties"],
@@ -7858,7 +9352,7 @@ const def = {
     code(cxt) {
         const { keyword, data, schemaCode } = cxt;
         const op = keyword === "maxProperties" ? codegen_1.operators.GT : codegen_1.operators.LT;
-        cxt.fail$data(codegen_1._ `Object.keys(${data}).length ${op} ${schemaCode}`);
+        cxt.fail$data((0, codegen_1._) `Object.keys(${data}).length ${op} ${schemaCode}`);
     },
 };
 exports.default = def;
@@ -7866,16 +9360,16 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 6932:
+/***/ 823:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const codegen_1 = __nccwpck_require__(4016);
+const codegen_1 = __nccwpck_require__(232);
 const error = {
-    message: ({ schemaCode }) => codegen_1.str `should be multiple of ${schemaCode}`,
-    params: ({ schemaCode }) => codegen_1._ `{multipleOf: ${schemaCode}}`,
+    message: ({ schemaCode }) => (0, codegen_1.str) `must be multiple of ${schemaCode}`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{multipleOf: ${schemaCode}}`,
 };
 const def = {
     keyword: "multipleOf",
@@ -7889,9 +9383,9 @@ const def = {
         const prec = it.opts.multipleOfPrecision;
         const res = gen.let("res");
         const invalid = prec
-            ? codegen_1._ `Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}`
-            : codegen_1._ `${res} !== parseInt(${res})`;
-        cxt.fail$data(codegen_1._ `(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid}))`);
+            ? (0, codegen_1._) `Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}`
+            : (0, codegen_1._) `${res} !== parseInt(${res})`;
+        cxt.fail$data((0, codegen_1._) `(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid}))`);
     },
 };
 exports.default = def;
@@ -7899,17 +9393,17 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 6389:
+/***/ 6110:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const code_1 = __nccwpck_require__(3570);
-const codegen_1 = __nccwpck_require__(4016);
+const code_1 = __nccwpck_require__(5481);
+const codegen_1 = __nccwpck_require__(232);
 const error = {
-    message: ({ schemaCode }) => codegen_1.str `should match pattern "${schemaCode}"`,
-    params: ({ schemaCode }) => codegen_1._ `{pattern: ${schemaCode}}`,
+    message: ({ schemaCode }) => (0, codegen_1.str) `must match pattern "${schemaCode}"`,
+    params: ({ schemaCode }) => (0, codegen_1._) `{pattern: ${schemaCode}}`,
 };
 const def = {
     keyword: "pattern",
@@ -7918,9 +9412,11 @@ const def = {
     $data: true,
     error,
     code(cxt) {
-        const { gen, data, $data, schema, schemaCode } = cxt;
-        const regExp = $data ? codegen_1._ `(new RegExp(${schemaCode}, "u"))` : code_1.usePattern(gen, schema); // TODO regexp should be wrapped in try/catch
-        cxt.fail$data(codegen_1._ `!${regExp}.test(${data})`);
+        const { data, $data, schema, schemaCode, it } = cxt;
+        // TODO regexp should be wrapped in try/catchs
+        const u = it.opts.unicodeRegExp ? "u" : "";
+        const regExp = $data ? (0, codegen_1._) `(new RegExp(${schemaCode}, ${u}))` : (0, code_1.usePattern)(cxt, schema);
+        cxt.fail$data((0, codegen_1._) `!${regExp}.test(${data})`);
     },
 };
 exports.default = def;
@@ -7928,18 +9424,18 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 3038:
+/***/ 235:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const code_1 = __nccwpck_require__(3570);
-const codegen_1 = __nccwpck_require__(4016);
-const validate_1 = __nccwpck_require__(1262);
+const code_1 = __nccwpck_require__(5481);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
 const error = {
-    message: ({ params: { missingProperty } }) => codegen_1.str `should have required property '${missingProperty}'`,
-    params: ({ params: { missingProperty } }) => codegen_1._ `{missingProperty: ${missingProperty}}`,
+    message: ({ params: { missingProperty } }) => (0, codegen_1.str) `must have required property '${missingProperty}'`,
+    params: ({ params: { missingProperty } }) => (0, codegen_1._) `{missingProperty: ${missingProperty}}`,
 };
 const def = {
     keyword: "required",
@@ -7964,7 +9460,7 @@ const def = {
                 if ((props === null || props === void 0 ? void 0 : props[requiredKey]) === undefined && !definedProperties.has(requiredKey)) {
                     const schemaPath = it.schemaEnv.baseId + it.errSchemaPath;
                     const msg = `required property "${requiredKey}" is not defined at "${schemaPath}" (strictRequired)`;
-                    validate_1.checkStrictMode(it, msg, it.opts.strictRequired);
+                    (0, util_1.checkStrictMode)(it, msg, it.opts.strictRequired);
                 }
             }
         }
@@ -7974,7 +9470,7 @@ const def = {
             }
             else {
                 for (const prop of schema) {
-                    code_1.checkReportMissingProp(cxt, prop);
+                    (0, code_1.checkReportMissingProp)(cxt, prop);
                 }
             }
         }
@@ -7986,22 +9482,22 @@ const def = {
                 cxt.ok(valid);
             }
             else {
-                gen.if(code_1.checkMissingProp(cxt, schema, missing));
-                code_1.reportMissingProp(cxt, missing);
+                gen.if((0, code_1.checkMissingProp)(cxt, schema, missing));
+                (0, code_1.reportMissingProp)(cxt, missing);
                 gen.else();
             }
         }
         function loopAllRequired() {
             gen.forOf("prop", schemaCode, (prop) => {
                 cxt.setParams({ missingProperty: prop });
-                gen.if(code_1.noPropertyInData(gen, data, prop, opts.ownProperties), () => cxt.error());
+                gen.if((0, code_1.noPropertyInData)(gen, data, prop, opts.ownProperties), () => cxt.error());
             });
         }
         function loopUntilMissing(missing, valid) {
             cxt.setParams({ missingProperty: missing });
             gen.forOf(missing, schemaCode, () => {
-                gen.assign(valid, code_1.propertyInData(gen, data, missing, opts.ownProperties));
-                gen.if(codegen_1.not(valid), () => {
+                gen.assign(valid, (0, code_1.propertyInData)(gen, data, missing, opts.ownProperties));
+                gen.if((0, codegen_1.not)(valid), () => {
                     cxt.error();
                     gen.break();
                 });
@@ -8014,18 +9510,19 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 721:
+/***/ 5312:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const dataType_1 = __nccwpck_require__(8950);
-const codegen_1 = __nccwpck_require__(4016);
-const equal = __nccwpck_require__(8206);
+const dataType_1 = __nccwpck_require__(1760);
+const codegen_1 = __nccwpck_require__(232);
+const util_1 = __nccwpck_require__(1212);
+const equal_1 = __nccwpck_require__(520);
 const error = {
-    message: ({ params: { i, j } }) => codegen_1.str `should NOT have duplicate items (items ## ${j} and ${i} are identical)`,
-    params: ({ params: { i, j } }) => codegen_1._ `{i: ${i}, j: ${j}}`,
+    message: ({ params: { i, j } }) => (0, codegen_1.str) `must NOT have duplicate items (items ## ${j} and ${i} are identical)`,
+    params: ({ params: { i, j } }) => (0, codegen_1._) `{i: ${i}, j: ${j}}`,
 };
 const def = {
     keyword: "uniqueItems",
@@ -8038,44 +9535,41 @@ const def = {
         if (!$data && !schema)
             return;
         const valid = gen.let("valid");
-        const itemTypes = parentSchema.items ? dataType_1.getSchemaTypes(parentSchema.items) : [];
-        cxt.block$data(valid, validateUniqueItems, codegen_1._ `${schemaCode} === false`);
+        const itemTypes = parentSchema.items ? (0, dataType_1.getSchemaTypes)(parentSchema.items) : [];
+        cxt.block$data(valid, validateUniqueItems, (0, codegen_1._) `${schemaCode} === false`);
         cxt.ok(valid);
         function validateUniqueItems() {
-            const i = gen.let("i", codegen_1._ `${data}.length`);
+            const i = gen.let("i", (0, codegen_1._) `${data}.length`);
             const j = gen.let("j");
             cxt.setParams({ i, j });
             gen.assign(valid, true);
-            gen.if(codegen_1._ `${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j));
+            gen.if((0, codegen_1._) `${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j));
         }
         function canOptimize() {
             return itemTypes.length > 0 && !itemTypes.some((t) => t === "object" || t === "array");
         }
         function loopN(i, j) {
             const item = gen.name("item");
-            const wrongType = dataType_1.checkDataTypes(itemTypes, item, it.opts.strict, dataType_1.DataType.Wrong);
-            const indices = gen.const("indices", codegen_1._ `{}`);
-            gen.for(codegen_1._ `;${i}--;`, () => {
-                gen.let(item, codegen_1._ `${data}[${i}]`);
-                gen.if(wrongType, codegen_1._ `continue`);
+            const wrongType = (0, dataType_1.checkDataTypes)(itemTypes, item, it.opts.strictNumbers, dataType_1.DataType.Wrong);
+            const indices = gen.const("indices", (0, codegen_1._) `{}`);
+            gen.for((0, codegen_1._) `;${i}--;`, () => {
+                gen.let(item, (0, codegen_1._) `${data}[${i}]`);
+                gen.if(wrongType, (0, codegen_1._) `continue`);
                 if (itemTypes.length > 1)
-                    gen.if(codegen_1._ `typeof ${item} == "string"`, codegen_1._ `${item} += "_"`);
+                    gen.if((0, codegen_1._) `typeof ${item} == "string"`, (0, codegen_1._) `${item} += "_"`);
                 gen
-                    .if(codegen_1._ `typeof ${indices}[${item}] == "number"`, () => {
-                    gen.assign(j, codegen_1._ `${indices}[${item}]`);
+                    .if((0, codegen_1._) `typeof ${indices}[${item}] == "number"`, () => {
+                    gen.assign(j, (0, codegen_1._) `${indices}[${item}]`);
                     cxt.error();
                     gen.assign(valid, false).break();
                 })
-                    .code(codegen_1._ `${indices}[${item}] = ${i}`);
+                    .code((0, codegen_1._) `${indices}[${item}] = ${i}`);
             });
         }
         function loopN2(i, j) {
-            const eql = cxt.gen.scopeValue("func", {
-                ref: equal,
-                code: codegen_1._ `require("ajv/dist/compile/equal")`,
-            });
+            const eql = (0, util_1.useFunc)(gen, equal_1.default);
             const outer = gen.name("outer");
-            gen.label(outer).for(codegen_1._ `;${i}--;`, () => gen.for(codegen_1._ `${j} = ${i}; ${j}--;`, () => gen.if(codegen_1._ `${eql}(${data}[${i}], ${data}[${j}])`, () => {
+            gen.label(outer).for((0, codegen_1._) `;${i}--;`, () => gen.for((0, codegen_1._) `${j} = ${i}; ${j}--;`, () => gen.if((0, codegen_1._) `${eql}(${data}[${i}], ${data}[${j}])`, () => {
                 cxt.error();
                 gen.assign(valid, false).break(outer);
             })));
@@ -8087,2997 +9581,258 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 8802:
+/***/ 3122:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
+var __webpack_unused_export__;
 
 
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
+__webpack_unused_export__ = ({ value: true });
 
-var _has = _interopRequireDefault(__nccwpck_require__(7198));
+var catalogModel = __nccwpck_require__(4094);
 
-var _isSchema = _interopRequireDefault(__nccwpck_require__(3516));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class Condition {
-  constructor(refs, options) {
-    this.fn = void 0;
-    this.refs = refs;
-    this.refs = refs;
-
-    if (typeof options === 'function') {
-      this.fn = options;
-      return;
-    }
-
-    if (!(0, _has.default)(options, 'is')) throw new TypeError('`is:` is required for `when()` conditions');
-    if (!options.then && !options.otherwise) throw new TypeError('either `then:` or `otherwise:` is required for `when()` conditions');
-    let {
-      is,
-      then,
-      otherwise
-    } = options;
-    let check = typeof is === 'function' ? is : (...values) => values.every(value => value === is);
-
-    this.fn = function (...args) {
-      let options = args.pop();
-      let schema = args.pop();
-      let branch = check(...args) ? then : otherwise;
-      if (!branch) return undefined;
-      if (typeof branch === 'function') return branch(schema);
-      return schema.concat(branch.resolve(options));
-    };
-  }
-
-  resolve(base, options) {
-    let values = this.refs.map(ref => ref.getValue(options == null ? void 0 : options.value, options == null ? void 0 : options.parent, options == null ? void 0 : options.context));
-    let schema = this.fn.apply(base, values.concat(base, options));
-    if (schema === undefined || schema === base) return base;
-    if (!(0, _isSchema.default)(schema)) throw new TypeError('conditions must return a schema object');
-    return schema.resolve(options);
-  }
-
-}
-
-var _default = Condition;
-exports.default = _default;
-
-/***/ }),
-
-/***/ 590:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _isSchema = _interopRequireDefault(__nccwpck_require__(3516));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function create(builder) {
-  return new Lazy(builder);
-}
-
-class Lazy {
-  constructor(builder) {
-    this.type = 'lazy';
-    this.__isYupSchema__ = true;
-    this.__inputType = void 0;
-    this.__outputType = void 0;
-
-    this._resolve = (value, options = {}) => {
-      let schema = this.builder(value, options);
-      if (!(0, _isSchema.default)(schema)) throw new TypeError('lazy() functions must return a valid schema');
-      return schema.resolve(options);
-    };
-
-    this.builder = builder;
-  }
-
-  resolve(options) {
-    return this._resolve(options.value, options);
-  }
-
-  cast(value, options) {
-    return this._resolve(value, options).cast(value, options);
-  }
-
-  validate(value, options, maybeCb) {
-    // @ts-expect-error missing public callback on type
-    return this._resolve(value, options).validate(value, options, maybeCb);
-  }
-
-  validateSync(value, options) {
-    return this._resolve(value, options).validateSync(value, options);
-  }
-
-  validateAt(path, value, options) {
-    return this._resolve(value, options).validateAt(path, value, options);
-  }
-
-  validateSyncAt(path, value, options) {
-    return this._resolve(value, options).validateSyncAt(path, value, options);
-  }
-
-  describe() {
-    return null;
-  }
-
-  isValid(value, options) {
-    return this._resolve(value, options).isValid(value, options);
-  }
-
-  isValidSync(value, options) {
-    return this._resolve(value, options).isValidSync(value, options);
-  }
-
-}
-
-var _default = Lazy;
-exports.default = _default;
-
-/***/ }),
-
-/***/ 7221:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _propertyExpr = __nccwpck_require__(435);
-
-const prefixes = {
-  context: '$',
-  value: '.'
+var $schema = "http://json-schema.org/draft-07/schema";
+var $id = "TemplateV1beta3";
+var description = "A Template describes a scaffolding task for use with the Scaffolder. It describes the required parameters as well as a series of steps that will be taken to execute the scaffolding task.";
+var examples = [
+	{
+		apiVersion: "scaffolder.backstage.io/v1beta3",
+		kind: "Template",
+		metadata: {
+			name: "react-ssr-template",
+			title: "React SSR Template",
+			description: "Next.js application skeleton for creating isomorphic web applications.",
+			tags: [
+				"recommended",
+				"react"
+			]
+		},
+		spec: {
+			owner: "artist-relations-team",
+			parameters: {
+				required: [
+					"name",
+					"description",
+					"repoUrl"
+				],
+				properties: {
+					name: {
+						title: "Name",
+						type: "string",
+						description: "Unique name of the component"
+					},
+					description: {
+						title: "Description",
+						type: "string",
+						description: "Description of the component"
+					},
+					repoUrl: {
+						title: "Pick a repository",
+						type: "string",
+						"ui:field": "RepoUrlPicker"
+					}
+				}
+			},
+			steps: [
+				{
+					id: "fetch",
+					name: "Fetch",
+					action: "fetch:plain",
+					parameters: {
+						url: "./template"
+					}
+				},
+				{
+					id: "publish",
+					name: "Publish to GitHub",
+					action: "publish:github",
+					parameters: {
+						repoUrl: "${{ parameters.repoUrl }}"
+					},
+					"if": "${{ parameters.repoUrl }}"
+				}
+			],
+			output: {
+				catalogInfoUrl: "${{ steps.publish.output.catalogInfoUrl }}"
+			}
+		}
+	}
+];
+var allOf = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"scaffolder.backstage.io/v1beta3"
+				]
+			},
+			kind: {
+				"enum": [
+					"Template"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"type",
+					"steps"
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The type of component created by the template. The software catalog accepts any type value, but an organization should take great care to establish a proper taxonomy for these. Tools including Backstage itself may read this field and behave differently depending on its value. For example, a website type component may present tooling in the Backstage interface that is specific to just websites.",
+						examples: [
+							"service",
+							"website",
+							"library"
+						],
+						minLength: 1
+					},
+					owner: {
+						type: "string",
+						description: "The user (or group) owner of the template",
+						minLength: 1
+					},
+					parameters: {
+						oneOf: [
+							{
+								type: "object",
+								description: "The JSONSchema describing the inputs for the template."
+							},
+							{
+								type: "array",
+								description: "A list of separate forms to collect parameters.",
+								items: {
+									type: "object",
+									description: "The JSONSchema describing the inputs for the template."
+								}
+							}
+						]
+					},
+					steps: {
+						type: "array",
+						description: "A list of steps to execute.",
+						items: {
+							type: "object",
+							description: "A description of the step to execute.",
+							required: [
+								"action"
+							],
+							properties: {
+								id: {
+									type: "string",
+									description: "The ID of the step, which can be used to refer to its outputs."
+								},
+								name: {
+									type: "string",
+									description: "The name of the step, which will be displayed in the UI during the scaffolding process."
+								},
+								action: {
+									type: "string",
+									description: "The name of the action to execute."
+								},
+								input: {
+									type: "object",
+									description: "A templated object describing the inputs to the action."
+								},
+								"if": {
+									type: [
+										"string",
+										"boolean"
+									],
+									description: "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
+								}
+							}
+						}
+					},
+					output: {
+						type: "object",
+						description: "A templated object describing the outputs of the scaffolding task.",
+						properties: {
+							links: {
+								type: "array",
+								description: "A list of external hyperlinks, typically pointing to resources created or updated by the template",
+								items: {
+									type: "object",
+									required: [
+									],
+									properties: {
+										url: {
+											type: "string",
+											description: "A url in a standard uri format.",
+											examples: [
+												"https://github.com/my-org/my-new-repo"
+											],
+											minLength: 1
+										},
+										entityRef: {
+											type: "string",
+											description: "An entity reference to an entity in the catalog.",
+											examples: [
+												"Component:default/my-app"
+											],
+											minLength: 1
+										},
+										title: {
+											type: "string",
+											description: "A user friendly display name for the link.",
+											examples: [
+												"View new repo"
+											],
+											minLength: 1
+										},
+										icon: {
+											type: "string",
+											description: "A key representing a visual icon to be displayed in the UI.",
+											examples: [
+												"dashboard"
+											],
+											minLength: 1
+										}
+									}
+								}
+							}
+						},
+						additionalProperties: {
+							type: "string"
+						}
+					}
+				}
+			}
+		}
+	}
+];
+var schema = {
+	$schema: $schema,
+	$id: $id,
+	description: description,
+	examples: examples,
+	allOf: allOf
 };
 
-function create(key, options) {
-  return new Reference(key, options);
-}
-
-class Reference {
-  constructor(key, options = {}) {
-    this.key = void 0;
-    this.isContext = void 0;
-    this.isValue = void 0;
-    this.isSibling = void 0;
-    this.path = void 0;
-    this.getter = void 0;
-    this.map = void 0;
-    if (typeof key !== 'string') throw new TypeError('ref must be a string, got: ' + key);
-    this.key = key.trim();
-    if (key === '') throw new TypeError('ref must be a non-empty string');
-    this.isContext = this.key[0] === prefixes.context;
-    this.isValue = this.key[0] === prefixes.value;
-    this.isSibling = !this.isContext && !this.isValue;
-    let prefix = this.isContext ? prefixes.context : this.isValue ? prefixes.value : '';
-    this.path = this.key.slice(prefix.length);
-    this.getter = this.path && (0, _propertyExpr.getter)(this.path, true);
-    this.map = options.map;
+const validator = catalogModel.entityKindSchemaValidator(schema);
+const templateEntityV1beta3Validator = {
+  // TODO(freben): Emulate the old KindValidator until we fix that type
+  async check(data) {
+    return validator(data) === data;
   }
-
-  getValue(value, parent, context) {
-    let result = this.isContext ? context : this.isValue ? value : parent;
-    if (this.getter) result = this.getter(result || {});
-    if (this.map) result = this.map(result);
-    return result;
-  }
-  /**
-   *
-   * @param {*} value
-   * @param {Object} options
-   * @param {Object=} options.context
-   * @param {Object=} options.parent
-   */
-
-
-  cast(value, options) {
-    return this.getValue(value, options == null ? void 0 : options.parent, options == null ? void 0 : options.context);
-  }
-
-  resolve() {
-    return this;
-  }
-
-  describe() {
-    return {
-      type: 'ref',
-      key: this.key
-    };
-  }
-
-  toString() {
-    return `Ref(${this.key})`;
-  }
-
-  static isRef(value) {
-    return value && value.__isYupRef;
-  }
-
-} // @ts-ignore
-
-
-exports.default = Reference;
-Reference.prototype.__isYupRef = true;
-
-/***/ }),
-
-/***/ 5780:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
-
-var _printValue = _interopRequireDefault(__nccwpck_require__(588));
-
-var _toArray = _interopRequireDefault(__nccwpck_require__(9642));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-let strReg = /\$\{\s*(\w+)\s*\}/g;
-
-class ValidationError extends Error {
-  static formatError(message, params) {
-    const path = params.label || params.path || 'this';
-    if (path !== params.path) params = _extends({}, params, {
-      path
-    });
-    if (typeof message === 'string') return message.replace(strReg, (_, key) => (0, _printValue.default)(params[key]));
-    if (typeof message === 'function') return message(params);
-    return message;
-  }
-
-  static isError(err) {
-    return err && err.name === 'ValidationError';
-  }
-
-  constructor(errorOrErrors, value, field, type) {
-    super();
-    this.value = void 0;
-    this.path = void 0;
-    this.type = void 0;
-    this.errors = void 0;
-    this.params = void 0;
-    this.inner = void 0;
-    this.name = 'ValidationError';
-    this.value = value;
-    this.path = field;
-    this.type = type;
-    this.errors = [];
-    this.inner = [];
-    (0, _toArray.default)(errorOrErrors).forEach(err => {
-      if (ValidationError.isError(err)) {
-        this.errors.push(...err.errors);
-        this.inner = this.inner.concat(err.inner.length ? err.inner : err);
-      } else {
-        this.errors.push(err);
-      }
-    });
-    this.message = this.errors.length > 1 ? `${this.errors.length} errors occurred` : this.errors[0];
-    if (Error.captureStackTrace) Error.captureStackTrace(this, ValidationError);
-  }
-
-}
-
-exports.default = ValidationError;
-
-/***/ }),
-
-/***/ 8805:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _isAbsent = _interopRequireDefault(__nccwpck_require__(8974));
-
-var _isSchema = _interopRequireDefault(__nccwpck_require__(3516));
-
-var _printValue = _interopRequireDefault(__nccwpck_require__(588));
-
-var _locale = __nccwpck_require__(8795);
-
-var _runTests = _interopRequireDefault(__nccwpck_require__(3607));
-
-var _ValidationError = _interopRequireDefault(__nccwpck_require__(5780));
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function create(type) {
-  return new ArraySchema(type);
-}
-
-class ArraySchema extends _schema.default {
-  constructor(type) {
-    super({
-      type: 'array'
-    }); // `undefined` specifically means uninitialized, as opposed to
-    // "no subtype"
-
-    this.innerType = void 0;
-    this.innerType = type;
-    this.withMutation(() => {
-      this.transform(function (values) {
-        if (typeof values === 'string') try {
-          values = JSON.parse(values);
-        } catch (err) {
-          values = null;
-        }
-        return this.isType(values) ? values : null;
-      });
-    });
-  }
-
-  _typeCheck(v) {
-    return Array.isArray(v);
-  }
-
-  get _subType() {
-    return this.innerType;
-  }
-
-  _cast(_value, _opts) {
-    const value = super._cast(_value, _opts); //should ignore nulls here
-
-
-    if (!this._typeCheck(value) || !this.innerType) return value;
-    let isChanged = false;
-    const castArray = value.map((v, idx) => {
-      const castElement = this.innerType.cast(v, _extends({}, _opts, {
-        path: `${_opts.path || ''}[${idx}]`
-      }));
-
-      if (castElement !== v) {
-        isChanged = true;
-      }
-
-      return castElement;
-    });
-    return isChanged ? castArray : value;
-  }
-
-  _validate(_value, options = {}, callback) {
-    var _options$abortEarly, _options$recursive;
-
-    let errors = [];
-    let sync = options.sync;
-    let path = options.path;
-    let innerType = this.innerType;
-    let endEarly = (_options$abortEarly = options.abortEarly) != null ? _options$abortEarly : this.spec.abortEarly;
-    let recursive = (_options$recursive = options.recursive) != null ? _options$recursive : this.spec.recursive;
-    let originalValue = options.originalValue != null ? options.originalValue : _value;
-
-    super._validate(_value, options, (err, value) => {
-      if (err) {
-        if (!_ValidationError.default.isError(err) || endEarly) {
-          return void callback(err, value);
-        }
-
-        errors.push(err);
-      }
-
-      if (!recursive || !innerType || !this._typeCheck(value)) {
-        callback(errors[0] || null, value);
-        return;
-      }
-
-      originalValue = originalValue || value; // #950 Ensure that sparse array empty slots are validated
-
-      let tests = new Array(value.length);
-
-      for (let idx = 0; idx < value.length; idx++) {
-        let item = value[idx];
-        let path = `${options.path || ''}[${idx}]`; // object._validate note for isStrict explanation
-
-        let innerOptions = _extends({}, options, {
-          path,
-          strict: true,
-          parent: value,
-          index: idx,
-          originalValue: originalValue[idx]
-        });
-
-        tests[idx] = (_, cb) => innerType.validate(item, innerOptions, cb);
-      }
-
-      (0, _runTests.default)({
-        sync,
-        path,
-        value,
-        errors,
-        endEarly,
-        tests
-      }, callback);
-    });
-  }
-
-  clone(spec) {
-    const next = super.clone(spec);
-    next.innerType = this.innerType;
-    return next;
-  }
-
-  concat(schema) {
-    let next = super.concat(schema);
-    next.innerType = this.innerType;
-    if (schema.innerType) next.innerType = next.innerType ? // @ts-expect-error Lazy doesn't have concat()
-    next.innerType.concat(schema.innerType) : schema.innerType;
-    return next;
-  }
-
-  of(schema) {
-    // FIXME: this should return a new instance of array without the default to be
-    let next = this.clone();
-    if (!(0, _isSchema.default)(schema)) throw new TypeError('`array.of()` sub-schema must be a valid yup schema not: ' + (0, _printValue.default)(schema)); // FIXME(ts):
-
-    next.innerType = schema;
-    return next;
-  }
-
-  length(length, message = _locale.array.length) {
-    return this.test({
-      message,
-      name: 'length',
-      exclusive: true,
-      params: {
-        length
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value.length === this.resolve(length);
-      }
-
-    });
-  }
-
-  min(min, message) {
-    message = message || _locale.array.min;
-    return this.test({
-      message,
-      name: 'min',
-      exclusive: true,
-      params: {
-        min
-      },
-
-      // FIXME(ts): Array<typeof T>
-      test(value) {
-        return (0, _isAbsent.default)(value) || value.length >= this.resolve(min);
-      }
-
-    });
-  }
-
-  max(max, message) {
-    message = message || _locale.array.max;
-    return this.test({
-      message,
-      name: 'max',
-      exclusive: true,
-      params: {
-        max
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value.length <= this.resolve(max);
-      }
-
-    });
-  }
-
-  ensure() {
-    return this.default(() => []).transform((val, original) => {
-      // We don't want to return `null` for nullable schema
-      if (this._typeCheck(val)) return val;
-      return original == null ? [] : [].concat(original);
-    });
-  }
-
-  compact(rejector) {
-    let reject = !rejector ? v => !!v : (v, i, a) => !rejector(v, i, a);
-    return this.transform(values => values != null ? values.filter(reject) : values);
-  }
-
-  describe() {
-    let base = super.describe();
-    if (this.innerType) base.innerType = this.innerType.describe();
-    return base;
-  }
-
-  nullable(isNullable = true) {
-    return super.nullable(isNullable);
-  }
-
-  defined() {
-    return super.defined();
-  }
-
-  required(msg) {
-    return super.required(msg);
-  }
-
-}
-
-exports.default = ArraySchema;
-create.prototype = ArraySchema.prototype; //
-// Interfaces
-//
-
-/***/ }),
-
-/***/ 2008:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-var _locale = __nccwpck_require__(8795);
-
-var _isAbsent = _interopRequireDefault(__nccwpck_require__(8974));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function create() {
-  return new BooleanSchema();
-}
-
-class BooleanSchema extends _schema.default {
-  constructor() {
-    super({
-      type: 'boolean'
-    });
-    this.withMutation(() => {
-      this.transform(function (value) {
-        if (!this.isType(value)) {
-          if (/^(true|1)$/i.test(String(value))) return true;
-          if (/^(false|0)$/i.test(String(value))) return false;
-        }
-
-        return value;
-      });
-    });
-  }
-
-  _typeCheck(v) {
-    if (v instanceof Boolean) v = v.valueOf();
-    return typeof v === 'boolean';
-  }
-
-  isTrue(message = _locale.boolean.isValue) {
-    return this.test({
-      message,
-      name: 'is-value',
-      exclusive: true,
-      params: {
-        value: 'true'
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value === true;
-      }
-
-    });
-  }
-
-  isFalse(message = _locale.boolean.isValue) {
-    return this.test({
-      message,
-      name: 'is-value',
-      exclusive: true,
-      params: {
-        value: 'false'
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value === false;
-      }
-
-    });
-  }
-
-}
-
-exports.default = BooleanSchema;
-create.prototype = BooleanSchema.prototype;
-
-/***/ }),
-
-/***/ 6283:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _isodate = _interopRequireDefault(__nccwpck_require__(879));
-
-var _locale = __nccwpck_require__(8795);
-
-var _isAbsent = _interopRequireDefault(__nccwpck_require__(8974));
-
-var _Reference = _interopRequireDefault(__nccwpck_require__(7221));
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// @ts-ignore
-let invalidDate = new Date('');
-
-let isDate = obj => Object.prototype.toString.call(obj) === '[object Date]';
-
-function create() {
-  return new DateSchema();
-}
-
-class DateSchema extends _schema.default {
-  constructor() {
-    super({
-      type: 'date'
-    });
-    this.withMutation(() => {
-      this.transform(function (value) {
-        if (this.isType(value)) return value;
-        value = (0, _isodate.default)(value); // 0 is a valid timestamp equivalent to 1970-01-01T00:00:00Z(unix epoch) or before.
-
-        return !isNaN(value) ? new Date(value) : invalidDate;
-      });
-    });
-  }
-
-  _typeCheck(v) {
-    return isDate(v) && !isNaN(v.getTime());
-  }
-
-  prepareParam(ref, name) {
-    let param;
-
-    if (!_Reference.default.isRef(ref)) {
-      let cast = this.cast(ref);
-      if (!this._typeCheck(cast)) throw new TypeError(`\`${name}\` must be a Date or a value that can be \`cast()\` to a Date`);
-      param = cast;
-    } else {
-      param = ref;
-    }
-
-    return param;
-  }
-
-  min(min, message = _locale.date.min) {
-    let limit = this.prepareParam(min, 'min');
-    return this.test({
-      message,
-      name: 'min',
-      exclusive: true,
-      params: {
-        min
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value >= this.resolve(limit);
-      }
-
-    });
-  }
-
-  max(max, message = _locale.date.max) {
-    let limit = this.prepareParam(max, 'max');
-    return this.test({
-      message,
-      name: 'max',
-      exclusive: true,
-      params: {
-        max
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value <= this.resolve(limit);
-      }
-
-    });
-  }
-
-}
-
-exports.default = DateSchema;
-DateSchema.INVALID_DATE = invalidDate;
-create.prototype = DateSchema.prototype;
-create.INVALID_DATE = invalidDate;
-
-/***/ }),
-
-/***/ 112:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-Object.defineProperty(exports, "ArraySchema", ({
-  enumerable: true,
-  get: function () {
-    return _array.default;
-  }
-}));
-Object.defineProperty(exports, "BaseSchema", ({
-  enumerable: true,
-  get: function () {
-    return _schema.default;
-  }
-}));
-Object.defineProperty(exports, "BooleanSchema", ({
-  enumerable: true,
-  get: function () {
-    return _boolean.default;
-  }
-}));
-Object.defineProperty(exports, "DateSchema", ({
-  enumerable: true,
-  get: function () {
-    return _date.default;
-  }
-}));
-Object.defineProperty(exports, "MixedSchema", ({
-  enumerable: true,
-  get: function () {
-    return _mixed.default;
-  }
-}));
-Object.defineProperty(exports, "NumberSchema", ({
-  enumerable: true,
-  get: function () {
-    return _number.default;
-  }
-}));
-Object.defineProperty(exports, "ObjectSchema", ({
-  enumerable: true,
-  get: function () {
-    return _object.default;
-  }
-}));
-Object.defineProperty(exports, "StringSchema", ({
-  enumerable: true,
-  get: function () {
-    return _string.default;
-  }
-}));
-Object.defineProperty(exports, "ValidationError", ({
-  enumerable: true,
-  get: function () {
-    return _ValidationError.default;
-  }
-}));
-exports.addMethod = addMethod;
-Object.defineProperty(exports, "array", ({
-  enumerable: true,
-  get: function () {
-    return _array.create;
-  }
-}));
-Object.defineProperty(exports, "bool", ({
-  enumerable: true,
-  get: function () {
-    return _boolean.create;
-  }
-}));
-Object.defineProperty(exports, "boolean", ({
-  enumerable: true,
-  get: function () {
-    return _boolean.create;
-  }
-}));
-Object.defineProperty(exports, "date", ({
-  enumerable: true,
-  get: function () {
-    return _date.create;
-  }
-}));
-Object.defineProperty(exports, "isSchema", ({
-  enumerable: true,
-  get: function () {
-    return _isSchema.default;
-  }
-}));
-Object.defineProperty(exports, "lazy", ({
-  enumerable: true,
-  get: function () {
-    return _Lazy.create;
-  }
-}));
-Object.defineProperty(exports, "mixed", ({
-  enumerable: true,
-  get: function () {
-    return _mixed.create;
-  }
-}));
-Object.defineProperty(exports, "number", ({
-  enumerable: true,
-  get: function () {
-    return _number.create;
-  }
-}));
-Object.defineProperty(exports, "object", ({
-  enumerable: true,
-  get: function () {
-    return _object.create;
-  }
-}));
-Object.defineProperty(exports, "reach", ({
-  enumerable: true,
-  get: function () {
-    return _reach.default;
-  }
-}));
-Object.defineProperty(exports, "ref", ({
-  enumerable: true,
-  get: function () {
-    return _Reference.create;
-  }
-}));
-Object.defineProperty(exports, "setLocale", ({
-  enumerable: true,
-  get: function () {
-    return _setLocale.default;
-  }
-}));
-Object.defineProperty(exports, "string", ({
-  enumerable: true,
-  get: function () {
-    return _string.create;
-  }
-}));
-
-var _mixed = _interopRequireWildcard(__nccwpck_require__(2147));
-
-var _boolean = _interopRequireWildcard(__nccwpck_require__(2008));
-
-var _string = _interopRequireWildcard(__nccwpck_require__(5744));
-
-var _number = _interopRequireWildcard(__nccwpck_require__(2974));
-
-var _date = _interopRequireWildcard(__nccwpck_require__(6283));
-
-var _object = _interopRequireWildcard(__nccwpck_require__(3288));
-
-var _array = _interopRequireWildcard(__nccwpck_require__(8805));
-
-var _Reference = __nccwpck_require__(7221);
-
-var _Lazy = __nccwpck_require__(590);
-
-var _ValidationError = _interopRequireDefault(__nccwpck_require__(5780));
-
-var _reach = _interopRequireDefault(__nccwpck_require__(8187));
-
-var _isSchema = _interopRequireDefault(__nccwpck_require__(3516));
-
-var _setLocale = _interopRequireDefault(__nccwpck_require__(7663));
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function addMethod(schemaType, name, fn) {
-  if (!schemaType || !(0, _isSchema.default)(schemaType.prototype)) throw new TypeError('You must provide a yup schema constructor function');
-  if (typeof name !== 'string') throw new TypeError('A Method name must be provided');
-  if (typeof fn !== 'function') throw new TypeError('Method function must be provided');
-  schemaType.prototype[name] = fn;
-}
-
-/***/ }),
-
-/***/ 8795:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.string = exports.object = exports.number = exports.mixed = exports.default = exports.date = exports.boolean = exports.array = void 0;
-
-var _printValue = _interopRequireDefault(__nccwpck_require__(588));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-let mixed = {
-  default: '${path} is invalid',
-  required: '${path} is a required field',
-  oneOf: '${path} must be one of the following values: ${values}',
-  notOneOf: '${path} must not be one of the following values: ${values}',
-  notType: ({
-    path,
-    type,
-    value,
-    originalValue
-  }) => {
-    let isCast = originalValue != null && originalValue !== value;
-    let msg = `${path} must be a \`${type}\` type, ` + `but the final value was: \`${(0, _printValue.default)(value, true)}\`` + (isCast ? ` (cast from the value \`${(0, _printValue.default)(originalValue, true)}\`).` : '.');
-
-    if (value === null) {
-      msg += `\n If "null" is intended as an empty value be sure to mark the schema as \`.nullable()\``;
-    }
-
-    return msg;
-  },
-  defined: '${path} must be defined'
-};
-exports.mixed = mixed;
-let string = {
-  length: '${path} must be exactly ${length} characters',
-  min: '${path} must be at least ${min} characters',
-  max: '${path} must be at most ${max} characters',
-  matches: '${path} must match the following: "${regex}"',
-  email: '${path} must be a valid email',
-  url: '${path} must be a valid URL',
-  uuid: '${path} must be a valid UUID',
-  trim: '${path} must be a trimmed string',
-  lowercase: '${path} must be a lowercase string',
-  uppercase: '${path} must be a upper case string'
-};
-exports.string = string;
-let number = {
-  min: '${path} must be greater than or equal to ${min}',
-  max: '${path} must be less than or equal to ${max}',
-  lessThan: '${path} must be less than ${less}',
-  moreThan: '${path} must be greater than ${more}',
-  positive: '${path} must be a positive number',
-  negative: '${path} must be a negative number',
-  integer: '${path} must be an integer'
-};
-exports.number = number;
-let date = {
-  min: '${path} field must be later than ${min}',
-  max: '${path} field must be at earlier than ${max}'
-};
-exports.date = date;
-let boolean = {
-  isValue: '${path} field must be ${value}'
-};
-exports.boolean = boolean;
-let object = {
-  noUnknown: '${path} field has unspecified keys: ${unknown}'
-};
-exports.object = object;
-let array = {
-  min: '${path} field must have at least ${min} items',
-  max: '${path} field must have less than or equal to ${max} items',
-  length: '${path} must have ${length} items'
-};
-exports.array = array;
-
-var _default = Object.assign(Object.create(null), {
-  mixed,
-  string,
-  number,
-  date,
-  object,
-  array,
-  boolean
-});
-
-exports.default = _default;
-
-/***/ }),
-
-/***/ 2147:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const Mixed = _schema.default;
-var _default = Mixed;
-exports.default = _default;
-
-function create() {
-  return new Mixed();
-} // XXX: this is using the Base schema so that `addMethod(mixed)` works as a base class
-
-
-create.prototype = Mixed.prototype;
-
-/***/ }),
-
-/***/ 2974:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _locale = __nccwpck_require__(8795);
-
-var _isAbsent = _interopRequireDefault(__nccwpck_require__(8974));
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-let isNaN = value => value != +value;
-
-function create() {
-  return new NumberSchema();
-}
-
-class NumberSchema extends _schema.default {
-  constructor() {
-    super({
-      type: 'number'
-    });
-    this.withMutation(() => {
-      this.transform(function (value) {
-        let parsed = value;
-
-        if (typeof parsed === 'string') {
-          parsed = parsed.replace(/\s/g, '');
-          if (parsed === '') return NaN; // don't use parseFloat to avoid positives on alpha-numeric strings
-
-          parsed = +parsed;
-        }
-
-        if (this.isType(parsed)) return parsed;
-        return parseFloat(parsed);
-      });
-    });
-  }
-
-  _typeCheck(value) {
-    if (value instanceof Number) value = value.valueOf();
-    return typeof value === 'number' && !isNaN(value);
-  }
-
-  min(min, message = _locale.number.min) {
-    return this.test({
-      message,
-      name: 'min',
-      exclusive: true,
-      params: {
-        min
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value >= this.resolve(min);
-      }
-
-    });
-  }
-
-  max(max, message = _locale.number.max) {
-    return this.test({
-      message,
-      name: 'max',
-      exclusive: true,
-      params: {
-        max
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value <= this.resolve(max);
-      }
-
-    });
-  }
-
-  lessThan(less, message = _locale.number.lessThan) {
-    return this.test({
-      message,
-      name: 'max',
-      exclusive: true,
-      params: {
-        less
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value < this.resolve(less);
-      }
-
-    });
-  }
-
-  moreThan(more, message = _locale.number.moreThan) {
-    return this.test({
-      message,
-      name: 'min',
-      exclusive: true,
-      params: {
-        more
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value > this.resolve(more);
-      }
-
-    });
-  }
-
-  positive(msg = _locale.number.positive) {
-    return this.moreThan(0, msg);
-  }
-
-  negative(msg = _locale.number.negative) {
-    return this.lessThan(0, msg);
-  }
-
-  integer(message = _locale.number.integer) {
-    return this.test({
-      name: 'integer',
-      message,
-      test: val => (0, _isAbsent.default)(val) || Number.isInteger(val)
-    });
-  }
-
-  truncate() {
-    return this.transform(value => !(0, _isAbsent.default)(value) ? value | 0 : value);
-  }
-
-  round(method) {
-    var _method;
-
-    let avail = ['ceil', 'floor', 'round', 'trunc'];
-    method = ((_method = method) == null ? void 0 : _method.toLowerCase()) || 'round'; // this exists for symemtry with the new Math.trunc
-
-    if (method === 'trunc') return this.truncate();
-    if (avail.indexOf(method.toLowerCase()) === -1) throw new TypeError('Only valid options for round() are: ' + avail.join(', '));
-    return this.transform(value => !(0, _isAbsent.default)(value) ? Math[method](value) : value);
-  }
-
-}
-
-exports.default = NumberSchema;
-create.prototype = NumberSchema.prototype; //
-// Number Interfaces
-//
-
-/***/ }),
-
-/***/ 3288:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _has = _interopRequireDefault(__nccwpck_require__(7198));
-
-var _snakeCase = _interopRequireDefault(__nccwpck_require__(1419));
-
-var _camelCase = _interopRequireDefault(__nccwpck_require__(5769));
-
-var _mapKeys = _interopRequireDefault(__nccwpck_require__(2221));
-
-var _mapValues = _interopRequireDefault(__nccwpck_require__(668));
-
-var _propertyExpr = __nccwpck_require__(435);
-
-var _locale = __nccwpck_require__(8795);
-
-var _sortFields = _interopRequireDefault(__nccwpck_require__(5435));
-
-var _sortByKeyOrder = _interopRequireDefault(__nccwpck_require__(9791));
-
-var _runTests = _interopRequireDefault(__nccwpck_require__(3607));
-
-var _ValidationError = _interopRequireDefault(__nccwpck_require__(5780));
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-let isObject = obj => Object.prototype.toString.call(obj) === '[object Object]';
-
-function unknown(ctx, value) {
-  let known = Object.keys(ctx.fields);
-  return Object.keys(value).filter(key => known.indexOf(key) === -1);
-}
-
-const defaultSort = (0, _sortByKeyOrder.default)([]);
-
-class ObjectSchema extends _schema.default {
-  constructor(spec) {
-    super({
-      type: 'object'
-    });
-    this.fields = Object.create(null);
-    this._sortErrors = defaultSort;
-    this._nodes = [];
-    this._excludedEdges = [];
-    this.withMutation(() => {
-      this.transform(function coerce(value) {
-        if (typeof value === 'string') {
-          try {
-            value = JSON.parse(value);
-          } catch (err) {
-            value = null;
-          }
-        }
-
-        if (this.isType(value)) return value;
-        return null;
-      });
-
-      if (spec) {
-        this.shape(spec);
-      }
-    });
-  }
-
-  _typeCheck(value) {
-    return isObject(value) || typeof value === 'function';
-  }
-
-  _cast(_value, options = {}) {
-    var _options$stripUnknown;
-
-    let value = super._cast(_value, options); //should ignore nulls here
-
-
-    if (value === undefined) return this.getDefault();
-    if (!this._typeCheck(value)) return value;
-    let fields = this.fields;
-    let strip = (_options$stripUnknown = options.stripUnknown) != null ? _options$stripUnknown : this.spec.noUnknown;
-
-    let props = this._nodes.concat(Object.keys(value).filter(v => this._nodes.indexOf(v) === -1));
-
-    let intermediateValue = {}; // is filled during the transform below
-
-    let innerOptions = _extends({}, options, {
-      parent: intermediateValue,
-      __validating: options.__validating || false
-    });
-
-    let isChanged = false;
-
-    for (const prop of props) {
-      let field = fields[prop];
-      let exists = (0, _has.default)(value, prop);
-
-      if (field) {
-        let fieldValue;
-        let inputValue = value[prop]; // safe to mutate since this is fired in sequence
-
-        innerOptions.path = (options.path ? `${options.path}.` : '') + prop; // innerOptions.value = value[prop];
-
-        field = field.resolve({
-          value: inputValue,
-          context: options.context,
-          parent: intermediateValue
-        });
-        let fieldSpec = 'spec' in field ? field.spec : undefined;
-        let strict = fieldSpec == null ? void 0 : fieldSpec.strict;
-
-        if (fieldSpec == null ? void 0 : fieldSpec.strip) {
-          isChanged = isChanged || prop in value;
-          continue;
-        }
-
-        fieldValue = !options.__validating || !strict ? // TODO: use _cast, this is double resolving
-        field.cast(value[prop], innerOptions) : value[prop];
-
-        if (fieldValue !== undefined) {
-          intermediateValue[prop] = fieldValue;
-        }
-      } else if (exists && !strip) {
-        intermediateValue[prop] = value[prop];
-      }
-
-      if (intermediateValue[prop] !== value[prop]) {
-        isChanged = true;
-      }
-    }
-
-    return isChanged ? intermediateValue : value;
-  }
-
-  _validate(_value, opts = {}, callback) {
-    let errors = [];
-    let {
-      sync,
-      from = [],
-      originalValue = _value,
-      abortEarly = this.spec.abortEarly,
-      recursive = this.spec.recursive
-    } = opts;
-    from = [{
-      schema: this,
-      value: originalValue
-    }, ...from]; // this flag is needed for handling `strict` correctly in the context of
-    // validation vs just casting. e.g strict() on a field is only used when validating
-
-    opts.__validating = true;
-    opts.originalValue = originalValue;
-    opts.from = from;
-
-    super._validate(_value, opts, (err, value) => {
-      if (err) {
-        if (!_ValidationError.default.isError(err) || abortEarly) {
-          return void callback(err, value);
-        }
-
-        errors.push(err);
-      }
-
-      if (!recursive || !isObject(value)) {
-        callback(errors[0] || null, value);
-        return;
-      }
-
-      originalValue = originalValue || value;
-
-      let tests = this._nodes.map(key => (_, cb) => {
-        let path = key.indexOf('.') === -1 ? (opts.path ? `${opts.path}.` : '') + key : `${opts.path || ''}["${key}"]`;
-        let field = this.fields[key];
-
-        if (field && 'validate' in field) {
-          field.validate(value[key], _extends({}, opts, {
-            // @ts-ignore
-            path,
-            from,
-            // inner fields are always strict:
-            // 1. this isn't strict so the casting will also have cast inner values
-            // 2. this is strict in which case the nested values weren't cast either
-            strict: true,
-            parent: value,
-            originalValue: originalValue[key]
-          }), cb);
-          return;
-        }
-
-        cb(null);
-      });
-
-      (0, _runTests.default)({
-        sync,
-        tests,
-        value,
-        errors,
-        endEarly: abortEarly,
-        sort: this._sortErrors,
-        path: opts.path
-      }, callback);
-    });
-  }
-
-  clone(spec) {
-    const next = super.clone(spec);
-    next.fields = _extends({}, this.fields);
-    next._nodes = this._nodes;
-    next._excludedEdges = this._excludedEdges;
-    next._sortErrors = this._sortErrors;
-    return next;
-  }
-
-  concat(schema) {
-    let next = super.concat(schema);
-    let nextFields = next.fields;
-
-    for (let [field, schemaOrRef] of Object.entries(this.fields)) {
-      const target = nextFields[field];
-
-      if (target === undefined) {
-        nextFields[field] = schemaOrRef;
-      } else if (target instanceof _schema.default && schemaOrRef instanceof _schema.default) {
-        nextFields[field] = schemaOrRef.concat(target);
-      }
-    }
-
-    return next.withMutation(() => next.shape(nextFields, this._excludedEdges));
-  }
-
-  getDefaultFromShape() {
-    let dft = {};
-
-    this._nodes.forEach(key => {
-      const field = this.fields[key];
-      dft[key] = 'default' in field ? field.getDefault() : undefined;
-    });
-
-    return dft;
-  }
-
-  _getDefault() {
-    if ('default' in this.spec) {
-      return super._getDefault();
-    } // if there is no default set invent one
-
-
-    if (!this._nodes.length) {
-      return undefined;
-    }
-
-    return this.getDefaultFromShape();
-  }
-
-  shape(additions, excludes = []) {
-    let next = this.clone();
-    let fields = Object.assign(next.fields, additions);
-    next.fields = fields;
-    next._sortErrors = (0, _sortByKeyOrder.default)(Object.keys(fields));
-
-    if (excludes.length) {
-      // this is a convenience for when users only supply a single pair
-      if (!Array.isArray(excludes[0])) excludes = [excludes];
-      next._excludedEdges = [...next._excludedEdges, ...excludes];
-    }
-
-    next._nodes = (0, _sortFields.default)(fields, next._excludedEdges);
-    return next;
-  }
-
-  pick(keys) {
-    const picked = {};
-
-    for (const key of keys) {
-      if (this.fields[key]) picked[key] = this.fields[key];
-    }
-
-    return this.clone().withMutation(next => {
-      next.fields = {};
-      return next.shape(picked);
-    });
-  }
-
-  omit(keys) {
-    const next = this.clone();
-    const fields = next.fields;
-    next.fields = {};
-
-    for (const key of keys) {
-      delete fields[key];
-    }
-
-    return next.withMutation(() => next.shape(fields));
-  }
-
-  from(from, to, alias) {
-    let fromGetter = (0, _propertyExpr.getter)(from, true);
-    return this.transform(obj => {
-      if (obj == null) return obj;
-      let newObj = obj;
-
-      if ((0, _has.default)(obj, from)) {
-        newObj = _extends({}, obj);
-        if (!alias) delete newObj[from];
-        newObj[to] = fromGetter(obj);
-      }
-
-      return newObj;
-    });
-  }
-
-  noUnknown(noAllow = true, message = _locale.object.noUnknown) {
-    if (typeof noAllow === 'string') {
-      message = noAllow;
-      noAllow = true;
-    }
-
-    let next = this.test({
-      name: 'noUnknown',
-      exclusive: true,
-      message: message,
-
-      test(value) {
-        if (value == null) return true;
-        const unknownKeys = unknown(this.schema, value);
-        return !noAllow || unknownKeys.length === 0 || this.createError({
-          params: {
-            unknown: unknownKeys.join(', ')
-          }
-        });
-      }
-
-    });
-    next.spec.noUnknown = noAllow;
-    return next;
-  }
-
-  unknown(allow = true, message = _locale.object.noUnknown) {
-    return this.noUnknown(!allow, message);
-  }
-
-  transformKeys(fn) {
-    return this.transform(obj => obj && (0, _mapKeys.default)(obj, (_, key) => fn(key)));
-  }
-
-  camelCase() {
-    return this.transformKeys(_camelCase.default);
-  }
-
-  snakeCase() {
-    return this.transformKeys(_snakeCase.default);
-  }
-
-  constantCase() {
-    return this.transformKeys(key => (0, _snakeCase.default)(key).toUpperCase());
-  }
-
-  describe() {
-    let base = super.describe();
-    base.fields = (0, _mapValues.default)(this.fields, value => value.describe());
-    return base;
-  }
-
-}
-
-exports.default = ObjectSchema;
-
-function create(spec) {
-  return new ObjectSchema(spec);
-}
-
-create.prototype = ObjectSchema.prototype;
-
-/***/ }),
-
-/***/ 3628:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
-
-var _nanoclone = _interopRequireDefault(__nccwpck_require__(1754));
-
-var _locale = __nccwpck_require__(8795);
-
-var _Condition = _interopRequireDefault(__nccwpck_require__(8802));
-
-var _runTests = _interopRequireDefault(__nccwpck_require__(3607));
-
-var _createValidation = _interopRequireDefault(__nccwpck_require__(1025));
-
-var _printValue = _interopRequireDefault(__nccwpck_require__(588));
-
-var _Reference = _interopRequireDefault(__nccwpck_require__(7221));
-
-var _reach = __nccwpck_require__(8187);
-
-var _ValidationError = _interopRequireDefault(__nccwpck_require__(5780));
-
-var _ReferenceSet = _interopRequireDefault(__nccwpck_require__(9297));
-
-var _toArray = _interopRequireDefault(__nccwpck_require__(9642));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-class BaseSchema {
-  constructor(options) {
-    this.deps = [];
-    this.tests = void 0;
-    this.transforms = void 0;
-    this.conditions = [];
-    this._mutate = void 0;
-    this._typeError = void 0;
-    this._whitelist = new _ReferenceSet.default();
-    this._blacklist = new _ReferenceSet.default();
-    this.exclusiveTests = Object.create(null);
-    this.spec = void 0;
-    this.tests = [];
-    this.transforms = [];
-    this.withMutation(() => {
-      this.typeError(_locale.mixed.notType);
-    });
-    this.type = (options == null ? void 0 : options.type) || 'mixed';
-    this.spec = _extends({
-      strip: false,
-      strict: false,
-      abortEarly: true,
-      recursive: true,
-      nullable: false,
-      presence: 'optional'
-    }, options == null ? void 0 : options.spec);
-  } // TODO: remove
-
-
-  get _type() {
-    return this.type;
-  }
-
-  _typeCheck(_value) {
-    return true;
-  }
-
-  clone(spec) {
-    if (this._mutate) {
-      if (spec) Object.assign(this.spec, spec);
-      return this;
-    } // if the nested value is a schema we can skip cloning, since
-    // they are already immutable
-
-
-    const next = Object.create(Object.getPrototypeOf(this)); // @ts-expect-error this is readonly
-
-    next.type = this.type;
-    next._typeError = this._typeError;
-    next._whitelistError = this._whitelistError;
-    next._blacklistError = this._blacklistError;
-    next._whitelist = this._whitelist.clone();
-    next._blacklist = this._blacklist.clone();
-    next.exclusiveTests = _extends({}, this.exclusiveTests); // @ts-expect-error this is readonly
-
-    next.deps = [...this.deps];
-    next.conditions = [...this.conditions];
-    next.tests = [...this.tests];
-    next.transforms = [...this.transforms];
-    next.spec = (0, _nanoclone.default)(_extends({}, this.spec, spec));
-    return next;
-  }
-
-  label(label) {
-    let next = this.clone();
-    next.spec.label = label;
-    return next;
-  }
-
-  meta(...args) {
-    if (args.length === 0) return this.spec.meta;
-    let next = this.clone();
-    next.spec.meta = Object.assign(next.spec.meta || {}, args[0]);
-    return next;
-  } // withContext<TContext extends AnyObject>(): BaseSchema<
-  //   TCast,
-  //   TContext,
-  //   TOutput
-  // > {
-  //   return this as any;
-  // }
-
-
-  withMutation(fn) {
-    let before = this._mutate;
-    this._mutate = true;
-    let result = fn(this);
-    this._mutate = before;
-    return result;
-  }
-
-  concat(schema) {
-    if (!schema || schema === this) return this;
-    if (schema.type !== this.type && this.type !== 'mixed') throw new TypeError(`You cannot \`concat()\` schema's of different types: ${this.type} and ${schema.type}`);
-    let base = this;
-    let combined = schema.clone();
-
-    const mergedSpec = _extends({}, base.spec, combined.spec); // if (combined.spec.nullable === UNSET)
-    //   mergedSpec.nullable = base.spec.nullable;
-    // if (combined.spec.presence === UNSET)
-    //   mergedSpec.presence = base.spec.presence;
-
-
-    combined.spec = mergedSpec;
-    combined._typeError || (combined._typeError = base._typeError);
-    combined._whitelistError || (combined._whitelistError = base._whitelistError);
-    combined._blacklistError || (combined._blacklistError = base._blacklistError); // manually merge the blacklist/whitelist (the other `schema` takes
-    // precedence in case of conflicts)
-
-    combined._whitelist = base._whitelist.merge(schema._whitelist, schema._blacklist);
-    combined._blacklist = base._blacklist.merge(schema._blacklist, schema._whitelist); // start with the current tests
-
-    combined.tests = base.tests;
-    combined.exclusiveTests = base.exclusiveTests; // manually add the new tests to ensure
-    // the deduping logic is consistent
-
-    combined.withMutation(next => {
-      schema.tests.forEach(fn => {
-        next.test(fn.OPTIONS);
-      });
-    });
-    combined.transforms = [...base.transforms, ...combined.transforms];
-    return combined;
-  }
-
-  isType(v) {
-    if (this.spec.nullable && v === null) return true;
-    return this._typeCheck(v);
-  }
-
-  resolve(options) {
-    let schema = this;
-
-    if (schema.conditions.length) {
-      let conditions = schema.conditions;
-      schema = schema.clone();
-      schema.conditions = [];
-      schema = conditions.reduce((schema, condition) => condition.resolve(schema, options), schema);
-      schema = schema.resolve(options);
-    }
-
-    return schema;
-  }
-  /**
-   *
-   * @param {*} value
-   * @param {Object} options
-   * @param {*=} options.parent
-   * @param {*=} options.context
-   */
-
-
-  cast(value, options = {}) {
-    let resolvedSchema = this.resolve(_extends({
-      value
-    }, options));
-
-    let result = resolvedSchema._cast(value, options);
-
-    if (value !== undefined && options.assert !== false && resolvedSchema.isType(result) !== true) {
-      let formattedValue = (0, _printValue.default)(value);
-      let formattedResult = (0, _printValue.default)(result);
-      throw new TypeError(`The value of ${options.path || 'field'} could not be cast to a value ` + `that satisfies the schema type: "${resolvedSchema._type}". \n\n` + `attempted value: ${formattedValue} \n` + (formattedResult !== formattedValue ? `result of cast: ${formattedResult}` : ''));
-    }
-
-    return result;
-  }
-
-  _cast(rawValue, _options) {
-    let value = rawValue === undefined ? rawValue : this.transforms.reduce((value, fn) => fn.call(this, value, rawValue, this), rawValue);
-
-    if (value === undefined) {
-      value = this.getDefault();
-    }
-
-    return value;
-  }
-
-  _validate(_value, options = {}, cb) {
-    let {
-      sync,
-      path,
-      from = [],
-      originalValue = _value,
-      strict = this.spec.strict,
-      abortEarly = this.spec.abortEarly
-    } = options;
-    let value = _value;
-
-    if (!strict) {
-      // this._validating = true;
-      value = this._cast(value, _extends({
-        assert: false
-      }, options)); // this._validating = false;
-    } // value is cast, we can check if it meets type requirements
-
-
-    let args = {
-      value,
-      path,
-      options,
-      originalValue,
-      schema: this,
-      label: this.spec.label,
-      sync,
-      from
-    };
-    let initialTests = [];
-    if (this._typeError) initialTests.push(this._typeError);
-    let finalTests = [];
-    if (this._whitelistError) finalTests.push(this._whitelistError);
-    if (this._blacklistError) finalTests.push(this._blacklistError);
-    (0, _runTests.default)({
-      args,
-      value,
-      path,
-      sync,
-      tests: initialTests,
-      endEarly: abortEarly
-    }, err => {
-      if (err) return void cb(err, value);
-      (0, _runTests.default)({
-        tests: this.tests.concat(finalTests),
-        args,
-        path,
-        sync,
-        value,
-        endEarly: abortEarly
-      }, cb);
-    });
-  }
-
-  validate(value, options, maybeCb) {
-    let schema = this.resolve(_extends({}, options, {
-      value
-    })); // callback case is for nested validations
-
-    return typeof maybeCb === 'function' ? schema._validate(value, options, maybeCb) : new Promise((resolve, reject) => schema._validate(value, options, (err, value) => {
-      if (err) reject(err);else resolve(value);
-    }));
-  }
-
-  validateSync(value, options) {
-    let schema = this.resolve(_extends({}, options, {
-      value
-    }));
-    let result;
-
-    schema._validate(value, _extends({}, options, {
-      sync: true
-    }), (err, value) => {
-      if (err) throw err;
-      result = value;
-    });
-
-    return result;
-  }
-
-  isValid(value, options) {
-    return this.validate(value, options).then(() => true, err => {
-      if (_ValidationError.default.isError(err)) return false;
-      throw err;
-    });
-  }
-
-  isValidSync(value, options) {
-    try {
-      this.validateSync(value, options);
-      return true;
-    } catch (err) {
-      if (_ValidationError.default.isError(err)) return false;
-      throw err;
-    }
-  }
-
-  _getDefault() {
-    let defaultValue = this.spec.default;
-
-    if (defaultValue == null) {
-      return defaultValue;
-    }
-
-    return typeof defaultValue === 'function' ? defaultValue.call(this) : (0, _nanoclone.default)(defaultValue);
-  }
-
-  getDefault(options) {
-    let schema = this.resolve(options || {});
-    return schema._getDefault();
-  }
-
-  default(def) {
-    if (arguments.length === 0) {
-      return this._getDefault();
-    }
-
-    let next = this.clone({
-      default: def
-    });
-    return next;
-  }
-
-  strict(isStrict = true) {
-    let next = this.clone();
-    next.spec.strict = isStrict;
-    return next;
-  }
-
-  _isPresent(value) {
-    return value != null;
-  }
-
-  defined(message = _locale.mixed.defined) {
-    return this.test({
-      message,
-      name: 'defined',
-      exclusive: true,
-
-      test(value) {
-        return value !== undefined;
-      }
-
-    });
-  }
-
-  required(message = _locale.mixed.required) {
-    return this.clone({
-      presence: 'required'
-    }).withMutation(s => s.test({
-      message,
-      name: 'required',
-      exclusive: true,
-
-      test(value) {
-        return this.schema._isPresent(value);
-      }
-
-    }));
-  }
-
-  notRequired() {
-    let next = this.clone({
-      presence: 'optional'
-    });
-    next.tests = next.tests.filter(test => test.OPTIONS.name !== 'required');
-    return next;
-  }
-
-  nullable(isNullable = true) {
-    let next = this.clone({
-      nullable: isNullable !== false
-    });
-    return next;
-  }
-
-  transform(fn) {
-    let next = this.clone();
-    next.transforms.push(fn);
-    return next;
-  }
-  /**
-   * Adds a test function to the schema's queue of tests.
-   * tests can be exclusive or non-exclusive.
-   *
-   * - exclusive tests, will replace any existing tests of the same name.
-   * - non-exclusive: can be stacked
-   *
-   * If a non-exclusive test is added to a schema with an exclusive test of the same name
-   * the exclusive test is removed and further tests of the same name will be stacked.
-   *
-   * If an exclusive test is added to a schema with non-exclusive tests of the same name
-   * the previous tests are removed and further tests of the same name will replace each other.
-   */
-
-
-  test(...args) {
-    let opts;
-
-    if (args.length === 1) {
-      if (typeof args[0] === 'function') {
-        opts = {
-          test: args[0]
-        };
-      } else {
-        opts = args[0];
-      }
-    } else if (args.length === 2) {
-      opts = {
-        name: args[0],
-        test: args[1]
-      };
-    } else {
-      opts = {
-        name: args[0],
-        message: args[1],
-        test: args[2]
-      };
-    }
-
-    if (opts.message === undefined) opts.message = _locale.mixed.default;
-    if (typeof opts.test !== 'function') throw new TypeError('`test` is a required parameters');
-    let next = this.clone();
-    let validate = (0, _createValidation.default)(opts);
-    let isExclusive = opts.exclusive || opts.name && next.exclusiveTests[opts.name] === true;
-
-    if (opts.exclusive) {
-      if (!opts.name) throw new TypeError('Exclusive tests must provide a unique `name` identifying the test');
-    }
-
-    if (opts.name) next.exclusiveTests[opts.name] = !!opts.exclusive;
-    next.tests = next.tests.filter(fn => {
-      if (fn.OPTIONS.name === opts.name) {
-        if (isExclusive) return false;
-        if (fn.OPTIONS.test === validate.OPTIONS.test) return false;
-      }
-
-      return true;
-    });
-    next.tests.push(validate);
-    return next;
-  }
-
-  when(keys, options) {
-    if (!Array.isArray(keys) && typeof keys !== 'string') {
-      options = keys;
-      keys = '.';
-    }
-
-    let next = this.clone();
-    let deps = (0, _toArray.default)(keys).map(key => new _Reference.default(key));
-    deps.forEach(dep => {
-      // @ts-ignore
-      if (dep.isSibling) next.deps.push(dep.key);
-    });
-    next.conditions.push(new _Condition.default(deps, options));
-    return next;
-  }
-
-  typeError(message) {
-    let next = this.clone();
-    next._typeError = (0, _createValidation.default)({
-      message,
-      name: 'typeError',
-
-      test(value) {
-        if (value !== undefined && !this.schema.isType(value)) return this.createError({
-          params: {
-            type: this.schema._type
-          }
-        });
-        return true;
-      }
-
-    });
-    return next;
-  }
-
-  oneOf(enums, message = _locale.mixed.oneOf) {
-    let next = this.clone();
-    enums.forEach(val => {
-      next._whitelist.add(val);
-
-      next._blacklist.delete(val);
-    });
-    next._whitelistError = (0, _createValidation.default)({
-      message,
-      name: 'oneOf',
-
-      test(value) {
-        if (value === undefined) return true;
-        let valids = this.schema._whitelist;
-        let resolved = valids.resolveAll(this.resolve);
-        return resolved.includes(value) ? true : this.createError({
-          params: {
-            values: valids.toArray().join(', '),
-            resolved
-          }
-        });
-      }
-
-    });
-    return next;
-  }
-
-  notOneOf(enums, message = _locale.mixed.notOneOf) {
-    let next = this.clone();
-    enums.forEach(val => {
-      next._blacklist.add(val);
-
-      next._whitelist.delete(val);
-    });
-    next._blacklistError = (0, _createValidation.default)({
-      message,
-      name: 'notOneOf',
-
-      test(value) {
-        let invalids = this.schema._blacklist;
-        let resolved = invalids.resolveAll(this.resolve);
-        if (resolved.includes(value)) return this.createError({
-          params: {
-            values: invalids.toArray().join(', '),
-            resolved
-          }
-        });
-        return true;
-      }
-
-    });
-    return next;
-  }
-
-  strip(strip = true) {
-    let next = this.clone();
-    next.spec.strip = strip;
-    return next;
-  }
-
-  describe() {
-    const next = this.clone();
-    const {
-      label,
-      meta
-    } = next.spec;
-    const description = {
-      meta,
-      label,
-      type: next.type,
-      oneOf: next._whitelist.describe(),
-      notOneOf: next._blacklist.describe(),
-      tests: next.tests.map(fn => ({
-        name: fn.OPTIONS.name,
-        params: fn.OPTIONS.params
-      })).filter((n, idx, list) => list.findIndex(c => c.name === n.name) === idx)
-    };
-    return description;
-  }
-
-} // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-
-exports.default = BaseSchema;
-// @ts-expect-error
-BaseSchema.prototype.__isYupSchema__ = true;
-
-for (const method of ['validate', 'validateSync']) BaseSchema.prototype[`${method}At`] = function (path, value, options = {}) {
-  const {
-    parent,
-    parentPath,
-    schema
-  } = (0, _reach.getIn)(this, path, value, options.context);
-  return schema[method](parent && parent[parentPath], _extends({}, options, {
-    parent,
-    path
-  }));
 };
 
-for (const alias of ['equals', 'is']) BaseSchema.prototype[alias] = BaseSchema.prototype.oneOf;
+exports.y = templateEntityV1beta3Validator;
+//# sourceMappingURL=index.cjs.js.map
 
-for (const alias of ['not', 'nope']) BaseSchema.prototype[alias] = BaseSchema.prototype.notOneOf;
-
-BaseSchema.prototype.optional = BaseSchema.prototype.notRequired;
 
 /***/ }),
 
-/***/ 7663:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = setLocale;
-
-var _locale = _interopRequireDefault(__nccwpck_require__(8795));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function setLocale(custom) {
-  Object.keys(custom).forEach(type => {
-    // @ts-ignore
-    Object.keys(custom[type]).forEach(method => {
-      // @ts-ignore
-      _locale.default[type][method] = custom[type][method];
-    });
-  });
-}
-
-/***/ }),
-
-/***/ 5744:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.create = create;
-exports.default = void 0;
-
-var _locale = __nccwpck_require__(8795);
-
-var _isAbsent = _interopRequireDefault(__nccwpck_require__(8974));
-
-var _schema = _interopRequireDefault(__nccwpck_require__(3628));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// eslint-disable-next-line
-let rEmail = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i; // eslint-disable-next-line
-
-let rUrl = /^((https?|ftp):)?\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i; // eslint-disable-next-line
-
-let rUUID = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-
-let isTrimmed = value => (0, _isAbsent.default)(value) || value === value.trim();
-
-let objStringTag = {}.toString();
-
-function create() {
-  return new StringSchema();
-}
-
-class StringSchema extends _schema.default {
-  constructor() {
-    super({
-      type: 'string'
-    });
-    this.withMutation(() => {
-      this.transform(function (value) {
-        if (this.isType(value)) return value;
-        if (Array.isArray(value)) return value;
-        const strValue = value != null && value.toString ? value.toString() : value;
-        if (strValue === objStringTag) return value;
-        return strValue;
-      });
-    });
-  }
-
-  _typeCheck(value) {
-    if (value instanceof String) value = value.valueOf();
-    return typeof value === 'string';
-  }
-
-  _isPresent(value) {
-    return super._isPresent(value) && !!value.length;
-  }
-
-  length(length, message = _locale.string.length) {
-    return this.test({
-      message,
-      name: 'length',
-      exclusive: true,
-      params: {
-        length
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value.length === this.resolve(length);
-      }
-
-    });
-  }
-
-  min(min, message = _locale.string.min) {
-    return this.test({
-      message,
-      name: 'min',
-      exclusive: true,
-      params: {
-        min
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value.length >= this.resolve(min);
-      }
-
-    });
-  }
-
-  max(max, message = _locale.string.max) {
-    return this.test({
-      name: 'max',
-      exclusive: true,
-      message,
-      params: {
-        max
-      },
-
-      test(value) {
-        return (0, _isAbsent.default)(value) || value.length <= this.resolve(max);
-      }
-
-    });
-  }
-
-  matches(regex, options) {
-    let excludeEmptyString = false;
-    let message;
-    let name;
-
-    if (options) {
-      if (typeof options === 'object') {
-        ({
-          excludeEmptyString = false,
-          message,
-          name
-        } = options);
-      } else {
-        message = options;
-      }
-    }
-
-    return this.test({
-      name: name || 'matches',
-      message: message || _locale.string.matches,
-      params: {
-        regex
-      },
-      test: value => (0, _isAbsent.default)(value) || value === '' && excludeEmptyString || value.search(regex) !== -1
-    });
-  }
-
-  email(message = _locale.string.email) {
-    return this.matches(rEmail, {
-      name: 'email',
-      message,
-      excludeEmptyString: true
-    });
-  }
-
-  url(message = _locale.string.url) {
-    return this.matches(rUrl, {
-      name: 'url',
-      message,
-      excludeEmptyString: true
-    });
-  }
-
-  uuid(message = _locale.string.uuid) {
-    return this.matches(rUUID, {
-      name: 'uuid',
-      message,
-      excludeEmptyString: false
-    });
-  } //-- transforms --
-
-
-  ensure() {
-    return this.default('').transform(val => val === null ? '' : val);
-  }
-
-  trim(message = _locale.string.trim) {
-    return this.transform(val => val != null ? val.trim() : val).test({
-      message,
-      name: 'trim',
-      test: isTrimmed
-    });
-  }
-
-  lowercase(message = _locale.string.lowercase) {
-    return this.transform(value => !(0, _isAbsent.default)(value) ? value.toLowerCase() : value).test({
-      message,
-      name: 'string_case',
-      exclusive: true,
-      test: value => (0, _isAbsent.default)(value) || value === value.toLowerCase()
-    });
-  }
-
-  uppercase(message = _locale.string.uppercase) {
-    return this.transform(value => !(0, _isAbsent.default)(value) ? value.toUpperCase() : value).test({
-      message,
-      name: 'string_case',
-      exclusive: true,
-      test: value => (0, _isAbsent.default)(value) || value === value.toUpperCase()
-    });
-  }
-
-}
-
-exports.default = StringSchema;
-create.prototype = StringSchema.prototype; //
-// String Interfaces
-//
-
-/***/ }),
-
-/***/ 9297:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
-
-var _Reference = _interopRequireDefault(__nccwpck_require__(7221));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class ReferenceSet {
-  constructor() {
-    this.list = void 0;
-    this.refs = void 0;
-    this.list = new Set();
-    this.refs = new Map();
-  }
-
-  get size() {
-    return this.list.size + this.refs.size;
-  }
-
-  describe() {
-    const description = [];
-
-    for (const item of this.list) description.push(item);
-
-    for (const [, ref] of this.refs) description.push(ref.describe());
-
-    return description;
-  }
-
-  toArray() {
-    return Array.from(this.list).concat(Array.from(this.refs.values()));
-  }
-
-  resolveAll(resolve) {
-    return this.toArray().reduce((acc, e) => acc.concat(_Reference.default.isRef(e) ? resolve(e) : e), []);
-  }
-
-  add(value) {
-    _Reference.default.isRef(value) ? this.refs.set(value.key, value) : this.list.add(value);
-  }
-
-  delete(value) {
-    _Reference.default.isRef(value) ? this.refs.delete(value.key) : this.list.delete(value);
-  }
-
-  clone() {
-    const next = new ReferenceSet();
-    next.list = new Set(this.list);
-    next.refs = new Map(this.refs);
-    return next;
-  }
-
-  merge(newItems, removeItems) {
-    const next = this.clone();
-    newItems.list.forEach(value => next.add(value));
-    newItems.refs.forEach(value => next.add(value));
-    removeItems.list.forEach(value => next.delete(value));
-    removeItems.refs.forEach(value => next.delete(value));
-    return next;
-  }
-
-}
-
-exports.default = ReferenceSet;
-
-/***/ }),
-
-/***/ 1025:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = createValidation;
-
-var _mapValues = _interopRequireDefault(__nccwpck_require__(668));
-
-var _ValidationError = _interopRequireDefault(__nccwpck_require__(5780));
-
-var _Reference = _interopRequireDefault(__nccwpck_require__(7221));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function createValidation(config) {
-  function validate(_ref, cb) {
-    let {
-      value,
-      path = '',
-      label,
-      options,
-      originalValue,
-      sync
-    } = _ref,
-        rest = _objectWithoutPropertiesLoose(_ref, ["value", "path", "label", "options", "originalValue", "sync"]);
-
-    const {
-      name,
-      test,
-      params,
-      message
-    } = config;
-    let {
-      parent,
-      context
-    } = options;
-
-    function resolve(item) {
-      return _Reference.default.isRef(item) ? item.getValue(value, parent, context) : item;
-    }
-
-    function createError(overrides = {}) {
-      const nextParams = (0, _mapValues.default)(_extends({
-        value,
-        originalValue,
-        label,
-        path: overrides.path || path
-      }, params, overrides.params), resolve);
-      const error = new _ValidationError.default(_ValidationError.default.formatError(overrides.message || message, nextParams), value, nextParams.path, overrides.type || name);
-      error.params = nextParams;
-      return error;
-    }
-
-    let ctx = _extends({
-      path,
-      parent,
-      type: name,
-      createError,
-      resolve,
-      options,
-      originalValue
-    }, rest);
-
-    if (!sync) {
-      try {
-        Promise.resolve(test.call(ctx, value, ctx)).then(validOrError => {
-          if (_ValidationError.default.isError(validOrError)) cb(validOrError);else if (!validOrError) cb(createError());else cb(null, validOrError);
-        }).catch(cb);
-      } catch (err) {
-        cb(err);
-      }
-
-      return;
-    }
-
-    let result;
-
-    try {
-      var _ref2;
-
-      result = test.call(ctx, value, ctx);
-
-      if (typeof ((_ref2 = result) == null ? void 0 : _ref2.then) === 'function') {
-        throw new Error(`Validation test of type: "${ctx.type}" returned a Promise during a synchronous validate. ` + `This test will finish after the validate call has returned`);
-      }
-    } catch (err) {
-      cb(err);
-      return;
-    }
-
-    if (_ValidationError.default.isError(result)) cb(result);else if (!result) cb(createError());else cb(null, result);
-  }
-
-  validate.OPTIONS = config;
-  return validate;
-}
-
-/***/ }),
-
-/***/ 8974:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
-
-const isAbsent = value => value == null;
-
-var _default = isAbsent;
-exports.default = _default;
-
-/***/ }),
-
-/***/ 3516:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
-
-const isSchema = obj => obj && obj.__isYupSchema__;
-
-var _default = isSchema;
-exports.default = _default;
-
-/***/ }),
-
-/***/ 879:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = parseIsoDate;
-
-/* eslint-disable */
-
-/**
- *
- * Date.parse with progressive enhancement for ISO 8601 <https://github.com/csnover/js-iso8601>
- * NON-CONFORMANT EDITION.
- * © 2011 Colin Snover <http://zetafleet.com>
- * Released under MIT license.
- */
-//              1 YYYY                 2 MM        3 DD              4 HH     5 mm        6 ss            7 msec         8 Z 9 ±    10 tzHH    11 tzmm
-var isoReg = /^(\d{4}|[+\-]\d{6})(?:-?(\d{2})(?:-?(\d{2}))?)?(?:[ T]?(\d{2}):?(\d{2})(?::?(\d{2})(?:[,\.](\d{1,}))?)?(?:(Z)|([+\-])(\d{2})(?::?(\d{2}))?)?)?$/;
-
-function parseIsoDate(date) {
-  var numericKeys = [1, 4, 5, 6, 7, 10, 11],
-      minutesOffset = 0,
-      timestamp,
-      struct;
-
-  if (struct = isoReg.exec(date)) {
-    // avoid NaN timestamps caused by “undefined” values being passed to Date.UTC
-    for (var i = 0, k; k = numericKeys[i]; ++i) struct[k] = +struct[k] || 0; // allow undefined days and months
-
-
-    struct[2] = (+struct[2] || 1) - 1;
-    struct[3] = +struct[3] || 1; // allow arbitrary sub-second precision beyond milliseconds
-
-    struct[7] = struct[7] ? String(struct[7]).substr(0, 3) : 0; // timestamps without timezone identifiers should be considered local time
-
-    if ((struct[8] === undefined || struct[8] === '') && (struct[9] === undefined || struct[9] === '')) timestamp = +new Date(struct[1], struct[2], struct[3], struct[4], struct[5], struct[6], struct[7]);else {
-      if (struct[8] !== 'Z' && struct[9] !== undefined) {
-        minutesOffset = struct[10] * 60 + struct[11];
-        if (struct[9] === '+') minutesOffset = 0 - minutesOffset;
-      }
-
-      timestamp = Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]);
-    }
-  } else timestamp = Date.parse ? Date.parse(date) : NaN;
-
-  return timestamp;
-}
-
-/***/ }),
-
-/***/ 588:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = printValue;
-const toString = Object.prototype.toString;
-const errorToString = Error.prototype.toString;
-const regExpToString = RegExp.prototype.toString;
-const symbolToString = typeof Symbol !== 'undefined' ? Symbol.prototype.toString : () => '';
-const SYMBOL_REGEXP = /^Symbol\((.*)\)(.*)$/;
-
-function printNumber(val) {
-  if (val != +val) return 'NaN';
-  const isNegativeZero = val === 0 && 1 / val < 0;
-  return isNegativeZero ? '-0' : '' + val;
-}
-
-function printSimpleValue(val, quoteStrings = false) {
-  if (val == null || val === true || val === false) return '' + val;
-  const typeOf = typeof val;
-  if (typeOf === 'number') return printNumber(val);
-  if (typeOf === 'string') return quoteStrings ? `"${val}"` : val;
-  if (typeOf === 'function') return '[Function ' + (val.name || 'anonymous') + ']';
-  if (typeOf === 'symbol') return symbolToString.call(val).replace(SYMBOL_REGEXP, 'Symbol($1)');
-  const tag = toString.call(val).slice(8, -1);
-  if (tag === 'Date') return isNaN(val.getTime()) ? '' + val : val.toISOString(val);
-  if (tag === 'Error' || val instanceof Error) return '[' + errorToString.call(val) + ']';
-  if (tag === 'RegExp') return regExpToString.call(val);
-  return null;
-}
-
-function printValue(value, quoteStrings) {
-  let result = printSimpleValue(value, quoteStrings);
-  if (result !== null) return result;
-  return JSON.stringify(value, function (key, value) {
-    let result = printSimpleValue(this[key], quoteStrings);
-    if (result !== null) return result;
-    return value;
-  }, 2);
-}
-
-/***/ }),
-
-/***/ 8187:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = void 0;
-exports.getIn = getIn;
-
-var _propertyExpr = __nccwpck_require__(435);
-
-let trim = part => part.substr(0, part.length - 1).substr(1);
-
-function getIn(schema, path, value, context = value) {
-  let parent, lastPart, lastPartDebug; // root path: ''
-
-  if (!path) return {
-    parent,
-    parentPath: path,
-    schema
-  };
-  (0, _propertyExpr.forEach)(path, (_part, isBracket, isArray) => {
-    let part = isBracket ? trim(_part) : _part;
-    schema = schema.resolve({
-      context,
-      parent,
-      value
-    });
-
-    if (schema.innerType) {
-      let idx = isArray ? parseInt(part, 10) : 0;
-
-      if (value && idx >= value.length) {
-        throw new Error(`Yup.reach cannot resolve an array item at index: ${_part}, in the path: ${path}. ` + `because there is no value at that index. `);
-      }
-
-      parent = value;
-      value = value && value[idx];
-      schema = schema.innerType;
-    } // sometimes the array index part of a path doesn't exist: "nested.arr.child"
-    // in these cases the current part is the next schema and should be processed
-    // in this iteration. For cases where the index signature is included this
-    // check will fail and we'll handle the `child` part on the next iteration like normal
-
-
-    if (!isArray) {
-      if (!schema.fields || !schema.fields[part]) throw new Error(`The schema does not contain the path: ${path}. ` + `(failed at: ${lastPartDebug} which is a type: "${schema._type}")`);
-      parent = value;
-      value = value && value[part];
-      schema = schema.fields[part];
-    }
-
-    lastPart = part;
-    lastPartDebug = isBracket ? '[' + _part + ']' : '.' + _part;
-  });
-  return {
-    schema,
-    parent,
-    parentPath: lastPart
-  };
-}
-
-const reach = (obj, path, value, context) => getIn(obj, path, value, context).schema;
-
-var _default = reach;
-exports.default = _default;
-
-/***/ }),
-
-/***/ 3607:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = runTests;
-
-var _ValidationError = _interopRequireDefault(__nccwpck_require__(5780));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const once = cb => {
-  let fired = false;
-  return (...args) => {
-    if (fired) return;
-    fired = true;
-    cb(...args);
-  };
-};
-
-function runTests(options, cb) {
-  let {
-    endEarly,
-    tests,
-    args,
-    value,
-    errors,
-    sort,
-    path
-  } = options;
-  let callback = once(cb);
-  let count = tests.length;
-  const nestedErrors = [];
-  errors = errors ? errors : [];
-  if (!count) return errors.length ? callback(new _ValidationError.default(errors, value, path)) : callback(null, value);
-
-  for (let i = 0; i < tests.length; i++) {
-    const test = tests[i];
-    test(args, function finishTestRun(err) {
-      if (err) {
-        // always return early for non validation errors
-        if (!_ValidationError.default.isError(err)) {
-          return callback(err, value);
-        }
-
-        if (endEarly) {
-          err.value = value;
-          return callback(err, value);
-        }
-
-        nestedErrors.push(err);
-      }
-
-      if (--count <= 0) {
-        if (nestedErrors.length) {
-          if (sort) nestedErrors.sort(sort); //show parent errors after the nested ones: name.first, name
-
-          if (errors.length) nestedErrors.push(...errors);
-          errors = nestedErrors;
-        }
-
-        if (errors.length) {
-          callback(new _ValidationError.default(errors, value, path), value);
-          return;
-        }
-
-        callback(null, value);
-      }
-    });
-  }
-}
-
-/***/ }),
-
-/***/ 9791:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = sortByKeyOrder;
-
-function findIndex(arr, err) {
-  let idx = Infinity;
-  arr.some((key, ii) => {
-    var _err$path;
-
-    if (((_err$path = err.path) == null ? void 0 : _err$path.indexOf(key)) !== -1) {
-      idx = ii;
-      return true;
-    }
-  });
-  return idx;
-}
-
-function sortByKeyOrder(keys) {
-  return (a, b) => {
-    return findIndex(keys, a) - findIndex(keys, b);
-  };
-}
-
-/***/ }),
-
-/***/ 5435:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = sortFields;
-
-var _has = _interopRequireDefault(__nccwpck_require__(7198));
-
-var _toposort = _interopRequireDefault(__nccwpck_require__(3889));
-
-var _propertyExpr = __nccwpck_require__(435);
-
-var _Reference = _interopRequireDefault(__nccwpck_require__(7221));
-
-var _isSchema = _interopRequireDefault(__nccwpck_require__(3516));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// @ts-expect-error
-function sortFields(fields, excludedEdges = []) {
-  let edges = [];
-  let nodes = new Set();
-  let excludes = new Set(excludedEdges.map(([a, b]) => `${a}-${b}`));
-
-  function addNode(depPath, key) {
-    let node = (0, _propertyExpr.split)(depPath)[0];
-    nodes.add(node);
-    if (!excludes.has(`${key}-${node}`)) edges.push([key, node]);
-  }
-
-  for (const key in fields) if ((0, _has.default)(fields, key)) {
-    let value = fields[key];
-    nodes.add(key);
-    if (_Reference.default.isRef(value) && value.isSibling) addNode(value.path, key);else if ((0, _isSchema.default)(value) && 'deps' in value) value.deps.forEach(path => addNode(path, key));
-  }
-
-  return _toposort.default.array(Array.from(nodes), edges).reverse();
-}
-
-/***/ }),
-
-/***/ 9642:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports.default = toArray;
-
-function toArray(value) {
-  return value == null ? [] : [].concat(value);
-}
-
-/***/ }),
-
-/***/ 5570:
+/***/ 2105:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -14947,13 +13702,2045 @@ var jsYaml = {
 /* harmony default export */ const js_yaml = (jsYaml);
 
 
-// EXTERNAL MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/index.cjs.js
-var index_cjs = __nccwpck_require__(7777);
+// EXTERNAL MODULE: ./node_modules/lodash/lodash.js
+var lodash = __nccwpck_require__(250);
+var lodash_default = /*#__PURE__*/__nccwpck_require__.n(lodash);
+
+// EXTERNAL MODULE: ./node_modules/@backstage/catalog-model/node_modules/ajv/dist/ajv.js
+var dist_ajv = __nccwpck_require__(7090);
+var ajv_default = /*#__PURE__*/__nccwpck_require__.n(dist_ajv);
+
+// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/index.esm.js
+
+
+
+function isApiEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "API";
+}
+function isComponentEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "COMPONENT";
+}
+function isDomainEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "DOMAIN";
+}
+function isGroupEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "GROUP";
+}
+function isLocationEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "LOCATION";
+}
+function isResourceEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "RESOURCE";
+}
+function isSystemEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "SYSTEM";
+}
+function isUserEntity(entity) {
+  return entity.kind.toLocaleUpperCase("en-US") === "USER";
+}
+
+const DEFAULT_NAMESPACE = "default";
+const ANNOTATION_VIEW_URL = "backstage.io/view-url";
+const ANNOTATION_EDIT_URL = "backstage.io/edit-url";
+const ANNOTATION_KUBERNETES_API_SERVER = "kubernetes.io/api-server";
+const ANNOTATION_KUBERNETES_API_SERVER_CA = "kubernetes.io/api-server-certificate-authority";
+const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
+
+class DefaultNamespaceEntityPolicy {
+  constructor(namespace = DEFAULT_NAMESPACE) {
+    this.namespace = namespace;
+  }
+  async enforce(entity) {
+    if (entity.metadata.namespace) {
+      return entity;
+    }
+    return lodash_default().merge({ metadata: { namespace: this.namespace } }, entity);
+  }
+}
+
+function parseRefString(ref) {
+  let colonI = ref.indexOf(":");
+  const slashI = ref.indexOf("/");
+  if (slashI !== -1 && slashI < colonI) {
+    colonI = -1;
+  }
+  const kind = colonI === -1 ? void 0 : ref.slice(0, colonI);
+  const namespace = slashI === -1 ? void 0 : ref.slice(colonI + 1, slashI);
+  const name = ref.slice(Math.max(colonI + 1, slashI + 1));
+  if (kind === "" || namespace === "" || name === "") {
+    throw new TypeError(
+      `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`
+    );
+  }
+  return { kind, namespace, name };
+}
+function getCompoundEntityRef(entity) {
+  return {
+    kind: entity.kind,
+    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+    name: entity.metadata.name
+  };
+}
+function parseEntityRef(ref, context) {
+  var _a, _b, _c, _d;
+  if (!ref) {
+    throw new Error(`Entity reference must not be empty`);
+  }
+  const defaultKind = context == null ? void 0 : context.defaultKind;
+  const defaultNamespace = (context == null ? void 0 : context.defaultNamespace) || DEFAULT_NAMESPACE;
+  let kind;
+  let namespace;
+  let name;
+  if (typeof ref === "string") {
+    const parsed = parseRefString(ref);
+    kind = (_a = parsed.kind) != null ? _a : defaultKind;
+    namespace = (_b = parsed.namespace) != null ? _b : defaultNamespace;
+    name = parsed.name;
+  } else {
+    kind = (_c = ref.kind) != null ? _c : defaultKind;
+    namespace = (_d = ref.namespace) != null ? _d : defaultNamespace;
+    name = ref.name;
+  }
+  if (!kind) {
+    const textual = JSON.stringify(ref);
+    throw new Error(
+      `Entity reference ${textual} had missing or empty kind (e.g. did not start with "component:" or similar)`
+    );
+  } else if (!namespace) {
+    const textual = JSON.stringify(ref);
+    throw new Error(
+      `Entity reference ${textual} had missing or empty namespace`
+    );
+  } else if (!name) {
+    const textual = JSON.stringify(ref);
+    throw new Error(`Entity reference ${textual} had missing or empty name`);
+  }
+  return { kind, namespace, name };
+}
+function stringifyEntityRef(ref) {
+  var _a, _b;
+  let kind;
+  let namespace;
+  let name;
+  if ("metadata" in ref) {
+    kind = ref.kind;
+    namespace = (_a = ref.metadata.namespace) != null ? _a : DEFAULT_NAMESPACE;
+    name = ref.metadata.name;
+  } else {
+    kind = ref.kind;
+    namespace = (_b = ref.namespace) != null ? _b : DEFAULT_NAMESPACE;
+    name = ref.name;
+  }
+  return `${kind.toLocaleLowerCase("en-US")}:${namespace.toLocaleLowerCase(
+    "en-US"
+  )}/${name.toLocaleLowerCase("en-US")}`;
+}
+
+class GroupDefaultParentEntityPolicy {
+  constructor(parentEntityRef) {
+    const { kind, namespace, name } = parseEntityRef(parentEntityRef, {
+      defaultKind: "Group",
+      defaultNamespace: DEFAULT_NAMESPACE
+    });
+    if (kind.toLocaleUpperCase("en-US") !== "GROUP") {
+      throw new TypeError("group parent must be a group");
+    }
+    this.parentRef = stringifyEntityRef({
+      kind,
+      namespace,
+      name
+    });
+  }
+  async enforce(entity) {
+    if (entity.kind !== "Group") {
+      return entity;
+    }
+    const group = entity;
+    if (group.spec.parent) {
+      return group;
+    }
+    if (stringifyEntityRef(group) !== this.parentRef) {
+      group.spec.parent = this.parentRef;
+    }
+    return group;
+  }
+}
+
+class CommonValidatorFunctions {
+  /**
+   * Checks that the value is on the form `<suffix>` or `<prefix><separator><suffix>`, and validates
+   * those parts separately.
+   *
+   * @param value - The value to check
+   * @param separator - The separator between parts
+   * @param isValidPrefix - Checks that the part before the separator is valid, if present
+   * @param isValidSuffix - Checks that the part after the separator (or the entire value if there is no separator) is valid
+   */
+  static isValidPrefixAndOrSuffix(value, separator, isValidPrefix, isValidSuffix) {
+    if (typeof value !== "string") {
+      return false;
+    }
+    const parts = value.split(separator);
+    if (parts.length === 1) {
+      return isValidSuffix(parts[0]);
+    } else if (parts.length === 2) {
+      return isValidPrefix(parts[0]) && isValidSuffix(parts[1]);
+    }
+    return false;
+  }
+  /**
+   * Checks that the value can be safely transferred as JSON.
+   *
+   * @param value - The value to check
+   */
+  static isJsonSafe(value) {
+    try {
+      return lodash_default().isEqual(value, JSON.parse(JSON.stringify(value)));
+    } catch {
+      return false;
+    }
+  }
+  /**
+   * Checks that the value is a valid DNS subdomain name.
+   *
+   * @param value - The value to check
+   * @see https://tools.ietf.org/html/rfc1123
+   */
+  static isValidDnsSubdomain(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 253 && value.split(".").every(CommonValidatorFunctions.isValidDnsLabel);
+  }
+  /**
+   * Checks that the value is a valid DNS label.
+   *
+   * @param value - The value to check
+   * @see https://tools.ietf.org/html/rfc1123
+   */
+  static isValidDnsLabel(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9]+(\-[a-z0-9]+)*$/.test(value);
+  }
+  /**
+   * Checks that the value is a valid tag.
+   *
+   * @deprecated This will be removed in a future release
+   * @param value - The value to check
+   */
+  static isValidTag(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9+#]+(\-[a-z0-9+#]+)*$/.test(value);
+  }
+  /**
+   * Checks that the value is a valid string URL.
+   *
+   * @param value - The value to check
+   */
+  static isValidUrl(value) {
+    if (typeof value !== "string") {
+      return false;
+    }
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  /**
+   * Checks that the value is a non empty string value.
+   *
+   * @deprecated use isNonEmptyString instead
+   * @param value - The value to check
+   */
+  static isValidString(value) {
+    var _a;
+    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+  }
+  /**
+   * Checks that the value is a string value that's not empty.
+   *
+   * @param value - The value to check
+   */
+  static isNonEmptyString(value) {
+    var _a;
+    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+  }
+}
+
+var $schema$b = "http://json-schema.org/draft-07/schema";
+var $id$b = "EntityEnvelope";
+var description$b = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
+var examples$a = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Component",
+		metadata: {
+			name: "LoremService"
+		}
+	}
+];
+var type$3 = "object";
+var required$2 = [
+	"apiVersion",
+	"kind",
+	"metadata"
+];
+var additionalProperties$2 = true;
+var properties$2 = {
+	apiVersion: {
+		type: "string",
+		description: "The version of specification format for this particular entity that this is written against.",
+		minLength: 1,
+		examples: [
+			"backstage.io/v1alpha1",
+			"my-company.net/v1",
+			"1.0"
+		]
+	},
+	kind: {
+		type: "string",
+		description: "The high level entity type being described.",
+		minLength: 1,
+		examples: [
+			"API",
+			"Component",
+			"Domain",
+			"Group",
+			"Location",
+			"Resource",
+			"System",
+			"Template",
+			"User"
+		]
+	},
+	metadata: {
+		type: "object",
+		required: [
+			"name"
+		],
+		additionalProperties: true,
+		properties: {
+			name: {
+				type: "string",
+				description: "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
+				examples: [
+					"metadata-proxy"
+				],
+				minLength: 1
+			},
+			namespace: {
+				type: "string",
+				description: "The namespace that the entity belongs to.",
+				"default": "default",
+				examples: [
+					"default",
+					"admin"
+				],
+				minLength: 1
+			}
+		}
+	}
+};
+var entityEnvelopeSchema = {
+	$schema: $schema$b,
+	$id: $id$b,
+	description: description$b,
+	examples: examples$a,
+	type: type$3,
+	required: required$2,
+	additionalProperties: additionalProperties$2,
+	properties: properties$2
+};
+
+var $schema$a = "http://json-schema.org/draft-07/schema";
+var $id$a = "Entity";
+var description$a = "The parts of the format that's common to all versions/kinds of entity.";
+var examples$9 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Component",
+		metadata: {
+			name: "LoremService",
+			description: "Creates Lorems like a pro.",
+			labels: {
+				product_name: "Random value Generator"
+			},
+			annotations: {
+				docs: "https://github.com/..../tree/develop/doc"
+			}
+		},
+		spec: {
+			type: "service",
+			lifecycle: "production",
+			owner: "tools"
+		}
+	}
+];
+var type$2 = "object";
+var required$1 = [
+	"apiVersion",
+	"kind",
+	"metadata"
+];
+var additionalProperties$1 = false;
+var properties$1 = {
+	apiVersion: {
+		type: "string",
+		description: "The version of specification format for this particular entity that this is written against.",
+		minLength: 1,
+		examples: [
+			"backstage.io/v1alpha1",
+			"my-company.net/v1",
+			"1.0"
+		]
+	},
+	kind: {
+		type: "string",
+		description: "The high level entity type being described.",
+		minLength: 1,
+		examples: [
+			"API",
+			"Component",
+			"Domain",
+			"Group",
+			"Location",
+			"Resource",
+			"System",
+			"Template",
+			"User"
+		]
+	},
+	metadata: {
+		$ref: "EntityMeta"
+	},
+	spec: {
+		type: "object",
+		description: "The specification data describing the entity itself."
+	},
+	relations: {
+		type: "array",
+		description: "The relations that this entity has with other entities.",
+		items: {
+			$ref: "common#relation"
+		}
+	},
+	status: {
+		$ref: "common#status"
+	}
+};
+var entitySchema = {
+	$schema: $schema$a,
+	$id: $id$a,
+	description: description$a,
+	examples: examples$9,
+	type: type$2,
+	required: required$1,
+	additionalProperties: additionalProperties$1,
+	properties: properties$1
+};
+
+var $schema$9 = "http://json-schema.org/draft-07/schema";
+var $id$9 = "EntityMeta";
+var description$9 = "Metadata fields common to all versions/kinds of entity.";
+var examples$8 = [
+	{
+		uid: "e01199ab-08cc-44c2-8e19-5c29ded82521",
+		etag: "lsndfkjsndfkjnsdfkjnsd==",
+		name: "my-component-yay",
+		namespace: "the-namespace",
+		labels: {
+			"backstage.io/custom": "ValueStuff"
+		},
+		annotations: {
+			"example.com/bindings": "are-secret"
+		},
+		tags: [
+			"java",
+			"data"
+		]
+	}
+];
+var type$1 = "object";
+var required = [
+	"name"
+];
+var additionalProperties = true;
+var properties = {
+	uid: {
+		type: "string",
+		description: "A globally unique ID for the entity. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, but the server is free to reject requests that do so in such a way that it breaks semantics.",
+		examples: [
+			"e01199ab-08cc-44c2-8e19-5c29ded82521"
+		],
+		minLength: 1
+	},
+	etag: {
+		type: "string",
+		description: "An opaque string that changes for each update operation to any part of the entity, including metadata. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, and the server will then reject the operation if it does not match the current stored value.",
+		examples: [
+			"lsndfkjsndfkjnsdfkjnsd=="
+		],
+		minLength: 1
+	},
+	name: {
+		type: "string",
+		description: "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
+		examples: [
+			"metadata-proxy"
+		],
+		minLength: 1
+	},
+	namespace: {
+		type: "string",
+		description: "The namespace that the entity belongs to.",
+		"default": "default",
+		examples: [
+			"default",
+			"admin"
+		],
+		minLength: 1
+	},
+	title: {
+		type: "string",
+		description: "A display name of the entity, to be presented in user interfaces instead of the name property, when available.",
+		examples: [
+			"React SSR Template"
+		],
+		minLength: 1
+	},
+	description: {
+		type: "string",
+		description: "A short (typically relatively few words, on one line) description of the entity."
+	},
+	labels: {
+		type: "object",
+		description: "Key/value pairs of identifying information attached to the entity.",
+		additionalProperties: true,
+		patternProperties: {
+			"^.+$": {
+				type: "string"
+			}
+		}
+	},
+	annotations: {
+		type: "object",
+		description: "Key/value pairs of non-identifying auxiliary information attached to the entity.",
+		additionalProperties: true,
+		patternProperties: {
+			"^.+$": {
+				type: "string"
+			}
+		}
+	},
+	tags: {
+		type: "array",
+		description: "A list of single-valued strings, to for example classify catalog entities in various ways.",
+		items: {
+			type: "string",
+			minLength: 1
+		}
+	},
+	links: {
+		type: "array",
+		description: "A list of external hyperlinks related to the entity. Links can provide additional contextual information that may be located outside of Backstage itself. For example, an admin dashboard or external CMS page.",
+		items: {
+			type: "object",
+			required: [
+				"url"
+			],
+			properties: {
+				url: {
+					type: "string",
+					description: "A url in a standard uri format.",
+					examples: [
+						"https://admin.example-org.com"
+					],
+					minLength: 1
+				},
+				title: {
+					type: "string",
+					description: "A user friendly display name for the link.",
+					examples: [
+						"Admin Dashboard"
+					],
+					minLength: 1
+				},
+				icon: {
+					type: "string",
+					description: "A key representing a visual icon to be displayed in the UI.",
+					examples: [
+						"dashboard"
+					],
+					minLength: 1
+				},
+				type: {
+					type: "string",
+					description: "An optional value to categorize links into specific groups.",
+					examples: [
+						"runbook",
+						"documentation",
+						"logs",
+						"dashboard"
+					],
+					minLength: 1
+				}
+			}
+		}
+	}
+};
+var entityMetaSchema = {
+	$schema: $schema$9,
+	$id: $id$9,
+	description: description$9,
+	examples: examples$8,
+	type: type$1,
+	required: required,
+	additionalProperties: additionalProperties,
+	properties: properties
+};
+
+var $schema$8 = "http://json-schema.org/draft-07/schema";
+var $id$8 = "common";
+var index_esm_type = "object";
+var description$8 = "Common definitions to import from other schemas";
+var definitions = {
+	reference: {
+		$id: "#reference",
+		type: "object",
+		description: "A reference by name to another entity.",
+		required: [
+			"kind",
+			"namespace",
+			"name"
+		],
+		additionalProperties: false,
+		properties: {
+			kind: {
+				type: "string",
+				description: "The kind field of the entity.",
+				minLength: 1
+			},
+			namespace: {
+				type: "string",
+				description: "The metadata.namespace field of the entity.",
+				minLength: 1
+			},
+			name: {
+				type: "string",
+				description: "The metadata.name field of the entity.",
+				minLength: 1
+			}
+		}
+	},
+	relation: {
+		$id: "#relation",
+		type: "object",
+		description: "A directed relation from one entity to another.",
+		required: [
+			"type",
+			"target"
+		],
+		additionalProperties: false,
+		properties: {
+			type: {
+				type: "string",
+				minLength: 1,
+				pattern: "^\\w+$",
+				description: "The type of relation."
+			},
+			target: {
+				$ref: "#reference"
+			},
+			targetRef: {
+				type: "string",
+				minLength: 1,
+				description: "The entity ref of the target of this relation."
+			}
+		}
+	},
+	status: {
+		$id: "#status",
+		type: "object",
+		description: "The current status of the entity, as claimed by various sources.",
+		required: [
+		],
+		additionalProperties: true,
+		properties: {
+			items: {
+				type: "array",
+				items: {
+					$ref: "#statusItem"
+				}
+			}
+		}
+	},
+	statusItem: {
+		$id: "#statusItem",
+		type: "object",
+		description: "A specific status item on a well known format.",
+		required: [
+			"type",
+			"level",
+			"message"
+		],
+		additionalProperties: true,
+		properties: {
+			type: {
+				type: "string",
+				minLength: 1
+			},
+			level: {
+				$ref: "#statusLevel",
+				description: "The status level / severity of the status item."
+			},
+			message: {
+				type: "string",
+				description: "A brief message describing the status, intended for human consumption."
+			},
+			error: {
+				$ref: "#error",
+				description: "An optional serialized error object related to the status."
+			}
+		}
+	},
+	statusLevel: {
+		$id: "#statusLevel",
+		type: "string",
+		description: "A status level / severity.",
+		"enum": [
+			"info",
+			"warning",
+			"error"
+		]
+	},
+	error: {
+		$id: "#error",
+		type: "object",
+		description: "A serialized error object.",
+		required: [
+			"name",
+			"message"
+		],
+		additionalProperties: true,
+		properties: {
+			name: {
+				type: "string",
+				examples: [
+					"Error",
+					"InputError"
+				],
+				description: "The type name of the error",
+				minLength: 1
+			},
+			message: {
+				type: "string",
+				description: "The message of the error"
+			},
+			code: {
+				type: "string",
+				description: "An error code associated with the error"
+			},
+			stack: {
+				type: "string",
+				description: "An error stack trace"
+			}
+		}
+	}
+};
+var commonSchema = {
+	$schema: $schema$8,
+	$id: $id$8,
+	type: index_esm_type,
+	description: description$8,
+	definitions: definitions
+};
+
+const compiledSchemaCache = /* @__PURE__ */ new Map();
+const refDependencyCandidates = [
+  entityEnvelopeSchema,
+  entitySchema,
+  entityMetaSchema,
+  commonSchema
+];
+function throwAjvError(errors) {
+  if (!(errors == null ? void 0 : errors.length)) {
+    throw new TypeError("Unknown error");
+  }
+  const error = errors[0];
+  throw new TypeError(
+    `${error.instancePath || "<root>"} ${error.message}${error.params ? ` - ${Object.entries(error.params).map(([key, val]) => `${key}: ${val}`).join(", ")}` : ""}`
+  );
+}
+function compileAjvSchema(schema, options = {}) {
+  var _a;
+  const disableCache = (_a = options == null ? void 0 : options.disableCache) != null ? _a : false;
+  const cacheKey = disableCache ? "" : JSON.stringify(schema);
+  if (!disableCache) {
+    const cached = compiledSchemaCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+  }
+  const extraSchemas = getExtraSchemas(schema);
+  const ajv = new (ajv_default())({
+    allowUnionTypes: true,
+    allErrors: true,
+    validateSchema: true
+  });
+  if (extraSchemas.length) {
+    ajv.addSchema(extraSchemas, void 0, void 0, true);
+  }
+  const compiled = ajv.compile(schema);
+  if (!disableCache) {
+    compiledSchemaCache.set(cacheKey, compiled);
+  }
+  return compiled;
+}
+function getExtraSchemas(schema) {
+  if (typeof schema !== "object") {
+    return [];
+  }
+  const seen = /* @__PURE__ */ new Set();
+  if (schema.$id) {
+    seen.add(schema.$id);
+  }
+  const selected = new Array();
+  const todo = [schema];
+  while (todo.length) {
+    const current = todo.pop();
+    for (const ref of getAllRefs(current)) {
+      if (!seen.has(ref)) {
+        seen.add(ref);
+        const match = refDependencyCandidates.find((c) => c.$id === ref);
+        if (match) {
+          selected.push(match);
+          todo.push(match);
+        }
+      }
+    }
+  }
+  return selected;
+}
+function* getAllRefs(schema) {
+  const todo = [schema];
+  while (todo.length) {
+    const current = todo.pop();
+    if (typeof current === "object" && current) {
+      for (const [key, value] of Object.entries(current)) {
+        if (key === "$ref" && typeof value === "string") {
+          yield value.split("#")[0];
+        } else {
+          todo.push(value);
+        }
+      }
+    }
+  }
+}
+
+function entityEnvelopeSchemaValidator(schema) {
+  const validate = compileAjvSchema(
+    schema ? schema : entityEnvelopeSchema
+  );
+  return (data) => {
+    const result = validate(data);
+    if (result === true) {
+      return data;
+    }
+    throw throwAjvError(validate.errors);
+  };
+}
+
+function entityKindSchemaValidator(schema) {
+  const validate = compileAjvSchema(schema);
+  return (data) => {
+    var _a;
+    const result = validate(data);
+    if (result === true) {
+      return data;
+    }
+    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter(
+      (e) => ["/kind", "/apiVersion"].includes(e.instancePath)
+    );
+    if ((softCandidates == null ? void 0 : softCandidates.length) && softCandidates.every((e) => e.keyword === "enum")) {
+      return false;
+    }
+    throw throwAjvError(validate.errors);
+  };
+}
+
+function entitySchemaValidator(schema) {
+  const validate = compileAjvSchema(schema ? schema : entitySchema);
+  return (data) => {
+    const result = validate(data);
+    if (result === true) {
+      return data;
+    }
+    throw throwAjvError(validate.errors);
+  };
+}
+
+class KubernetesValidatorFunctions {
+  static isValidApiVersion(value) {
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      (n) => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n)
+    );
+  }
+  static isValidKind(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-zA-Z][a-z0-9A-Z]*$/.test(value);
+  }
+  static isValidObjectName(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(value);
+  }
+  static isValidNamespace(value) {
+    return CommonValidatorFunctions.isValidDnsLabel(value);
+  }
+  static isValidLabelKey(value) {
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      KubernetesValidatorFunctions.isValidObjectName
+    );
+  }
+  static isValidLabelValue(value) {
+    return value === "" || KubernetesValidatorFunctions.isValidObjectName(value);
+  }
+  static isValidAnnotationKey(value) {
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      KubernetesValidatorFunctions.isValidObjectName
+    );
+  }
+  static isValidAnnotationValue(value) {
+    return typeof value === "string";
+  }
+}
+
+const defaultValidators = {
+  isValidApiVersion: KubernetesValidatorFunctions.isValidApiVersion,
+  isValidKind: KubernetesValidatorFunctions.isValidKind,
+  isValidEntityName: KubernetesValidatorFunctions.isValidObjectName,
+  isValidNamespace: KubernetesValidatorFunctions.isValidNamespace,
+  isValidLabelKey: KubernetesValidatorFunctions.isValidLabelKey,
+  isValidLabelValue: KubernetesValidatorFunctions.isValidLabelValue,
+  isValidAnnotationKey: KubernetesValidatorFunctions.isValidAnnotationKey,
+  isValidAnnotationValue: KubernetesValidatorFunctions.isValidAnnotationValue,
+  isValidTag: (value) => {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9:+#]+(\-[a-z0-9:+#]+)*$/.test(value);
+  }
+};
+function makeValidator(overrides = {}) {
+  return {
+    ...defaultValidators,
+    ...overrides
+  };
+}
+
+class FieldFormatEntityPolicy {
+  constructor(validators = makeValidator()) {
+    this.validators = validators;
+  }
+  async enforce(entity) {
+    var _a, _b, _c, _d, _e, _f, _g;
+    function require(field, value, validator) {
+      if (value === void 0 || value === null) {
+        throw new Error(`${field} must have a value`);
+      }
+      let isValid;
+      try {
+        isValid = validator(value);
+      } catch (e) {
+        throw new Error(`${field} could not be validated, ${e}`);
+      }
+      if (!isValid) {
+        let expectation;
+        switch (validator.name) {
+          case "isValidLabelValue":
+          case "isValidObjectName":
+            expectation = "a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total";
+            break;
+          case "isValidLabelKey":
+          case "isValidApiVersion":
+          case "isValidAnnotationKey":
+            expectation = "a valid prefix and/or suffix";
+            break;
+          case "isValidNamespace":
+          case "isValidDnsLabel":
+            expectation = "a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total";
+            break;
+          case "isValidTag":
+            expectation = "a string that is sequences of [a-z0-9+#] separated by [-], at most 63 characters in total";
+            break;
+          case "isValidAnnotationValue":
+            expectation = "a string";
+            break;
+          case "isValidKind":
+            expectation = "a string that is a sequence of [a-zA-Z][a-z0-9A-Z], at most 63 characters in total";
+            break;
+          case "isValidUrl":
+            expectation = "a string that is a valid url";
+            break;
+          case "isValidString":
+          case "isNonEmptyString":
+            expectation = "a non empty string";
+            break;
+          default:
+            expectation = void 0;
+            break;
+        }
+        const message = expectation ? ` expected ${expectation} but found "${value}".` : "";
+        throw new Error(
+          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`
+        );
+      }
+    }
+    function optional(field, value, validator) {
+      return value === void 0 || require(field, value, validator);
+    }
+    require("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
+    require("kind", entity.kind, this.validators.isValidKind);
+    require("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
+    optional(
+      "metadata.namespace",
+      entity.metadata.namespace,
+      this.validators.isValidNamespace
+    );
+    for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
+      require(`labels.${k}`, k, this.validators.isValidLabelKey);
+      require(`labels.${k}`, v, this.validators.isValidLabelValue);
+    }
+    for (const [k, v] of Object.entries((_b = entity.metadata.annotations) != null ? _b : [])) {
+      require(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
+      require(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
+    }
+    const tags = (_c = entity.metadata.tags) != null ? _c : [];
+    for (let i = 0; i < tags.length; ++i) {
+      require(`tags.${i}`, tags[i], this.validators.isValidTag);
+    }
+    const links = (_d = entity.metadata.links) != null ? _d : [];
+    for (let i = 0; i < links.length; ++i) {
+      require(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
+      optional(
+        `links.${i}.title`,
+        (_f = links[i]) == null ? void 0 : _f.title,
+        CommonValidatorFunctions.isNonEmptyString
+      );
+      optional(
+        `links.${i}.icon`,
+        (_g = links[i]) == null ? void 0 : _g.icon,
+        KubernetesValidatorFunctions.isValidObjectName
+      );
+    }
+    return entity;
+  }
+}
+
+const defaultKnownFields = ["apiVersion", "kind", "metadata", "spec"];
+class NoForeignRootFieldsEntityPolicy {
+  constructor(knownFields = defaultKnownFields) {
+    this.knownFields = knownFields;
+  }
+  async enforce(entity) {
+    for (const field of Object.keys(entity)) {
+      if (!this.knownFields.includes(field)) {
+        throw new Error(`Unknown field ${field}`);
+      }
+    }
+    return entity;
+  }
+}
+
+class SchemaValidEntityPolicy {
+  async enforce(entity) {
+    if (!this.validate) {
+      const ajv = new (ajv_default())({ allowUnionTypes: true });
+      this.validate = ajv.addSchema([commonSchema, entityMetaSchema], void 0, void 0, true).compile(entitySchema);
+    }
+    const result = this.validate(entity);
+    if (result === true) {
+      return entity;
+    }
+    const [error] = this.validate.errors || [];
+    if (!error) {
+      throw new Error(`Malformed envelope, Unknown error`);
+    }
+    throw new Error(
+      `Malformed envelope, ${error.instancePath || "<root>"} ${error.message}`
+    );
+  }
+}
+
+class AllEntityPolicies {
+  constructor(policies) {
+    this.policies = policies;
+  }
+  async enforce(entity) {
+    let result = entity;
+    for (const policy of this.policies) {
+      const output = await policy.enforce(result);
+      if (!output) {
+        throw new Error(
+          `Policy ${policy.constructor.name} did not return a result`
+        );
+      }
+      result = output;
+    }
+    return result;
+  }
+}
+class AnyEntityPolicy {
+  constructor(policies) {
+    this.policies = policies;
+  }
+  async enforce(entity) {
+    for (const policy of this.policies) {
+      const output = await policy.enforce(entity);
+      if (output) {
+        return output;
+      }
+    }
+    throw new Error(`The entity did not match any known policy`);
+  }
+}
+const EntityPolicies = {
+  allOf(policies) {
+    return new AllEntityPolicies(policies);
+  },
+  oneOf(policies) {
+    return new AnyEntityPolicy(policies);
+  }
+};
+
+var $schema$7 = "http://json-schema.org/draft-07/schema";
+var $id$7 = "ApiV1alpha1";
+var description$7 = "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats.";
+var examples$7 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "API",
+		metadata: {
+			name: "artist-api",
+			description: "Retrieve artist details",
+			labels: {
+				product_name: "Random value Generator"
+			},
+			annotations: {
+				docs: "https://github.com/..../tree/develop/doc"
+			}
+		},
+		spec: {
+			type: "openapi",
+			lifecycle: "production",
+			owner: "artist-relations-team",
+			system: "artist-engagement-portal",
+			definition: "openapi: \"3.0.0\"\ninfo:..."
+		}
+	}
+];
+var allOf$7 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"API"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"type",
+					"lifecycle",
+					"owner",
+					"definition"
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The type of the API definition.",
+						examples: [
+							"openapi",
+							"asyncapi",
+							"graphql",
+							"grpc",
+							"trpc"
+						],
+						minLength: 1
+					},
+					lifecycle: {
+						type: "string",
+						description: "The lifecycle state of the API.",
+						examples: [
+							"experimental",
+							"production",
+							"deprecated"
+						],
+						minLength: 1
+					},
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the API.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					system: {
+						type: "string",
+						description: "An entity reference to the system that the API belongs to.",
+						minLength: 1
+					},
+					definition: {
+						type: "string",
+						description: "The definition of the API, based on the format defined by the type.",
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var schema$7 = {
+	$schema: $schema$7,
+	$id: $id$7,
+	description: description$7,
+	examples: examples$7,
+	allOf: allOf$7
+};
+
+function ajvCompiledJsonSchemaValidator(schema) {
+  let validator;
+  return {
+    async check(data) {
+      if (!validator) {
+        validator = entityKindSchemaValidator(schema);
+      }
+      return validator(data) === data;
+    }
+  };
+}
+
+const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$7);
+
+var $schema$6 = "http://json-schema.org/draft-07/schema";
+var $id$6 = "ComponentV1alpha1";
+var description$6 = "A Component describes a software component. It is typically intimately linked to the source code that constitutes the component, and should be what a developer may regard a \"unit of software\", usually with a distinct deployable or linkable artifact.";
+var examples$6 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Component",
+		metadata: {
+			name: "LoremService",
+			description: "Creates Lorems like a pro.",
+			labels: {
+				product_name: "Random value Generator"
+			},
+			annotations: {
+				docs: "https://github.com/..../tree/develop/doc"
+			}
+		},
+		spec: {
+			type: "service",
+			lifecycle: "production",
+			owner: "tools"
+		}
+	}
+];
+var allOf$6 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Component"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"type",
+					"lifecycle",
+					"owner"
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The type of component.",
+						examples: [
+							"service",
+							"website",
+							"library"
+						],
+						minLength: 1
+					},
+					lifecycle: {
+						type: "string",
+						description: "The lifecycle state of the component.",
+						examples: [
+							"experimental",
+							"production",
+							"deprecated"
+						],
+						minLength: 1
+					},
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the component.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					system: {
+						type: "string",
+						description: "An entity reference to the system that the component belongs to.",
+						minLength: 1
+					},
+					subcomponentOf: {
+						type: "string",
+						description: "An entity reference to another component of which the component is a part.",
+						minLength: 1
+					},
+					providesApis: {
+						type: "array",
+						description: "An array of entity references to the APIs that are provided by the component.",
+						items: {
+							type: "string",
+							minLength: 1
+						}
+					},
+					consumesApis: {
+						type: "array",
+						description: "An array of entity references to the APIs that are consumed by the component.",
+						items: {
+							type: "string",
+							minLength: 1
+						}
+					},
+					dependsOn: {
+						type: "array",
+						description: "An array of references to other entities that the component depends on to function.",
+						items: {
+							type: "string",
+							minLength: 1
+						}
+					}
+				}
+			}
+		}
+	}
+];
+var schema$6 = {
+	$schema: $schema$6,
+	$id: $id$6,
+	description: description$6,
+	examples: examples$6,
+	allOf: allOf$6
+};
+
+const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$6);
+
+var $schema$5 = "http://json-schema.org/draft-07/schema";
+var $id$5 = "DomainV1alpha1";
+var description$5 = "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.";
+var examples$5 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Domain",
+		metadata: {
+			name: "artists",
+			description: "Everything about artists"
+		},
+		spec: {
+			owner: "artist-relations-team"
+		}
+	}
+];
+var allOf$5 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Domain"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"owner"
+				],
+				properties: {
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the component.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var schema$5 = {
+	$schema: $schema$5,
+	$id: $id$5,
+	description: description$5,
+	examples: examples$5,
+	allOf: allOf$5
+};
+
+const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$5);
+
+var $schema$4 = "http://json-schema.org/draft-07/schema";
+var $id$4 = "GroupV1alpha1";
+var description$4 = "A group describes an organizational entity, such as for example a team, a business unit, or a loose collection of people in an interest group. Members of these groups are modeled in the catalog as kind User.";
+var examples$4 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Group",
+		metadata: {
+			name: "infrastructure",
+			description: "The infra business unit"
+		},
+		spec: {
+			type: "business-unit",
+			profile: {
+				displayName: "Infrastructure",
+				email: "infrastructure@example.com",
+				picture: "https://example.com/groups/bu-infrastructure.jpeg"
+			},
+			parent: "ops",
+			children: [
+				"backstage",
+				"other"
+			]
+		}
+	}
+];
+var allOf$4 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Group"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"type",
+					"children"
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The type of group. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their org hierarchy.",
+						examples: [
+							"team",
+							"business-unit",
+							"product-area",
+							"root"
+						],
+						minLength: 1
+					},
+					profile: {
+						type: "object",
+						description: "Optional profile information about the group, mainly for display purposes. All fields of this structure are also optional. The email would be a group email of some form, that the group may wish to be used for contacting them. The picture is expected to be a URL pointing to an image that's representative of the group, and that a browser could fetch and render on a group page or similar.",
+						properties: {
+							displayName: {
+								type: "string",
+								description: "A simple display name to present to users.",
+								examples: [
+									"Infrastructure"
+								],
+								minLength: 1
+							},
+							email: {
+								type: "string",
+								description: "An email where this entity can be reached.",
+								examples: [
+									"infrastructure@example.com"
+								],
+								minLength: 1
+							},
+							picture: {
+								type: "string",
+								description: "The URL of an image that represents this entity.",
+								examples: [
+									"https://example.com/groups/bu-infrastructure.jpeg"
+								],
+								minLength: 1
+							}
+						}
+					},
+					parent: {
+						type: "string",
+						description: "The immediate parent group in the hierarchy, if any. Not all groups must have a parent; the catalog supports multi-root hierarchies. Groups may however not have more than one parent. This field is an entity reference.",
+						examples: [
+							"ops"
+						],
+						minLength: 1
+					},
+					children: {
+						type: "array",
+						description: "The immediate child groups of this group in the hierarchy (whose parent field points to this group). The list must be present, but may be empty if there are no child groups. The items are not guaranteed to be ordered in any particular way. The entries of this array are entity references.",
+						items: {
+							type: "string",
+							examples: [
+								"backstage",
+								"other"
+							],
+							minLength: 1
+						}
+					},
+					members: {
+						type: "array",
+						description: "The users that are members of this group. The entries of this array are entity references.",
+						items: {
+							type: "string",
+							examples: [
+								"jdoe"
+							],
+							minLength: 1
+						}
+					}
+				}
+			}
+		}
+	}
+];
+var schema$4 = {
+	$schema: $schema$4,
+	$id: $id$4,
+	description: description$4,
+	examples: examples$4,
+	allOf: allOf$4
+};
+
+const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$4);
+
+var $schema$3 = "http://json-schema.org/draft-07/schema";
+var $id$3 = "LocationV1alpha1";
+var description$3 = "A location is a marker that references other places to look for catalog data.";
+var examples$3 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Location",
+		metadata: {
+			name: "org-data"
+		},
+		spec: {
+			type: "url",
+			targets: [
+				"http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml",
+				"http://github.com/myorg/myproject/org-data-dump/catalog-info-consultants.yaml"
+			]
+		}
+	}
+];
+var allOf$3 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Location"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The single location type, that's common to the targets specified in the spec. If it is left out, it is inherited from the location type that originally read the entity data.",
+						examples: [
+							"url"
+						],
+						minLength: 1
+					},
+					target: {
+						type: "string",
+						description: "A single target as a string. Can be either an absolute path/URL (depending on the type), or a relative path such as ./details/catalog-info.yaml which is resolved relative to the location of this Location entity itself.",
+						examples: [
+							"./details/catalog-info.yaml"
+						],
+						minLength: 1
+					},
+					targets: {
+						type: "array",
+						description: "A list of targets as strings. They can all be either absolute paths/URLs (depending on the type), or relative paths such as ./details/catalog-info.yaml which are resolved relative to the location of this Location entity itself.",
+						items: {
+							type: "string",
+							examples: [
+								"./details/catalog-info.yaml",
+								"http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml"
+							],
+							minLength: 1
+						}
+					},
+					presence: {
+						type: "string",
+						description: "Whether the presence of the location target is required and it should be considered an error if it can not be found",
+						"default": "required",
+						examples: [
+							"required"
+						],
+						"enum": [
+							"required",
+							"optional"
+						]
+					}
+				}
+			}
+		}
+	}
+];
+var schema$3 = {
+	$schema: $schema$3,
+	$id: $id$3,
+	description: description$3,
+	examples: examples$3,
+	allOf: allOf$3
+};
+
+const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$3);
+
+const RELATION_OWNED_BY = "ownedBy";
+const RELATION_OWNER_OF = "ownerOf";
+const RELATION_CONSUMES_API = "consumesApi";
+const RELATION_API_CONSUMED_BY = "apiConsumedBy";
+const RELATION_PROVIDES_API = "providesApi";
+const RELATION_API_PROVIDED_BY = "apiProvidedBy";
+const RELATION_DEPENDS_ON = "dependsOn";
+const RELATION_DEPENDENCY_OF = "dependencyOf";
+const RELATION_PARENT_OF = "parentOf";
+const RELATION_CHILD_OF = "childOf";
+const RELATION_MEMBER_OF = "memberOf";
+const RELATION_HAS_MEMBER = "hasMember";
+const RELATION_PART_OF = "partOf";
+const RELATION_HAS_PART = "hasPart";
+
+var $schema$2 = "http://json-schema.org/draft-07/schema";
+var $id$2 = "ResourceV1alpha1";
+var description$2 = "A resource describes the infrastructure a system needs to operate, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with components and systems allows to visualize resource footprint, and create tooling around them.";
+var examples$2 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Resource",
+		metadata: {
+			name: "artists-db",
+			description: "Stores artist details"
+		},
+		spec: {
+			type: "database",
+			owner: "artist-relations-team",
+			system: "artist-engagement-portal"
+		}
+	}
+];
+var allOf$2 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Resource"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"type",
+					"owner"
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The type of resource.",
+						examples: [
+							"database",
+							"s3-bucket",
+							"cluster"
+						],
+						minLength: 1
+					},
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the resource.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					dependsOn: {
+						type: "array",
+						description: "An array of references to other entities that the resource depends on to function.",
+						items: {
+							type: "string",
+							minLength: 1
+						}
+					},
+					system: {
+						type: "string",
+						description: "An entity reference to the system that the resource belongs to.",
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var schema$2 = {
+	$schema: $schema$2,
+	$id: $id$2,
+	description: description$2,
+	examples: examples$2,
+	allOf: allOf$2
+};
+
+const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$2);
+
+var $schema$1 = "http://json-schema.org/draft-07/schema";
+var $id$1 = "SystemV1alpha1";
+var description$1 = "A system is a collection of resources and components. The system may expose or consume one or several APIs. It is viewed as abstraction level that provides potential consumers insights into exposed features without needing a too detailed view into the details of all components. This also gives the owning team the possibility to decide about published artifacts and APIs.";
+var examples$1 = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "System",
+		metadata: {
+			name: "artist-engagement-portal",
+			description: "Handy tools to keep artists in the loop"
+		},
+		spec: {
+			owner: "artist-relations-team",
+			domain: "artists"
+		}
+	}
+];
+var allOf$1 = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"System"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"owner"
+				],
+				properties: {
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the component.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					domain: {
+						type: "string",
+						description: "An entity reference to the domain that the system belongs to.",
+						examples: [
+							"artists"
+						],
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var schema$1 = {
+	$schema: $schema$1,
+	$id: $id$1,
+	description: description$1,
+	examples: examples$1,
+	allOf: allOf$1
+};
+
+const systemEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$1);
+
+var $schema = "http://json-schema.org/draft-07/schema";
+var $id = "UserV1alpha1";
+var description = "A user describes a person, such as an employee, a contractor, or similar. Users belong to Group entities in the catalog. These catalog user entries are connected to the way that authentication within the Backstage ecosystem works. See the auth section of the docs for a discussion of these concepts.";
+var examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "User",
+		metadata: {
+			name: "jdoe"
+		},
+		spec: {
+			profile: {
+				displayName: "Jenny Doe",
+				email: "jenny-doe@example.com",
+				picture: "https://example.com/staff/jenny-with-party-hat.jpeg"
+			},
+			memberOf: [
+				"team-b",
+				"employees"
+			]
+		}
+	}
+];
+var allOf = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"User"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"memberOf"
+				],
+				properties: {
+					profile: {
+						type: "object",
+						description: "Optional profile information about the user, mainly for display purposes. All fields of this structure are also optional. The email would be a primary email of some form, that the user may wish to be used for contacting them. The picture is expected to be a URL pointing to an image that's representative of the user, and that a browser could fetch and render on a profile page or similar.",
+						properties: {
+							displayName: {
+								type: "string",
+								description: "A simple display name to present to users.",
+								examples: [
+									"Jenny Doe"
+								],
+								minLength: 1
+							},
+							email: {
+								type: "string",
+								description: "An email where this user can be reached.",
+								examples: [
+									"jenny-doe@example.com"
+								],
+								minLength: 1
+							},
+							picture: {
+								type: "string",
+								description: "The URL of an image that represents this user.",
+								examples: [
+									"https://example.com/staff/jenny-with-party-hat.jpeg"
+								],
+								minLength: 1
+							}
+						}
+					},
+					memberOf: {
+						type: "array",
+						description: "The list of groups that the user is a direct member of (i.e., no transitive memberships are listed here). The list must be present, but may be empty if the user is not member of any groups. The items are not guaranteed to be ordered in any particular way. The entries of this array are entity references.",
+						items: {
+							type: "string",
+							examples: [
+								"team-b",
+								"employees"
+							],
+							minLength: 1
+						}
+					}
+				}
+			}
+		}
+	}
+];
+var index_esm_schema = {
+	$schema: $schema,
+	$id: $id,
+	description: description,
+	examples: examples,
+	allOf: allOf
+};
+
+const userEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(index_esm_schema);
+
+const ANNOTATION_LOCATION = "backstage.io/managed-by-location";
+const ANNOTATION_ORIGIN_LOCATION = "backstage.io/managed-by-origin-location";
+const ANNOTATION_SOURCE_LOCATION = "backstage.io/source-location";
+
+const scriptProtocolPattern = (
+  // eslint-disable-next-line no-control-regex
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i
+);
+function parseLocationRef(ref) {
+  if (typeof ref !== "string") {
+    throw new TypeError(
+      `Unable to parse location ref '${ref}', unexpected argument ${typeof ref}`
+    );
+  }
+  const splitIndex = ref.indexOf(":");
+  if (splitIndex < 0) {
+    throw new TypeError(
+      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`
+    );
+  }
+  const type = ref.substring(0, splitIndex).trim();
+  const target = ref.substring(splitIndex + 1).trim();
+  if (!type || !target) {
+    throw new TypeError(
+      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`
+    );
+  }
+  if (type === "http" || type === "https") {
+    throw new TypeError(
+      `Invalid location ref '${ref}', please prefix it with 'url:', e.g. 'url:${ref}'`
+    );
+  }
+  if (scriptProtocolPattern.test(target)) {
+    throw new TypeError(
+      `Invalid location ref '${ref}', target is a javascript: URL`
+    );
+  }
+  return { type, target };
+}
+function stringifyLocationRef(ref) {
+  const { type, target } = ref;
+  if (!type) {
+    throw new TypeError(`Unable to stringify location ref, empty type`);
+  } else if (!target) {
+    throw new TypeError(`Unable to stringify location ref, empty target`);
+  }
+  if (scriptProtocolPattern.test(target)) {
+    throw new TypeError(
+      `Invalid location ref '${type}:${target}', target is a javascript: URL`
+    );
+  }
+  return `${type}:${target}`;
+}
+function getEntitySourceLocation(entity) {
+  var _a, _b, _c, _d, _e;
+  const locationRef = (_e = (_b = (_a = entity.metadata) == null ? void 0 : _a.annotations) == null ? void 0 : _b[ANNOTATION_SOURCE_LOCATION]) != null ? _e : (_d = (_c = entity.metadata) == null ? void 0 : _c.annotations) == null ? void 0 : _d[ANNOTATION_LOCATION];
+  if (!locationRef) {
+    throw new Error(
+      `Entity '${stringifyEntityRef(entity)}' is missing location`
+    );
+  }
+  return parseLocationRef(locationRef);
+}
+
+
+//# sourceMappingURL=index.esm.js.map
+
+// EXTERNAL MODULE: ./node_modules/@backstage/plugin-scaffolder-common/dist/index.cjs.js
+var index_cjs = __nccwpck_require__(3122);
 // CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/annotations.schema.json
 const annotations_schema_namespaceObject = JSON.parse("{\"$schema\":\"http://json-schema.org/draft-07/schema\",\"$id\":\"Entity metadata annotations\",\"description\":\"Individual annotation format validations\",\"type\":\"object\",\"required\":[\"metadata\"],\"additionalProperties\":true,\"properties\":{\"metadata\":{\"type\":\"object\",\"properties\":{\"annotations\":{\"type\":\"object\",\"description\":\"Key/value pairs of non-identifying auxiliary information attached to the entity.\",\"additionalProperties\":false,\"patternProperties\":{\"^.+$\":{\"type\":\"string\"}},\"allOf\":[{\"properties\":{\"backstage.io/managed-by-location\":{\"type\":\"string\",\"pattern\":\"(url|gitlab|github|azure/api|dir):.*\"}}},{\"properties\":{\"backstage.io/managed-by-origin-location\":{\"type\":\"string\",\"pattern\":\"(url|gitlab|github|azure/api|dir):.*\"}}},{\"properties\":{\"backstage.io/techdocs-ref\":{\"type\":\"string\",\"pattern\":\"(url|gitlab|github|azure/api|dir):.*\"}}},{\"properties\":{\"backstage.io/source-location\":{\"type\":\"string\",\"pattern\":\"((url|gitlab|github|azure/api):.*|(dir):.*/)$\"}}},{\"properties\":{\"backstage.io/view-url\":{\"type\":\"string\",\"format\":\"uri\"}}},{\"properties\":{\"backstage.io/edit-url\":{\"type\":\"string\",\"format\":\"uri\"}}},{\"properties\":{\"graph.microsoft.com/group-id\":{\"type\":\"string\",\"format\":\"uuid\"}}},{\"properties\":{\"graph.microsoft.com/user-id\":{\"type\":\"string\",\"format\":\"uuid\"}}},{\"properties\":{\"datadog/dashboard-url\":{\"type\":\"string\",\"format\":\"uri\"}}},{\"properties\":{\"backstage.io/ldap-uuid\":{\"type\":\"string\",\"format\":\"uuid\"}}},{\"properties\":{\"backstage.io/ldap-dn\":{\"type\":\"string\"}}},{\"properties\":{\"backstage.io/ldap-rdn\":{\"type\":\"string\"}}},{\"properties\":{\"jenkins.io/github-folder\":{\"type\":\"string\"}}},{\"properties\":{\"github.com/project-slug\":{\"type\":\"string\"}}},{\"properties\":{\"github.com/team-slug\":{\"type\":\"string\"}}},{\"properties\":{\"github.com/user-login\":{\"type\":\"string\"}}},{\"properties\":{\"rollbar.com/project-slug\":{\"type\":\"string\"}}},{\"properties\":{\"circleci.com/project-slug\":{\"type\":\"string\"}}},{\"properties\":{\"sonarqube.org/project-key\":{\"type\":\"string\"}}},{\"properties\":{\"backstage.io/code-coverage\":{\"type\":\"string\"}}},{\"properties\":{\"github.com/project-slug\":{\"type\":\"string\"}}},{\"properties\":{\"sentry.io/project-slug\":{\"type\":\"string\"}}},{\"properties\":{\"aws.com/lambda-function-name\":{\"type\":\"string\"}}},{\"properties\":{\"aws.com/lambda-region\":{\"type\":\"string\"}}},{\"properties\":{\"jira/project-key\":{\"type\":\"string\"}}},{\"properties\":{\"snyk.io/org-name\":{\"type\":\"string\"}}},{\"properties\":{\"graph.microsoft.com/tenant-id\":{\"type\":\"string\"}}}]}}}}}");
 // EXTERNAL MODULE: ./node_modules/ajv/dist/ajv.js
 var ajv = __nccwpck_require__(2426);
-var ajv_default = /*#__PURE__*/__nccwpck_require__.n(ajv);
+var dist_ajv_default = /*#__PURE__*/__nccwpck_require__.n(ajv);
 
 // EXTERNAL MODULE: ./node_modules/ajv-formats/dist/index.js
 var dist = __nccwpck_require__(567);
@@ -14962,6 +15749,73 @@ var dist_default = /*#__PURE__*/__nccwpck_require__.n(dist);
 // EXTERNAL MODULE: external "path"
 var external_path_ = __nccwpck_require__(5622);
 var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
+
+// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/relativeSpaceValidation.js
+
+
+
+
+const fileExists = filePath => {
+  let flag = true;
+  try {
+    external_fs_default().accessSync(filePath, (external_fs_default()).constants.F_OK);
+  } catch (e) {
+    flag = false;
+  }
+  return flag;
+};
+
+const validateTechDocs = async (data, filePath) => {
+  if (
+    !data?.metadata?.annotations ||
+    !data?.metadata?.annotations['backstage.io/techdocs-ref']
+  ) {
+    return;
+  }
+  const techDocsAnnotation =
+    data.metadata.annotations['backstage.io/techdocs-ref'];
+  if (!techDocsAnnotation.includes('dir')) {
+    return;
+  }
+
+  const mkdocsYamlPath = external_path_default().join(
+    external_path_default().dirname(filePath),
+    techDocsAnnotation.split(':')[1],
+    'mkdocs.yaml',
+  );
+  const mkdocsYmlPath = external_path_default().join(
+    external_path_default().dirname(filePath),
+    techDocsAnnotation.split(':')[1],
+    'mkdocs.yml',
+  );
+
+  if (!fileExists(mkdocsYamlPath) & !fileExists(mkdocsYmlPath)) {
+    throw new Error(
+      `Techdocs annotation specifies "dir" but file under ${mkdocsYamlPath}|${mkdocsYmlPath} not found`,
+    );
+  }
+  return;
+};
+
+const relativeSpaceValidation = async (
+  fileContents,
+  filePath,
+  verbose,
+) => {
+  try {
+    const data = js_yaml.loadAll(fileContents);
+    if (verbose) {
+      console.log('Validating locally dependant catalog contents');
+    }
+    await Promise.all(
+      data.map(async it => {
+        await validateTechDocs(it, filePath);
+      }),
+    );
+  } catch (e) {
+    throw new Error(e);
+  }
+};
 
 // CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/validator.js
 
@@ -14972,31 +15826,34 @@ var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
 
 
 
-const validator_ajv = new (ajv_default())({ verbose: true });
+
+const validator_ajv = new (dist_ajv_default())({ verbose: true });
 dist_default()(validator_ajv);
 
 const VALIDATORS = {
-  api: index_cjs/* apiEntityV1alpha1Validator */.q_,
-  component: index_cjs/* componentEntityV1alpha1Validator */.Mw,
-  group: index_cjs/* groupEntityV1alpha1Validator */.pv,
-  location: index_cjs/* locationEntityV1alpha1Validator */._y,
-  template: index_cjs/* templateEntityV1beta2Validator */.wO,
-  user: index_cjs/* userEntityV1alpha1Validator */.HU,
-  system: index_cjs/* systemEntityV1alpha1Validator */.nh,
-  domain: index_cjs/* domainEntityV1alpha1Validator */._I,
-  resource: index_cjs/* resourceEntityV1alpha1Validator */.Ij
+  api: apiEntityV1alpha1Validator,
+  component: componentEntityV1alpha1Validator,
+  group: groupEntityV1alpha1Validator,
+  location: locationEntityV1alpha1Validator,
+  template: index_cjs/* templateEntityV1beta3Validator */.y,
+  user: userEntityV1alpha1Validator,
+  system: systemEntityV1alpha1Validator,
+  domain: domainEntityV1alpha1Validator,
+  resource: resourceEntityV1alpha1Validator,
 };
 
 function modifyPlaceholders(obj) {
   for (const k in obj) {
     if (typeof obj[k] === 'object') {
       try {
-        if (obj[k].$text) {
+        if (obj[k].$text || obj[k].$openapi || obj[k].$asyncapi) {
           obj[k] = 'DUMMY TEXT';
           return;
         }
-      } catch(e) {
-        throw new Error(`Placeholder with name '${k}' is empty. Please remove it or populate it.`)
+      } catch (e) {
+        throw new Error(
+          `Placeholder with name '${k}' is empty. Please remove it or populate it.`,
+        );
       }
       modifyPlaceholders(obj[k]);
     }
@@ -15034,11 +15891,11 @@ const validate = async (fileContents, verbose = true) => {
     data.forEach(it => {
       modifyPlaceholders(it);
     });
-    const entityPolicies = index_cjs/* EntityPolicies.allOf */.nW.allOf([
-      new index_cjs/* DefaultNamespaceEntityPolicy */.z3(),
-      new index_cjs/* FieldFormatEntityPolicy */.ze(),
-      new index_cjs/* NoForeignRootFieldsEntityPolicy */.Qp(),
-      new index_cjs/* SchemaValidEntityPolicy */.PG(),
+    const entityPolicies = EntityPolicies.allOf([
+      new DefaultNamespaceEntityPolicy(),
+      new FieldFormatEntityPolicy(),
+      new NoForeignRootFieldsEntityPolicy(),
+      new SchemaValidEntityPolicy(),
     ]);
     const responses = await Promise.all(
       data.map(it => {
@@ -15074,59 +15931,14 @@ const validate = async (fileContents, verbose = true) => {
   }
 };
 
-const relativeSpaceValidation = async (fileContents, filepath, verbose) => {
-  const fileExists = (fp) => {
-    let flag = true;
-    try{
-      external_fs_default().accessSync(fp, (external_fs_default()).constants.F_OK);
-    } catch(e){
-      flag = false;
-    }
-    return flag;
-  }
-
-  const validateTechDocs = async (data, fp) => {
-    if(!data?.metadata?.annotations || !data?.metadata?.annotations["backstage.io/techdocs-ref"] ){
-      return
-    }
-    const techDocsAnnotation = data.metadata.annotations["backstage.io/techdocs-ref"]
-    if(!techDocsAnnotation.includes('dir')){
-      return
-    }
-
-    const mkdocsPath = external_path_default().join(external_path_default().dirname(fp), techDocsAnnotation.split(':')[1], 'mkdocs.yaml');
-
-    if(await !fileExists(mkdocsPath)){
-      throw new Error(`Techdocs annotation specifies "dir" but file under ${mkdocsPath} not found`)
-    }
-    return
-  }
-
-  try {
-    const data = js_yaml.loadAll(fileContents);
-    if(verbose){
-      console.log('Validating locally dependant catalog contents')
-    }
-    await Promise.all(
-      data.map(async (it) => {
-        await validateTechDocs(it, filepath);
-      })
-    );
-  } catch(e){
-    throw new Error(e);
-  }
-}
-
-const validateFromFile = async (
-  filepath = './sample/catalog-info.yml',
-  verbose = true,
-) => {
+const validateFromFile = async (filepath, verbose = true) => {
   const fileContents = external_fs_default().readFileSync(filepath, 'utf8');
   if (verbose) {
     console.log(`Validating Entity Schema policies for file ${filepath}`);
   }
+
   await validate(fileContents, verbose);
-  await relativeSpaceValidation(fileContents, filepath, verbose)
+  await relativeSpaceValidation(fileContents, filepath, verbose);
 };
 
 
@@ -19513,14 +20325,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const additionalItems_1 = __nccwpck_require__(4720);
 const prefixItems_1 = __nccwpck_require__(9498);
 const items_1 = __nccwpck_require__(8008);
-const items2020_1 = __nccwpck_require__(9834);
+const items2020_1 = __nccwpck_require__(9084);
 const contains_1 = __nccwpck_require__(9535);
 const dependencies_1 = __nccwpck_require__(4611);
 const propertyNames_1 = __nccwpck_require__(2554);
 const additionalProperties_1 = __nccwpck_require__(3481);
 const properties_1 = __nccwpck_require__(7666);
 const patternProperties_1 = __nccwpck_require__(5157);
-const not_1 = __nccwpck_require__(2727);
+const not_1 = __nccwpck_require__(8720);
 const anyOf_1 = __nccwpck_require__(8168);
 const oneOf_1 = __nccwpck_require__(6434);
 const allOf_1 = __nccwpck_require__(8406);
@@ -19614,7 +20426,7 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 9834:
+/***/ 9084:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -19651,7 +20463,7 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 2727:
+/***/ 8720:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -23495,4429 +24307,6 @@ function _traverse(opts, pre, post, schema, jsonPtr, rootSchema, parentJsonPtr, 
 function escapeJsonPtr(str) {
   return str.replace(/~/g, '~0').replace(/\//g, '~1');
 }
-
-
-/***/ }),
-
-/***/ 1857:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479),
-    root = __nccwpck_require__(9882);
-
-/* Built-in method references that are verified to be native. */
-var DataView = getNative(root, 'DataView');
-
-module.exports = DataView;
-
-
-/***/ }),
-
-/***/ 5902:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var hashClear = __nccwpck_require__(1789),
-    hashDelete = __nccwpck_require__(712),
-    hashGet = __nccwpck_require__(5395),
-    hashHas = __nccwpck_require__(5232),
-    hashSet = __nccwpck_require__(7320);
-
-/**
- * Creates a hash object.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
-function Hash(entries) {
-  var index = -1,
-      length = entries == null ? 0 : entries.length;
-
-  this.clear();
-  while (++index < length) {
-    var entry = entries[index];
-    this.set(entry[0], entry[1]);
-  }
-}
-
-// Add methods to `Hash`.
-Hash.prototype.clear = hashClear;
-Hash.prototype['delete'] = hashDelete;
-Hash.prototype.get = hashGet;
-Hash.prototype.has = hashHas;
-Hash.prototype.set = hashSet;
-
-module.exports = Hash;
-
-
-/***/ }),
-
-/***/ 6608:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var listCacheClear = __nccwpck_require__(9792),
-    listCacheDelete = __nccwpck_require__(7716),
-    listCacheGet = __nccwpck_require__(5789),
-    listCacheHas = __nccwpck_require__(9386),
-    listCacheSet = __nccwpck_require__(7399);
-
-/**
- * Creates an list cache object.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
-function ListCache(entries) {
-  var index = -1,
-      length = entries == null ? 0 : entries.length;
-
-  this.clear();
-  while (++index < length) {
-    var entry = entries[index];
-    this.set(entry[0], entry[1]);
-  }
-}
-
-// Add methods to `ListCache`.
-ListCache.prototype.clear = listCacheClear;
-ListCache.prototype['delete'] = listCacheDelete;
-ListCache.prototype.get = listCacheGet;
-ListCache.prototype.has = listCacheHas;
-ListCache.prototype.set = listCacheSet;
-
-module.exports = ListCache;
-
-
-/***/ }),
-
-/***/ 881:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479),
-    root = __nccwpck_require__(9882);
-
-/* Built-in method references that are verified to be native. */
-var Map = getNative(root, 'Map');
-
-module.exports = Map;
-
-
-/***/ }),
-
-/***/ 938:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var mapCacheClear = __nccwpck_require__(1610),
-    mapCacheDelete = __nccwpck_require__(6657),
-    mapCacheGet = __nccwpck_require__(1372),
-    mapCacheHas = __nccwpck_require__(609),
-    mapCacheSet = __nccwpck_require__(5582);
-
-/**
- * Creates a map cache object to store key-value pairs.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
-function MapCache(entries) {
-  var index = -1,
-      length = entries == null ? 0 : entries.length;
-
-  this.clear();
-  while (++index < length) {
-    var entry = entries[index];
-    this.set(entry[0], entry[1]);
-  }
-}
-
-// Add methods to `MapCache`.
-MapCache.prototype.clear = mapCacheClear;
-MapCache.prototype['delete'] = mapCacheDelete;
-MapCache.prototype.get = mapCacheGet;
-MapCache.prototype.has = mapCacheHas;
-MapCache.prototype.set = mapCacheSet;
-
-module.exports = MapCache;
-
-
-/***/ }),
-
-/***/ 4671:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479),
-    root = __nccwpck_require__(9882);
-
-/* Built-in method references that are verified to be native. */
-var Promise = getNative(root, 'Promise');
-
-module.exports = Promise;
-
-
-/***/ }),
-
-/***/ 5793:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479),
-    root = __nccwpck_require__(9882);
-
-/* Built-in method references that are verified to be native. */
-var Set = getNative(root, 'Set');
-
-module.exports = Set;
-
-
-/***/ }),
-
-/***/ 2158:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var MapCache = __nccwpck_require__(938),
-    setCacheAdd = __nccwpck_require__(6895),
-    setCacheHas = __nccwpck_require__(804);
-
-/**
- *
- * Creates an array cache object to store unique values.
- *
- * @private
- * @constructor
- * @param {Array} [values] The values to cache.
- */
-function SetCache(values) {
-  var index = -1,
-      length = values == null ? 0 : values.length;
-
-  this.__data__ = new MapCache;
-  while (++index < length) {
-    this.add(values[index]);
-  }
-}
-
-// Add methods to `SetCache`.
-SetCache.prototype.add = SetCache.prototype.push = setCacheAdd;
-SetCache.prototype.has = setCacheHas;
-
-module.exports = SetCache;
-
-
-/***/ }),
-
-/***/ 5323:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var ListCache = __nccwpck_require__(6608),
-    stackClear = __nccwpck_require__(2843),
-    stackDelete = __nccwpck_require__(4717),
-    stackGet = __nccwpck_require__(21),
-    stackHas = __nccwpck_require__(3910),
-    stackSet = __nccwpck_require__(9955);
-
-/**
- * Creates a stack cache object to store key-value pairs.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
-function Stack(entries) {
-  var data = this.__data__ = new ListCache(entries);
-  this.size = data.size;
-}
-
-// Add methods to `Stack`.
-Stack.prototype.clear = stackClear;
-Stack.prototype['delete'] = stackDelete;
-Stack.prototype.get = stackGet;
-Stack.prototype.has = stackHas;
-Stack.prototype.set = stackSet;
-
-module.exports = Stack;
-
-
-/***/ }),
-
-/***/ 9213:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var root = __nccwpck_require__(9882);
-
-/** Built-in value references. */
-var Symbol = root.Symbol;
-
-module.exports = Symbol;
-
-
-/***/ }),
-
-/***/ 3261:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var root = __nccwpck_require__(9882);
-
-/** Built-in value references. */
-var Uint8Array = root.Uint8Array;
-
-module.exports = Uint8Array;
-
-
-/***/ }),
-
-/***/ 3915:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479),
-    root = __nccwpck_require__(9882);
-
-/* Built-in method references that are verified to be native. */
-var WeakMap = getNative(root, 'WeakMap');
-
-module.exports = WeakMap;
-
-
-/***/ }),
-
-/***/ 8388:
-/***/ ((module) => {
-
-/**
- * A specialized version of `_.filter` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {Array} Returns the new filtered array.
- */
-function arrayFilter(array, predicate) {
-  var index = -1,
-      length = array == null ? 0 : array.length,
-      resIndex = 0,
-      result = [];
-
-  while (++index < length) {
-    var value = array[index];
-    if (predicate(value, index, array)) {
-      result[resIndex++] = value;
-    }
-  }
-  return result;
-}
-
-module.exports = arrayFilter;
-
-
-/***/ }),
-
-/***/ 2237:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseTimes = __nccwpck_require__(7765),
-    isArguments = __nccwpck_require__(8495),
-    isArray = __nccwpck_require__(4869),
-    isBuffer = __nccwpck_require__(4190),
-    isIndex = __nccwpck_require__(2936),
-    isTypedArray = __nccwpck_require__(2496);
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Creates an array of the enumerable property names of the array-like `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @param {boolean} inherited Specify returning inherited property names.
- * @returns {Array} Returns the array of property names.
- */
-function arrayLikeKeys(value, inherited) {
-  var isArr = isArray(value),
-      isArg = !isArr && isArguments(value),
-      isBuff = !isArr && !isArg && isBuffer(value),
-      isType = !isArr && !isArg && !isBuff && isTypedArray(value),
-      skipIndexes = isArr || isArg || isBuff || isType,
-      result = skipIndexes ? baseTimes(value.length, String) : [],
-      length = result.length;
-
-  for (var key in value) {
-    if ((inherited || hasOwnProperty.call(value, key)) &&
-        !(skipIndexes && (
-           // Safari 9 has enumerable `arguments.length` in strict mode.
-           key == 'length' ||
-           // Node.js 0.10 has enumerable non-index properties on buffers.
-           (isBuff && (key == 'offset' || key == 'parent')) ||
-           // PhantomJS 2 has enumerable non-index properties on typed arrays.
-           (isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset')) ||
-           // Skip index properties.
-           isIndex(key, length)
-        ))) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-module.exports = arrayLikeKeys;
-
-
-/***/ }),
-
-/***/ 4356:
-/***/ ((module) => {
-
-/**
- * A specialized version of `_.map` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- */
-function arrayMap(array, iteratee) {
-  var index = -1,
-      length = array == null ? 0 : array.length,
-      result = Array(length);
-
-  while (++index < length) {
-    result[index] = iteratee(array[index], index, array);
-  }
-  return result;
-}
-
-module.exports = arrayMap;
-
-
-/***/ }),
-
-/***/ 82:
-/***/ ((module) => {
-
-/**
- * Appends the elements of `values` to `array`.
- *
- * @private
- * @param {Array} array The array to modify.
- * @param {Array} values The values to append.
- * @returns {Array} Returns `array`.
- */
-function arrayPush(array, values) {
-  var index = -1,
-      length = values.length,
-      offset = array.length;
-
-  while (++index < length) {
-    array[offset + index] = values[index];
-  }
-  return array;
-}
-
-module.exports = arrayPush;
-
-
-/***/ }),
-
-/***/ 8018:
-/***/ ((module) => {
-
-/**
- * A specialized version of `_.reduce` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @param {*} [accumulator] The initial value.
- * @param {boolean} [initAccum] Specify using the first element of `array` as
- *  the initial value.
- * @returns {*} Returns the accumulated value.
- */
-function arrayReduce(array, iteratee, accumulator, initAccum) {
-  var index = -1,
-      length = array == null ? 0 : array.length;
-
-  if (initAccum && length) {
-    accumulator = array[++index];
-  }
-  while (++index < length) {
-    accumulator = iteratee(accumulator, array[index], index, array);
-  }
-  return accumulator;
-}
-
-module.exports = arrayReduce;
-
-
-/***/ }),
-
-/***/ 9410:
-/***/ ((module) => {
-
-/**
- * A specialized version of `_.some` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {boolean} Returns `true` if any element passes the predicate check,
- *  else `false`.
- */
-function arraySome(array, predicate) {
-  var index = -1,
-      length = array == null ? 0 : array.length;
-
-  while (++index < length) {
-    if (predicate(array[index], index, array)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-module.exports = arraySome;
-
-
-/***/ }),
-
-/***/ 2187:
-/***/ ((module) => {
-
-/**
- * Converts an ASCII `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function asciiToArray(string) {
-  return string.split('');
-}
-
-module.exports = asciiToArray;
-
-
-/***/ }),
-
-/***/ 2560:
-/***/ ((module) => {
-
-/** Used to match words composed of alphanumeric characters. */
-var reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;
-
-/**
- * Splits an ASCII `string` into an array of its words.
- *
- * @private
- * @param {string} The string to inspect.
- * @returns {Array} Returns the words of `string`.
- */
-function asciiWords(string) {
-  return string.match(reAsciiWord) || [];
-}
-
-module.exports = asciiWords;
-
-
-/***/ }),
-
-/***/ 6752:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var eq = __nccwpck_require__(1901);
-
-/**
- * Gets the index at which the `key` is found in `array` of key-value pairs.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} key The key to search for.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function assocIndexOf(array, key) {
-  var length = array.length;
-  while (length--) {
-    if (eq(array[length][0], key)) {
-      return length;
-    }
-  }
-  return -1;
-}
-
-module.exports = assocIndexOf;
-
-
-/***/ }),
-
-/***/ 3868:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var defineProperty = __nccwpck_require__(416);
-
-/**
- * The base implementation of `assignValue` and `assignMergeValue` without
- * value checks.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */
-function baseAssignValue(object, key, value) {
-  if (key == '__proto__' && defineProperty) {
-    defineProperty(object, key, {
-      'configurable': true,
-      'enumerable': true,
-      'value': value,
-      'writable': true
-    });
-  } else {
-    object[key] = value;
-  }
-}
-
-module.exports = baseAssignValue;
-
-
-/***/ }),
-
-/***/ 6588:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var createBaseFor = __nccwpck_require__(5709);
-
-/**
- * The base implementation of `baseForOwn` which iterates over `object`
- * properties returned by `keysFunc` and invokes `iteratee` for each property.
- * Iteratee functions may exit iteration early by explicitly returning `false`.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @param {Function} keysFunc The function to get the keys of `object`.
- * @returns {Object} Returns `object`.
- */
-var baseFor = createBaseFor();
-
-module.exports = baseFor;
-
-
-/***/ }),
-
-/***/ 5712:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseFor = __nccwpck_require__(6588),
-    keys = __nccwpck_require__(7645);
-
-/**
- * The base implementation of `_.forOwn` without support for iteratee shorthands.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Object} Returns `object`.
- */
-function baseForOwn(object, iteratee) {
-  return object && baseFor(object, iteratee, keys);
-}
-
-module.exports = baseForOwn;
-
-
-/***/ }),
-
-/***/ 5758:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var castPath = __nccwpck_require__(2688),
-    toKey = __nccwpck_require__(9071);
-
-/**
- * The base implementation of `_.get` without support for default values.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {Array|string} path The path of the property to get.
- * @returns {*} Returns the resolved value.
- */
-function baseGet(object, path) {
-  path = castPath(path, object);
-
-  var index = 0,
-      length = path.length;
-
-  while (object != null && index < length) {
-    object = object[toKey(path[index++])];
-  }
-  return (index && index == length) ? object : undefined;
-}
-
-module.exports = baseGet;
-
-
-/***/ }),
-
-/***/ 5951:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var arrayPush = __nccwpck_require__(82),
-    isArray = __nccwpck_require__(4869);
-
-/**
- * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
- * `keysFunc` and `symbolsFunc` to get the enumerable property names and
- * symbols of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {Function} keysFunc The function to get the keys of `object`.
- * @param {Function} symbolsFunc The function to get the symbols of `object`.
- * @returns {Array} Returns the array of property names and symbols.
- */
-function baseGetAllKeys(object, keysFunc, symbolsFunc) {
-  var result = keysFunc(object);
-  return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
-}
-
-module.exports = baseGetAllKeys;
-
-
-/***/ }),
-
-/***/ 7497:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Symbol = __nccwpck_require__(9213),
-    getRawTag = __nccwpck_require__(923),
-    objectToString = __nccwpck_require__(4200);
-
-/** `Object#toString` result references. */
-var nullTag = '[object Null]',
-    undefinedTag = '[object Undefined]';
-
-/** Built-in value references. */
-var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
-
-/**
- * The base implementation of `getTag` without fallbacks for buggy environments.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the `toStringTag`.
- */
-function baseGetTag(value) {
-  if (value == null) {
-    return value === undefined ? undefinedTag : nullTag;
-  }
-  return (symToStringTag && symToStringTag in Object(value))
-    ? getRawTag(value)
-    : objectToString(value);
-}
-
-module.exports = baseGetTag;
-
-
-/***/ }),
-
-/***/ 351:
-/***/ ((module) => {
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * The base implementation of `_.has` without support for deep paths.
- *
- * @private
- * @param {Object} [object] The object to query.
- * @param {Array|string} key The key to check.
- * @returns {boolean} Returns `true` if `key` exists, else `false`.
- */
-function baseHas(object, key) {
-  return object != null && hasOwnProperty.call(object, key);
-}
-
-module.exports = baseHas;
-
-
-/***/ }),
-
-/***/ 4129:
-/***/ ((module) => {
-
-/**
- * The base implementation of `_.hasIn` without support for deep paths.
- *
- * @private
- * @param {Object} [object] The object to query.
- * @param {Array|string} key The key to check.
- * @returns {boolean} Returns `true` if `key` exists, else `false`.
- */
-function baseHasIn(object, key) {
-  return object != null && key in Object(object);
-}
-
-module.exports = baseHasIn;
-
-
-/***/ }),
-
-/***/ 2177:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGetTag = __nccwpck_require__(7497),
-    isObjectLike = __nccwpck_require__(5926);
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]';
-
-/**
- * The base implementation of `_.isArguments`.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- */
-function baseIsArguments(value) {
-  return isObjectLike(value) && baseGetTag(value) == argsTag;
-}
-
-module.exports = baseIsArguments;
-
-
-/***/ }),
-
-/***/ 8494:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseIsEqualDeep = __nccwpck_require__(3987),
-    isObjectLike = __nccwpck_require__(5926);
-
-/**
- * The base implementation of `_.isEqual` which supports partial comparisons
- * and tracks traversed objects.
- *
- * @private
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @param {boolean} bitmask The bitmask flags.
- *  1 - Unordered comparison
- *  2 - Partial comparison
- * @param {Function} [customizer] The function to customize comparisons.
- * @param {Object} [stack] Tracks traversed `value` and `other` objects.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- */
-function baseIsEqual(value, other, bitmask, customizer, stack) {
-  if (value === other) {
-    return true;
-  }
-  if (value == null || other == null || (!isObjectLike(value) && !isObjectLike(other))) {
-    return value !== value && other !== other;
-  }
-  return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
-}
-
-module.exports = baseIsEqual;
-
-
-/***/ }),
-
-/***/ 3987:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Stack = __nccwpck_require__(5323),
-    equalArrays = __nccwpck_require__(6305),
-    equalByTag = __nccwpck_require__(9106),
-    equalObjects = __nccwpck_require__(101),
-    getTag = __nccwpck_require__(941),
-    isArray = __nccwpck_require__(4869),
-    isBuffer = __nccwpck_require__(4190),
-    isTypedArray = __nccwpck_require__(2496);
-
-/** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1;
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]',
-    arrayTag = '[object Array]',
-    objectTag = '[object Object]';
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * A specialized version of `baseIsEqual` for arrays and objects which performs
- * deep comparisons and tracks traversed objects enabling objects with circular
- * references to be compared.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} [stack] Tracks traversed `object` and `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
-  var objIsArr = isArray(object),
-      othIsArr = isArray(other),
-      objTag = objIsArr ? arrayTag : getTag(object),
-      othTag = othIsArr ? arrayTag : getTag(other);
-
-  objTag = objTag == argsTag ? objectTag : objTag;
-  othTag = othTag == argsTag ? objectTag : othTag;
-
-  var objIsObj = objTag == objectTag,
-      othIsObj = othTag == objectTag,
-      isSameTag = objTag == othTag;
-
-  if (isSameTag && isBuffer(object)) {
-    if (!isBuffer(other)) {
-      return false;
-    }
-    objIsArr = true;
-    objIsObj = false;
-  }
-  if (isSameTag && !objIsObj) {
-    stack || (stack = new Stack);
-    return (objIsArr || isTypedArray(object))
-      ? equalArrays(object, other, bitmask, customizer, equalFunc, stack)
-      : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
-  }
-  if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
-    var objIsWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
-        othIsWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
-
-    if (objIsWrapped || othIsWrapped) {
-      var objUnwrapped = objIsWrapped ? object.value() : object,
-          othUnwrapped = othIsWrapped ? other.value() : other;
-
-      stack || (stack = new Stack);
-      return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
-    }
-  }
-  if (!isSameTag) {
-    return false;
-  }
-  stack || (stack = new Stack);
-  return equalObjects(object, other, bitmask, customizer, equalFunc, stack);
-}
-
-module.exports = baseIsEqualDeep;
-
-
-/***/ }),
-
-/***/ 9124:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Stack = __nccwpck_require__(5323),
-    baseIsEqual = __nccwpck_require__(8494);
-
-/** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1,
-    COMPARE_UNORDERED_FLAG = 2;
-
-/**
- * The base implementation of `_.isMatch` without support for iteratee shorthands.
- *
- * @private
- * @param {Object} object The object to inspect.
- * @param {Object} source The object of property values to match.
- * @param {Array} matchData The property names, values, and compare flags to match.
- * @param {Function} [customizer] The function to customize comparisons.
- * @returns {boolean} Returns `true` if `object` is a match, else `false`.
- */
-function baseIsMatch(object, source, matchData, customizer) {
-  var index = matchData.length,
-      length = index,
-      noCustomizer = !customizer;
-
-  if (object == null) {
-    return !length;
-  }
-  object = Object(object);
-  while (index--) {
-    var data = matchData[index];
-    if ((noCustomizer && data[2])
-          ? data[1] !== object[data[0]]
-          : !(data[0] in object)
-        ) {
-      return false;
-    }
-  }
-  while (++index < length) {
-    data = matchData[index];
-    var key = data[0],
-        objValue = object[key],
-        srcValue = data[1];
-
-    if (noCustomizer && data[2]) {
-      if (objValue === undefined && !(key in object)) {
-        return false;
-      }
-    } else {
-      var stack = new Stack;
-      if (customizer) {
-        var result = customizer(objValue, srcValue, key, object, source, stack);
-      }
-      if (!(result === undefined
-            ? baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG, customizer, stack)
-            : result
-          )) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-module.exports = baseIsMatch;
-
-
-/***/ }),
-
-/***/ 583:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isFunction = __nccwpck_require__(7799),
-    isMasked = __nccwpck_require__(9058),
-    isObject = __nccwpck_require__(3334),
-    toSource = __nccwpck_require__(6928);
-
-/**
- * Used to match `RegExp`
- * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
- */
-var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
-
-/** Used to detect host constructors (Safari). */
-var reIsHostCtor = /^\[object .+?Constructor\]$/;
-
-/** Used for built-in method references. */
-var funcProto = Function.prototype,
-    objectProto = Object.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var funcToString = funcProto.toString;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/** Used to detect if a method is native. */
-var reIsNative = RegExp('^' +
-  funcToString.call(hasOwnProperty).replace(reRegExpChar, '\\$&')
-  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-);
-
-/**
- * The base implementation of `_.isNative` without bad shim checks.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a native function,
- *  else `false`.
- */
-function baseIsNative(value) {
-  if (!isObject(value) || isMasked(value)) {
-    return false;
-  }
-  var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
-  return pattern.test(toSource(value));
-}
-
-module.exports = baseIsNative;
-
-
-/***/ }),
-
-/***/ 1528:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGetTag = __nccwpck_require__(7497),
-    isLength = __nccwpck_require__(4530),
-    isObjectLike = __nccwpck_require__(5926);
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]',
-    arrayTag = '[object Array]',
-    boolTag = '[object Boolean]',
-    dateTag = '[object Date]',
-    errorTag = '[object Error]',
-    funcTag = '[object Function]',
-    mapTag = '[object Map]',
-    numberTag = '[object Number]',
-    objectTag = '[object Object]',
-    regexpTag = '[object RegExp]',
-    setTag = '[object Set]',
-    stringTag = '[object String]',
-    weakMapTag = '[object WeakMap]';
-
-var arrayBufferTag = '[object ArrayBuffer]',
-    dataViewTag = '[object DataView]',
-    float32Tag = '[object Float32Array]',
-    float64Tag = '[object Float64Array]',
-    int8Tag = '[object Int8Array]',
-    int16Tag = '[object Int16Array]',
-    int32Tag = '[object Int32Array]',
-    uint8Tag = '[object Uint8Array]',
-    uint8ClampedTag = '[object Uint8ClampedArray]',
-    uint16Tag = '[object Uint16Array]',
-    uint32Tag = '[object Uint32Array]';
-
-/** Used to identify `toStringTag` values of typed arrays. */
-var typedArrayTags = {};
-typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
-typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
-typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
-typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
-typedArrayTags[uint32Tag] = true;
-typedArrayTags[argsTag] = typedArrayTags[arrayTag] =
-typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
-typedArrayTags[dataViewTag] = typedArrayTags[dateTag] =
-typedArrayTags[errorTag] = typedArrayTags[funcTag] =
-typedArrayTags[mapTag] = typedArrayTags[numberTag] =
-typedArrayTags[objectTag] = typedArrayTags[regexpTag] =
-typedArrayTags[setTag] = typedArrayTags[stringTag] =
-typedArrayTags[weakMapTag] = false;
-
-/**
- * The base implementation of `_.isTypedArray` without Node.js optimizations.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
- */
-function baseIsTypedArray(value) {
-  return isObjectLike(value) &&
-    isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
-}
-
-module.exports = baseIsTypedArray;
-
-
-/***/ }),
-
-/***/ 427:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseMatches = __nccwpck_require__(599),
-    baseMatchesProperty = __nccwpck_require__(7591),
-    identity = __nccwpck_require__(7822),
-    isArray = __nccwpck_require__(4869),
-    property = __nccwpck_require__(7261);
-
-/**
- * The base implementation of `_.iteratee`.
- *
- * @private
- * @param {*} [value=_.identity] The value to convert to an iteratee.
- * @returns {Function} Returns the iteratee.
- */
-function baseIteratee(value) {
-  // Don't store the `typeof` result in a variable to avoid a JIT bug in Safari 9.
-  // See https://bugs.webkit.org/show_bug.cgi?id=156034 for more details.
-  if (typeof value == 'function') {
-    return value;
-  }
-  if (value == null) {
-    return identity;
-  }
-  if (typeof value == 'object') {
-    return isArray(value)
-      ? baseMatchesProperty(value[0], value[1])
-      : baseMatches(value);
-  }
-  return property(value);
-}
-
-module.exports = baseIteratee;
-
-
-/***/ }),
-
-/***/ 7164:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isPrototype = __nccwpck_require__(10),
-    nativeKeys = __nccwpck_require__(5778);
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-function baseKeys(object) {
-  if (!isPrototype(object)) {
-    return nativeKeys(object);
-  }
-  var result = [];
-  for (var key in Object(object)) {
-    if (hasOwnProperty.call(object, key) && key != 'constructor') {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-module.exports = baseKeys;
-
-
-/***/ }),
-
-/***/ 599:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseIsMatch = __nccwpck_require__(9124),
-    getMatchData = __nccwpck_require__(2458),
-    matchesStrictComparable = __nccwpck_require__(3509);
-
-/**
- * The base implementation of `_.matches` which doesn't clone `source`.
- *
- * @private
- * @param {Object} source The object of property values to match.
- * @returns {Function} Returns the new spec function.
- */
-function baseMatches(source) {
-  var matchData = getMatchData(source);
-  if (matchData.length == 1 && matchData[0][2]) {
-    return matchesStrictComparable(matchData[0][0], matchData[0][1]);
-  }
-  return function(object) {
-    return object === source || baseIsMatch(object, source, matchData);
-  };
-}
-
-module.exports = baseMatches;
-
-
-/***/ }),
-
-/***/ 7591:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseIsEqual = __nccwpck_require__(8494),
-    get = __nccwpck_require__(6908),
-    hasIn = __nccwpck_require__(9409),
-    isKey = __nccwpck_require__(9084),
-    isStrictComparable = __nccwpck_require__(9789),
-    matchesStrictComparable = __nccwpck_require__(3509),
-    toKey = __nccwpck_require__(9071);
-
-/** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1,
-    COMPARE_UNORDERED_FLAG = 2;
-
-/**
- * The base implementation of `_.matchesProperty` which doesn't clone `srcValue`.
- *
- * @private
- * @param {string} path The path of the property to get.
- * @param {*} srcValue The value to match.
- * @returns {Function} Returns the new spec function.
- */
-function baseMatchesProperty(path, srcValue) {
-  if (isKey(path) && isStrictComparable(srcValue)) {
-    return matchesStrictComparable(toKey(path), srcValue);
-  }
-  return function(object) {
-    var objValue = get(object, path);
-    return (objValue === undefined && objValue === srcValue)
-      ? hasIn(object, path)
-      : baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG);
-  };
-}
-
-module.exports = baseMatchesProperty;
-
-
-/***/ }),
-
-/***/ 6829:
-/***/ ((module) => {
-
-/**
- * The base implementation of `_.property` without support for deep paths.
- *
- * @private
- * @param {string} key The key of the property to get.
- * @returns {Function} Returns the new accessor function.
- */
-function baseProperty(key) {
-  return function(object) {
-    return object == null ? undefined : object[key];
-  };
-}
-
-module.exports = baseProperty;
-
-
-/***/ }),
-
-/***/ 974:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGet = __nccwpck_require__(5758);
-
-/**
- * A specialized version of `baseProperty` which supports deep paths.
- *
- * @private
- * @param {Array|string} path The path of the property to get.
- * @returns {Function} Returns the new accessor function.
- */
-function basePropertyDeep(path) {
-  return function(object) {
-    return baseGet(object, path);
-  };
-}
-
-module.exports = basePropertyDeep;
-
-
-/***/ }),
-
-/***/ 6610:
-/***/ ((module) => {
-
-/**
- * The base implementation of `_.propertyOf` without support for deep paths.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Function} Returns the new accessor function.
- */
-function basePropertyOf(object) {
-  return function(key) {
-    return object == null ? undefined : object[key];
-  };
-}
-
-module.exports = basePropertyOf;
-
-
-/***/ }),
-
-/***/ 8758:
-/***/ ((module) => {
-
-/**
- * The base implementation of `_.slice` without an iteratee call guard.
- *
- * @private
- * @param {Array} array The array to slice.
- * @param {number} [start=0] The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the slice of `array`.
- */
-function baseSlice(array, start, end) {
-  var index = -1,
-      length = array.length;
-
-  if (start < 0) {
-    start = -start > length ? 0 : (length + start);
-  }
-  end = end > length ? length : end;
-  if (end < 0) {
-    end += length;
-  }
-  length = start > end ? 0 : ((end - start) >>> 0);
-  start >>>= 0;
-
-  var result = Array(length);
-  while (++index < length) {
-    result[index] = array[index + start];
-  }
-  return result;
-}
-
-module.exports = baseSlice;
-
-
-/***/ }),
-
-/***/ 7765:
-/***/ ((module) => {
-
-/**
- * The base implementation of `_.times` without support for iteratee shorthands
- * or max array length checks.
- *
- * @private
- * @param {number} n The number of times to invoke `iteratee`.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the array of results.
- */
-function baseTimes(n, iteratee) {
-  var index = -1,
-      result = Array(n);
-
-  while (++index < n) {
-    result[index] = iteratee(index);
-  }
-  return result;
-}
-
-module.exports = baseTimes;
-
-
-/***/ }),
-
-/***/ 6792:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Symbol = __nccwpck_require__(9213),
-    arrayMap = __nccwpck_require__(4356),
-    isArray = __nccwpck_require__(4869),
-    isSymbol = __nccwpck_require__(6403);
-
-/** Used as references for various `Number` constants. */
-var INFINITY = 1 / 0;
-
-/** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol ? Symbol.prototype : undefined,
-    symbolToString = symbolProto ? symbolProto.toString : undefined;
-
-/**
- * The base implementation of `_.toString` which doesn't convert nullish
- * values to empty strings.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {string} Returns the string.
- */
-function baseToString(value) {
-  // Exit early for strings to avoid a performance hit in some environments.
-  if (typeof value == 'string') {
-    return value;
-  }
-  if (isArray(value)) {
-    // Recursively convert values (susceptible to call stack limits).
-    return arrayMap(value, baseToString) + '';
-  }
-  if (isSymbol(value)) {
-    return symbolToString ? symbolToString.call(value) : '';
-  }
-  var result = (value + '');
-  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
-}
-
-module.exports = baseToString;
-
-
-/***/ }),
-
-/***/ 9258:
-/***/ ((module) => {
-
-/**
- * The base implementation of `_.unary` without support for storing metadata.
- *
- * @private
- * @param {Function} func The function to cap arguments for.
- * @returns {Function} Returns the new capped function.
- */
-function baseUnary(func) {
-  return function(value) {
-    return func(value);
-  };
-}
-
-module.exports = baseUnary;
-
-
-/***/ }),
-
-/***/ 2675:
-/***/ ((module) => {
-
-/**
- * Checks if a `cache` value for `key` exists.
- *
- * @private
- * @param {Object} cache The cache to query.
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */
-function cacheHas(cache, key) {
-  return cache.has(key);
-}
-
-module.exports = cacheHas;
-
-
-/***/ }),
-
-/***/ 2688:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isArray = __nccwpck_require__(4869),
-    isKey = __nccwpck_require__(9084),
-    stringToPath = __nccwpck_require__(1853),
-    toString = __nccwpck_require__(2931);
-
-/**
- * Casts `value` to a path array if it's not one.
- *
- * @private
- * @param {*} value The value to inspect.
- * @param {Object} [object] The object to query keys on.
- * @returns {Array} Returns the cast property path array.
- */
-function castPath(value, object) {
-  if (isArray(value)) {
-    return value;
-  }
-  return isKey(value, object) ? [value] : stringToPath(toString(value));
-}
-
-module.exports = castPath;
-
-
-/***/ }),
-
-/***/ 5557:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseSlice = __nccwpck_require__(8758);
-
-/**
- * Casts `array` to a slice if it's needed.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {number} start The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the cast slice.
- */
-function castSlice(array, start, end) {
-  var length = array.length;
-  end = end === undefined ? length : end;
-  return (!start && end >= length) ? array : baseSlice(array, start, end);
-}
-
-module.exports = castSlice;
-
-
-/***/ }),
-
-/***/ 8380:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var root = __nccwpck_require__(9882);
-
-/** Used to detect overreaching core-js shims. */
-var coreJsData = root['__core-js_shared__'];
-
-module.exports = coreJsData;
-
-
-/***/ }),
-
-/***/ 5709:
-/***/ ((module) => {
-
-/**
- * Creates a base function for methods like `_.forIn` and `_.forOwn`.
- *
- * @private
- * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {Function} Returns the new base function.
- */
-function createBaseFor(fromRight) {
-  return function(object, iteratee, keysFunc) {
-    var index = -1,
-        iterable = Object(object),
-        props = keysFunc(object),
-        length = props.length;
-
-    while (length--) {
-      var key = props[fromRight ? length : ++index];
-      if (iteratee(iterable[key], key, iterable) === false) {
-        break;
-      }
-    }
-    return object;
-  };
-}
-
-module.exports = createBaseFor;
-
-
-/***/ }),
-
-/***/ 5898:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var castSlice = __nccwpck_require__(5557),
-    hasUnicode = __nccwpck_require__(9489),
-    stringToArray = __nccwpck_require__(1296),
-    toString = __nccwpck_require__(2931);
-
-/**
- * Creates a function like `_.lowerFirst`.
- *
- * @private
- * @param {string} methodName The name of the `String` case method to use.
- * @returns {Function} Returns the new case function.
- */
-function createCaseFirst(methodName) {
-  return function(string) {
-    string = toString(string);
-
-    var strSymbols = hasUnicode(string)
-      ? stringToArray(string)
-      : undefined;
-
-    var chr = strSymbols
-      ? strSymbols[0]
-      : string.charAt(0);
-
-    var trailing = strSymbols
-      ? castSlice(strSymbols, 1).join('')
-      : string.slice(1);
-
-    return chr[methodName]() + trailing;
-  };
-}
-
-module.exports = createCaseFirst;
-
-
-/***/ }),
-
-/***/ 3702:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var arrayReduce = __nccwpck_require__(8018),
-    deburr = __nccwpck_require__(833),
-    words = __nccwpck_require__(6454);
-
-/** Used to compose unicode capture groups. */
-var rsApos = "['\u2019]";
-
-/** Used to match apostrophes. */
-var reApos = RegExp(rsApos, 'g');
-
-/**
- * Creates a function like `_.camelCase`.
- *
- * @private
- * @param {Function} callback The function to combine each word.
- * @returns {Function} Returns the new compounder function.
- */
-function createCompounder(callback) {
-  return function(string) {
-    return arrayReduce(words(deburr(string).replace(reApos, '')), callback, '');
-  };
-}
-
-module.exports = createCompounder;
-
-
-/***/ }),
-
-/***/ 1683:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var basePropertyOf = __nccwpck_require__(6610);
-
-/** Used to map Latin Unicode letters to basic Latin letters. */
-var deburredLetters = {
-  // Latin-1 Supplement block.
-  '\xc0': 'A',  '\xc1': 'A', '\xc2': 'A', '\xc3': 'A', '\xc4': 'A', '\xc5': 'A',
-  '\xe0': 'a',  '\xe1': 'a', '\xe2': 'a', '\xe3': 'a', '\xe4': 'a', '\xe5': 'a',
-  '\xc7': 'C',  '\xe7': 'c',
-  '\xd0': 'D',  '\xf0': 'd',
-  '\xc8': 'E',  '\xc9': 'E', '\xca': 'E', '\xcb': 'E',
-  '\xe8': 'e',  '\xe9': 'e', '\xea': 'e', '\xeb': 'e',
-  '\xcc': 'I',  '\xcd': 'I', '\xce': 'I', '\xcf': 'I',
-  '\xec': 'i',  '\xed': 'i', '\xee': 'i', '\xef': 'i',
-  '\xd1': 'N',  '\xf1': 'n',
-  '\xd2': 'O',  '\xd3': 'O', '\xd4': 'O', '\xd5': 'O', '\xd6': 'O', '\xd8': 'O',
-  '\xf2': 'o',  '\xf3': 'o', '\xf4': 'o', '\xf5': 'o', '\xf6': 'o', '\xf8': 'o',
-  '\xd9': 'U',  '\xda': 'U', '\xdb': 'U', '\xdc': 'U',
-  '\xf9': 'u',  '\xfa': 'u', '\xfb': 'u', '\xfc': 'u',
-  '\xdd': 'Y',  '\xfd': 'y', '\xff': 'y',
-  '\xc6': 'Ae', '\xe6': 'ae',
-  '\xde': 'Th', '\xfe': 'th',
-  '\xdf': 'ss',
-  // Latin Extended-A block.
-  '\u0100': 'A',  '\u0102': 'A', '\u0104': 'A',
-  '\u0101': 'a',  '\u0103': 'a', '\u0105': 'a',
-  '\u0106': 'C',  '\u0108': 'C', '\u010a': 'C', '\u010c': 'C',
-  '\u0107': 'c',  '\u0109': 'c', '\u010b': 'c', '\u010d': 'c',
-  '\u010e': 'D',  '\u0110': 'D', '\u010f': 'd', '\u0111': 'd',
-  '\u0112': 'E',  '\u0114': 'E', '\u0116': 'E', '\u0118': 'E', '\u011a': 'E',
-  '\u0113': 'e',  '\u0115': 'e', '\u0117': 'e', '\u0119': 'e', '\u011b': 'e',
-  '\u011c': 'G',  '\u011e': 'G', '\u0120': 'G', '\u0122': 'G',
-  '\u011d': 'g',  '\u011f': 'g', '\u0121': 'g', '\u0123': 'g',
-  '\u0124': 'H',  '\u0126': 'H', '\u0125': 'h', '\u0127': 'h',
-  '\u0128': 'I',  '\u012a': 'I', '\u012c': 'I', '\u012e': 'I', '\u0130': 'I',
-  '\u0129': 'i',  '\u012b': 'i', '\u012d': 'i', '\u012f': 'i', '\u0131': 'i',
-  '\u0134': 'J',  '\u0135': 'j',
-  '\u0136': 'K',  '\u0137': 'k', '\u0138': 'k',
-  '\u0139': 'L',  '\u013b': 'L', '\u013d': 'L', '\u013f': 'L', '\u0141': 'L',
-  '\u013a': 'l',  '\u013c': 'l', '\u013e': 'l', '\u0140': 'l', '\u0142': 'l',
-  '\u0143': 'N',  '\u0145': 'N', '\u0147': 'N', '\u014a': 'N',
-  '\u0144': 'n',  '\u0146': 'n', '\u0148': 'n', '\u014b': 'n',
-  '\u014c': 'O',  '\u014e': 'O', '\u0150': 'O',
-  '\u014d': 'o',  '\u014f': 'o', '\u0151': 'o',
-  '\u0154': 'R',  '\u0156': 'R', '\u0158': 'R',
-  '\u0155': 'r',  '\u0157': 'r', '\u0159': 'r',
-  '\u015a': 'S',  '\u015c': 'S', '\u015e': 'S', '\u0160': 'S',
-  '\u015b': 's',  '\u015d': 's', '\u015f': 's', '\u0161': 's',
-  '\u0162': 'T',  '\u0164': 'T', '\u0166': 'T',
-  '\u0163': 't',  '\u0165': 't', '\u0167': 't',
-  '\u0168': 'U',  '\u016a': 'U', '\u016c': 'U', '\u016e': 'U', '\u0170': 'U', '\u0172': 'U',
-  '\u0169': 'u',  '\u016b': 'u', '\u016d': 'u', '\u016f': 'u', '\u0171': 'u', '\u0173': 'u',
-  '\u0174': 'W',  '\u0175': 'w',
-  '\u0176': 'Y',  '\u0177': 'y', '\u0178': 'Y',
-  '\u0179': 'Z',  '\u017b': 'Z', '\u017d': 'Z',
-  '\u017a': 'z',  '\u017c': 'z', '\u017e': 'z',
-  '\u0132': 'IJ', '\u0133': 'ij',
-  '\u0152': 'Oe', '\u0153': 'oe',
-  '\u0149': "'n", '\u017f': 's'
-};
-
-/**
- * Used by `_.deburr` to convert Latin-1 Supplement and Latin Extended-A
- * letters to basic Latin letters.
- *
- * @private
- * @param {string} letter The matched letter to deburr.
- * @returns {string} Returns the deburred letter.
- */
-var deburrLetter = basePropertyOf(deburredLetters);
-
-module.exports = deburrLetter;
-
-
-/***/ }),
-
-/***/ 416:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479);
-
-var defineProperty = (function() {
-  try {
-    var func = getNative(Object, 'defineProperty');
-    func({}, '', {});
-    return func;
-  } catch (e) {}
-}());
-
-module.exports = defineProperty;
-
-
-/***/ }),
-
-/***/ 6305:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var SetCache = __nccwpck_require__(2158),
-    arraySome = __nccwpck_require__(9410),
-    cacheHas = __nccwpck_require__(2675);
-
-/** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1,
-    COMPARE_UNORDERED_FLAG = 2;
-
-/**
- * A specialized version of `baseIsEqualDeep` for arrays with support for
- * partial deep comparisons.
- *
- * @private
- * @param {Array} array The array to compare.
- * @param {Array} other The other array to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} stack Tracks traversed `array` and `other` objects.
- * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
- */
-function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
-  var isPartial = bitmask & COMPARE_PARTIAL_FLAG,
-      arrLength = array.length,
-      othLength = other.length;
-
-  if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
-    return false;
-  }
-  // Check that cyclic values are equal.
-  var arrStacked = stack.get(array);
-  var othStacked = stack.get(other);
-  if (arrStacked && othStacked) {
-    return arrStacked == other && othStacked == array;
-  }
-  var index = -1,
-      result = true,
-      seen = (bitmask & COMPARE_UNORDERED_FLAG) ? new SetCache : undefined;
-
-  stack.set(array, other);
-  stack.set(other, array);
-
-  // Ignore non-index properties.
-  while (++index < arrLength) {
-    var arrValue = array[index],
-        othValue = other[index];
-
-    if (customizer) {
-      var compared = isPartial
-        ? customizer(othValue, arrValue, index, other, array, stack)
-        : customizer(arrValue, othValue, index, array, other, stack);
-    }
-    if (compared !== undefined) {
-      if (compared) {
-        continue;
-      }
-      result = false;
-      break;
-    }
-    // Recursively compare arrays (susceptible to call stack limits).
-    if (seen) {
-      if (!arraySome(other, function(othValue, othIndex) {
-            if (!cacheHas(seen, othIndex) &&
-                (arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
-              return seen.push(othIndex);
-            }
-          })) {
-        result = false;
-        break;
-      }
-    } else if (!(
-          arrValue === othValue ||
-            equalFunc(arrValue, othValue, bitmask, customizer, stack)
-        )) {
-      result = false;
-      break;
-    }
-  }
-  stack['delete'](array);
-  stack['delete'](other);
-  return result;
-}
-
-module.exports = equalArrays;
-
-
-/***/ }),
-
-/***/ 9106:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Symbol = __nccwpck_require__(9213),
-    Uint8Array = __nccwpck_require__(3261),
-    eq = __nccwpck_require__(1901),
-    equalArrays = __nccwpck_require__(6305),
-    mapToArray = __nccwpck_require__(5853),
-    setToArray = __nccwpck_require__(9553);
-
-/** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1,
-    COMPARE_UNORDERED_FLAG = 2;
-
-/** `Object#toString` result references. */
-var boolTag = '[object Boolean]',
-    dateTag = '[object Date]',
-    errorTag = '[object Error]',
-    mapTag = '[object Map]',
-    numberTag = '[object Number]',
-    regexpTag = '[object RegExp]',
-    setTag = '[object Set]',
-    stringTag = '[object String]',
-    symbolTag = '[object Symbol]';
-
-var arrayBufferTag = '[object ArrayBuffer]',
-    dataViewTag = '[object DataView]';
-
-/** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol ? Symbol.prototype : undefined,
-    symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
-
-/**
- * A specialized version of `baseIsEqualDeep` for comparing objects of
- * the same `toStringTag`.
- *
- * **Note:** This function only supports comparing values with tags of
- * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {string} tag The `toStringTag` of the objects to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} stack Tracks traversed `object` and `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
-  switch (tag) {
-    case dataViewTag:
-      if ((object.byteLength != other.byteLength) ||
-          (object.byteOffset != other.byteOffset)) {
-        return false;
-      }
-      object = object.buffer;
-      other = other.buffer;
-
-    case arrayBufferTag:
-      if ((object.byteLength != other.byteLength) ||
-          !equalFunc(new Uint8Array(object), new Uint8Array(other))) {
-        return false;
-      }
-      return true;
-
-    case boolTag:
-    case dateTag:
-    case numberTag:
-      // Coerce booleans to `1` or `0` and dates to milliseconds.
-      // Invalid dates are coerced to `NaN`.
-      return eq(+object, +other);
-
-    case errorTag:
-      return object.name == other.name && object.message == other.message;
-
-    case regexpTag:
-    case stringTag:
-      // Coerce regexes to strings and treat strings, primitives and objects,
-      // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
-      // for more details.
-      return object == (other + '');
-
-    case mapTag:
-      var convert = mapToArray;
-
-    case setTag:
-      var isPartial = bitmask & COMPARE_PARTIAL_FLAG;
-      convert || (convert = setToArray);
-
-      if (object.size != other.size && !isPartial) {
-        return false;
-      }
-      // Assume cyclic values are equal.
-      var stacked = stack.get(object);
-      if (stacked) {
-        return stacked == other;
-      }
-      bitmask |= COMPARE_UNORDERED_FLAG;
-
-      // Recursively compare objects (susceptible to call stack limits).
-      stack.set(object, other);
-      var result = equalArrays(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
-      stack['delete'](object);
-      return result;
-
-    case symbolTag:
-      if (symbolValueOf) {
-        return symbolValueOf.call(object) == symbolValueOf.call(other);
-      }
-  }
-  return false;
-}
-
-module.exports = equalByTag;
-
-
-/***/ }),
-
-/***/ 101:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getAllKeys = __nccwpck_require__(8009);
-
-/** Used to compose bitmasks for value comparisons. */
-var COMPARE_PARTIAL_FLAG = 1;
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * A specialized version of `baseIsEqualDeep` for objects with support for
- * partial deep comparisons.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} stack Tracks traversed `object` and `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
-  var isPartial = bitmask & COMPARE_PARTIAL_FLAG,
-      objProps = getAllKeys(object),
-      objLength = objProps.length,
-      othProps = getAllKeys(other),
-      othLength = othProps.length;
-
-  if (objLength != othLength && !isPartial) {
-    return false;
-  }
-  var index = objLength;
-  while (index--) {
-    var key = objProps[index];
-    if (!(isPartial ? key in other : hasOwnProperty.call(other, key))) {
-      return false;
-    }
-  }
-  // Check that cyclic values are equal.
-  var objStacked = stack.get(object);
-  var othStacked = stack.get(other);
-  if (objStacked && othStacked) {
-    return objStacked == other && othStacked == object;
-  }
-  var result = true;
-  stack.set(object, other);
-  stack.set(other, object);
-
-  var skipCtor = isPartial;
-  while (++index < objLength) {
-    key = objProps[index];
-    var objValue = object[key],
-        othValue = other[key];
-
-    if (customizer) {
-      var compared = isPartial
-        ? customizer(othValue, objValue, key, other, object, stack)
-        : customizer(objValue, othValue, key, object, other, stack);
-    }
-    // Recursively compare objects (susceptible to call stack limits).
-    if (!(compared === undefined
-          ? (objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack))
-          : compared
-        )) {
-      result = false;
-      break;
-    }
-    skipCtor || (skipCtor = key == 'constructor');
-  }
-  if (result && !skipCtor) {
-    var objCtor = object.constructor,
-        othCtor = other.constructor;
-
-    // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor &&
-        ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
-          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
-      result = false;
-    }
-  }
-  stack['delete'](object);
-  stack['delete'](other);
-  return result;
-}
-
-module.exports = equalObjects;
-
-
-/***/ }),
-
-/***/ 2085:
-/***/ ((module) => {
-
-/** Detect free variable `global` from Node.js. */
-var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
-
-module.exports = freeGlobal;
-
-
-/***/ }),
-
-/***/ 8009:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGetAllKeys = __nccwpck_require__(5951),
-    getSymbols = __nccwpck_require__(6802),
-    keys = __nccwpck_require__(7645);
-
-/**
- * Creates an array of own enumerable property names and symbols of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names and symbols.
- */
-function getAllKeys(object) {
-  return baseGetAllKeys(object, keys, getSymbols);
-}
-
-module.exports = getAllKeys;
-
-
-/***/ }),
-
-/***/ 9980:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isKeyable = __nccwpck_require__(3308);
-
-/**
- * Gets the data for `map`.
- *
- * @private
- * @param {Object} map The map to query.
- * @param {string} key The reference key.
- * @returns {*} Returns the map data.
- */
-function getMapData(map, key) {
-  var data = map.__data__;
-  return isKeyable(key)
-    ? data[typeof key == 'string' ? 'string' : 'hash']
-    : data.map;
-}
-
-module.exports = getMapData;
-
-
-/***/ }),
-
-/***/ 2458:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isStrictComparable = __nccwpck_require__(9789),
-    keys = __nccwpck_require__(7645);
-
-/**
- * Gets the property names, values, and compare flags of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the match data of `object`.
- */
-function getMatchData(object) {
-  var result = keys(object),
-      length = result.length;
-
-  while (length--) {
-    var key = result[length],
-        value = object[key];
-
-    result[length] = [key, value, isStrictComparable(value)];
-  }
-  return result;
-}
-
-module.exports = getMatchData;
-
-
-/***/ }),
-
-/***/ 4479:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseIsNative = __nccwpck_require__(583),
-    getValue = __nccwpck_require__(3542);
-
-/**
- * Gets the native function at `key` of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {string} key The key of the method to get.
- * @returns {*} Returns the function if it's native, else `undefined`.
- */
-function getNative(object, key) {
-  var value = getValue(object, key);
-  return baseIsNative(value) ? value : undefined;
-}
-
-module.exports = getNative;
-
-
-/***/ }),
-
-/***/ 923:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Symbol = __nccwpck_require__(9213);
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var nativeObjectToString = objectProto.toString;
-
-/** Built-in value references. */
-var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
-
-/**
- * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the raw `toStringTag`.
- */
-function getRawTag(value) {
-  var isOwn = hasOwnProperty.call(value, symToStringTag),
-      tag = value[symToStringTag];
-
-  try {
-    value[symToStringTag] = undefined;
-    var unmasked = true;
-  } catch (e) {}
-
-  var result = nativeObjectToString.call(value);
-  if (unmasked) {
-    if (isOwn) {
-      value[symToStringTag] = tag;
-    } else {
-      delete value[symToStringTag];
-    }
-  }
-  return result;
-}
-
-module.exports = getRawTag;
-
-
-/***/ }),
-
-/***/ 6802:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var arrayFilter = __nccwpck_require__(8388),
-    stubArray = __nccwpck_require__(8634);
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Built-in value references. */
-var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeGetSymbols = Object.getOwnPropertySymbols;
-
-/**
- * Creates an array of the own enumerable symbols of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of symbols.
- */
-var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
-  if (object == null) {
-    return [];
-  }
-  object = Object(object);
-  return arrayFilter(nativeGetSymbols(object), function(symbol) {
-    return propertyIsEnumerable.call(object, symbol);
-  });
-};
-
-module.exports = getSymbols;
-
-
-/***/ }),
-
-/***/ 941:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var DataView = __nccwpck_require__(1857),
-    Map = __nccwpck_require__(881),
-    Promise = __nccwpck_require__(4671),
-    Set = __nccwpck_require__(5793),
-    WeakMap = __nccwpck_require__(3915),
-    baseGetTag = __nccwpck_require__(7497),
-    toSource = __nccwpck_require__(6928);
-
-/** `Object#toString` result references. */
-var mapTag = '[object Map]',
-    objectTag = '[object Object]',
-    promiseTag = '[object Promise]',
-    setTag = '[object Set]',
-    weakMapTag = '[object WeakMap]';
-
-var dataViewTag = '[object DataView]';
-
-/** Used to detect maps, sets, and weakmaps. */
-var dataViewCtorString = toSource(DataView),
-    mapCtorString = toSource(Map),
-    promiseCtorString = toSource(Promise),
-    setCtorString = toSource(Set),
-    weakMapCtorString = toSource(WeakMap);
-
-/**
- * Gets the `toStringTag` of `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the `toStringTag`.
- */
-var getTag = baseGetTag;
-
-// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
-    (Map && getTag(new Map) != mapTag) ||
-    (Promise && getTag(Promise.resolve()) != promiseTag) ||
-    (Set && getTag(new Set) != setTag) ||
-    (WeakMap && getTag(new WeakMap) != weakMapTag)) {
-  getTag = function(value) {
-    var result = baseGetTag(value),
-        Ctor = result == objectTag ? value.constructor : undefined,
-        ctorString = Ctor ? toSource(Ctor) : '';
-
-    if (ctorString) {
-      switch (ctorString) {
-        case dataViewCtorString: return dataViewTag;
-        case mapCtorString: return mapTag;
-        case promiseCtorString: return promiseTag;
-        case setCtorString: return setTag;
-        case weakMapCtorString: return weakMapTag;
-      }
-    }
-    return result;
-  };
-}
-
-module.exports = getTag;
-
-
-/***/ }),
-
-/***/ 3542:
-/***/ ((module) => {
-
-/**
- * Gets the value at `key` of `object`.
- *
- * @private
- * @param {Object} [object] The object to query.
- * @param {string} key The key of the property to get.
- * @returns {*} Returns the property value.
- */
-function getValue(object, key) {
-  return object == null ? undefined : object[key];
-}
-
-module.exports = getValue;
-
-
-/***/ }),
-
-/***/ 7658:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var castPath = __nccwpck_require__(2688),
-    isArguments = __nccwpck_require__(8495),
-    isArray = __nccwpck_require__(4869),
-    isIndex = __nccwpck_require__(2936),
-    isLength = __nccwpck_require__(4530),
-    toKey = __nccwpck_require__(9071);
-
-/**
- * Checks if `path` exists on `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {Array|string} path The path to check.
- * @param {Function} hasFunc The function to check properties.
- * @returns {boolean} Returns `true` if `path` exists, else `false`.
- */
-function hasPath(object, path, hasFunc) {
-  path = castPath(path, object);
-
-  var index = -1,
-      length = path.length,
-      result = false;
-
-  while (++index < length) {
-    var key = toKey(path[index]);
-    if (!(result = object != null && hasFunc(object, key))) {
-      break;
-    }
-    object = object[key];
-  }
-  if (result || ++index != length) {
-    return result;
-  }
-  length = object == null ? 0 : object.length;
-  return !!length && isLength(length) && isIndex(key, length) &&
-    (isArray(object) || isArguments(object));
-}
-
-module.exports = hasPath;
-
-
-/***/ }),
-
-/***/ 9489:
-/***/ ((module) => {
-
-/** Used to compose unicode character classes. */
-var rsAstralRange = '\\ud800-\\udfff',
-    rsComboMarksRange = '\\u0300-\\u036f',
-    reComboHalfMarksRange = '\\ufe20-\\ufe2f',
-    rsComboSymbolsRange = '\\u20d0-\\u20ff',
-    rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange,
-    rsVarRange = '\\ufe0e\\ufe0f';
-
-/** Used to compose unicode capture groups. */
-var rsZWJ = '\\u200d';
-
-/** Used to detect strings with [zero-width joiners or code points from the astral planes](http://eev.ee/blog/2015/09/12/dark-corners-of-unicode/). */
-var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
-
-/**
- * Checks if `string` contains Unicode symbols.
- *
- * @private
- * @param {string} string The string to inspect.
- * @returns {boolean} Returns `true` if a symbol is found, else `false`.
- */
-function hasUnicode(string) {
-  return reHasUnicode.test(string);
-}
-
-module.exports = hasUnicode;
-
-
-/***/ }),
-
-/***/ 4632:
-/***/ ((module) => {
-
-/** Used to detect strings that need a more robust regexp to match words. */
-var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
-
-/**
- * Checks if `string` contains a word composed of Unicode symbols.
- *
- * @private
- * @param {string} string The string to inspect.
- * @returns {boolean} Returns `true` if a word is found, else `false`.
- */
-function hasUnicodeWord(string) {
-  return reHasUnicodeWord.test(string);
-}
-
-module.exports = hasUnicodeWord;
-
-
-/***/ }),
-
-/***/ 1789:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var nativeCreate = __nccwpck_require__(3041);
-
-/**
- * Removes all key-value entries from the hash.
- *
- * @private
- * @name clear
- * @memberOf Hash
- */
-function hashClear() {
-  this.__data__ = nativeCreate ? nativeCreate(null) : {};
-  this.size = 0;
-}
-
-module.exports = hashClear;
-
-
-/***/ }),
-
-/***/ 712:
-/***/ ((module) => {
-
-/**
- * Removes `key` and its value from the hash.
- *
- * @private
- * @name delete
- * @memberOf Hash
- * @param {Object} hash The hash to modify.
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */
-function hashDelete(key) {
-  var result = this.has(key) && delete this.__data__[key];
-  this.size -= result ? 1 : 0;
-  return result;
-}
-
-module.exports = hashDelete;
-
-
-/***/ }),
-
-/***/ 5395:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var nativeCreate = __nccwpck_require__(3041);
-
-/** Used to stand-in for `undefined` hash values. */
-var HASH_UNDEFINED = '__lodash_hash_undefined__';
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Gets the hash value for `key`.
- *
- * @private
- * @name get
- * @memberOf Hash
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */
-function hashGet(key) {
-  var data = this.__data__;
-  if (nativeCreate) {
-    var result = data[key];
-    return result === HASH_UNDEFINED ? undefined : result;
-  }
-  return hasOwnProperty.call(data, key) ? data[key] : undefined;
-}
-
-module.exports = hashGet;
-
-
-/***/ }),
-
-/***/ 5232:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var nativeCreate = __nccwpck_require__(3041);
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Checks if a hash value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf Hash
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */
-function hashHas(key) {
-  var data = this.__data__;
-  return nativeCreate ? (data[key] !== undefined) : hasOwnProperty.call(data, key);
-}
-
-module.exports = hashHas;
-
-
-/***/ }),
-
-/***/ 7320:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var nativeCreate = __nccwpck_require__(3041);
-
-/** Used to stand-in for `undefined` hash values. */
-var HASH_UNDEFINED = '__lodash_hash_undefined__';
-
-/**
- * Sets the hash `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf Hash
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the hash instance.
- */
-function hashSet(key, value) {
-  var data = this.__data__;
-  this.size += this.has(key) ? 0 : 1;
-  data[key] = (nativeCreate && value === undefined) ? HASH_UNDEFINED : value;
-  return this;
-}
-
-module.exports = hashSet;
-
-
-/***/ }),
-
-/***/ 2936:
-/***/ ((module) => {
-
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER = 9007199254740991;
-
-/** Used to detect unsigned integer values. */
-var reIsUint = /^(?:0|[1-9]\d*)$/;
-
-/**
- * Checks if `value` is a valid array-like index.
- *
- * @private
- * @param {*} value The value to check.
- * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
- * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
- */
-function isIndex(value, length) {
-  var type = typeof value;
-  length = length == null ? MAX_SAFE_INTEGER : length;
-
-  return !!length &&
-    (type == 'number' ||
-      (type != 'symbol' && reIsUint.test(value))) &&
-        (value > -1 && value % 1 == 0 && value < length);
-}
-
-module.exports = isIndex;
-
-
-/***/ }),
-
-/***/ 9084:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isArray = __nccwpck_require__(4869),
-    isSymbol = __nccwpck_require__(6403);
-
-/** Used to match property names within property paths. */
-var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
-    reIsPlainProp = /^\w*$/;
-
-/**
- * Checks if `value` is a property name and not a property path.
- *
- * @private
- * @param {*} value The value to check.
- * @param {Object} [object] The object to query keys on.
- * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
- */
-function isKey(value, object) {
-  if (isArray(value)) {
-    return false;
-  }
-  var type = typeof value;
-  if (type == 'number' || type == 'symbol' || type == 'boolean' ||
-      value == null || isSymbol(value)) {
-    return true;
-  }
-  return reIsPlainProp.test(value) || !reIsDeepProp.test(value) ||
-    (object != null && value in Object(object));
-}
-
-module.exports = isKey;
-
-
-/***/ }),
-
-/***/ 3308:
-/***/ ((module) => {
-
-/**
- * Checks if `value` is suitable for use as unique object key.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is suitable, else `false`.
- */
-function isKeyable(value) {
-  var type = typeof value;
-  return (type == 'string' || type == 'number' || type == 'symbol' || type == 'boolean')
-    ? (value !== '__proto__')
-    : (value === null);
-}
-
-module.exports = isKeyable;
-
-
-/***/ }),
-
-/***/ 9058:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var coreJsData = __nccwpck_require__(8380);
-
-/** Used to detect methods masquerading as native. */
-var maskSrcKey = (function() {
-  var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
-  return uid ? ('Symbol(src)_1.' + uid) : '';
-}());
-
-/**
- * Checks if `func` has its source masked.
- *
- * @private
- * @param {Function} func The function to check.
- * @returns {boolean} Returns `true` if `func` is masked, else `false`.
- */
-function isMasked(func) {
-  return !!maskSrcKey && (maskSrcKey in func);
-}
-
-module.exports = isMasked;
-
-
-/***/ }),
-
-/***/ 10:
-/***/ ((module) => {
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Checks if `value` is likely a prototype object.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
- */
-function isPrototype(value) {
-  var Ctor = value && value.constructor,
-      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
-
-  return value === proto;
-}
-
-module.exports = isPrototype;
-
-
-/***/ }),
-
-/***/ 9789:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isObject = __nccwpck_require__(3334);
-
-/**
- * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` if suitable for strict
- *  equality comparisons, else `false`.
- */
-function isStrictComparable(value) {
-  return value === value && !isObject(value);
-}
-
-module.exports = isStrictComparable;
-
-
-/***/ }),
-
-/***/ 9792:
-/***/ ((module) => {
-
-/**
- * Removes all key-value entries from the list cache.
- *
- * @private
- * @name clear
- * @memberOf ListCache
- */
-function listCacheClear() {
-  this.__data__ = [];
-  this.size = 0;
-}
-
-module.exports = listCacheClear;
-
-
-/***/ }),
-
-/***/ 7716:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var assocIndexOf = __nccwpck_require__(6752);
-
-/** Used for built-in method references. */
-var arrayProto = Array.prototype;
-
-/** Built-in value references. */
-var splice = arrayProto.splice;
-
-/**
- * Removes `key` and its value from the list cache.
- *
- * @private
- * @name delete
- * @memberOf ListCache
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */
-function listCacheDelete(key) {
-  var data = this.__data__,
-      index = assocIndexOf(data, key);
-
-  if (index < 0) {
-    return false;
-  }
-  var lastIndex = data.length - 1;
-  if (index == lastIndex) {
-    data.pop();
-  } else {
-    splice.call(data, index, 1);
-  }
-  --this.size;
-  return true;
-}
-
-module.exports = listCacheDelete;
-
-
-/***/ }),
-
-/***/ 5789:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var assocIndexOf = __nccwpck_require__(6752);
-
-/**
- * Gets the list cache value for `key`.
- *
- * @private
- * @name get
- * @memberOf ListCache
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */
-function listCacheGet(key) {
-  var data = this.__data__,
-      index = assocIndexOf(data, key);
-
-  return index < 0 ? undefined : data[index][1];
-}
-
-module.exports = listCacheGet;
-
-
-/***/ }),
-
-/***/ 9386:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var assocIndexOf = __nccwpck_require__(6752);
-
-/**
- * Checks if a list cache value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf ListCache
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */
-function listCacheHas(key) {
-  return assocIndexOf(this.__data__, key) > -1;
-}
-
-module.exports = listCacheHas;
-
-
-/***/ }),
-
-/***/ 7399:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var assocIndexOf = __nccwpck_require__(6752);
-
-/**
- * Sets the list cache `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf ListCache
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the list cache instance.
- */
-function listCacheSet(key, value) {
-  var data = this.__data__,
-      index = assocIndexOf(data, key);
-
-  if (index < 0) {
-    ++this.size;
-    data.push([key, value]);
-  } else {
-    data[index][1] = value;
-  }
-  return this;
-}
-
-module.exports = listCacheSet;
-
-
-/***/ }),
-
-/***/ 1610:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Hash = __nccwpck_require__(5902),
-    ListCache = __nccwpck_require__(6608),
-    Map = __nccwpck_require__(881);
-
-/**
- * Removes all key-value entries from the map.
- *
- * @private
- * @name clear
- * @memberOf MapCache
- */
-function mapCacheClear() {
-  this.size = 0;
-  this.__data__ = {
-    'hash': new Hash,
-    'map': new (Map || ListCache),
-    'string': new Hash
-  };
-}
-
-module.exports = mapCacheClear;
-
-
-/***/ }),
-
-/***/ 6657:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getMapData = __nccwpck_require__(9980);
-
-/**
- * Removes `key` and its value from the map.
- *
- * @private
- * @name delete
- * @memberOf MapCache
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */
-function mapCacheDelete(key) {
-  var result = getMapData(this, key)['delete'](key);
-  this.size -= result ? 1 : 0;
-  return result;
-}
-
-module.exports = mapCacheDelete;
-
-
-/***/ }),
-
-/***/ 1372:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getMapData = __nccwpck_require__(9980);
-
-/**
- * Gets the map value for `key`.
- *
- * @private
- * @name get
- * @memberOf MapCache
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */
-function mapCacheGet(key) {
-  return getMapData(this, key).get(key);
-}
-
-module.exports = mapCacheGet;
-
-
-/***/ }),
-
-/***/ 609:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getMapData = __nccwpck_require__(9980);
-
-/**
- * Checks if a map value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf MapCache
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */
-function mapCacheHas(key) {
-  return getMapData(this, key).has(key);
-}
-
-module.exports = mapCacheHas;
-
-
-/***/ }),
-
-/***/ 5582:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getMapData = __nccwpck_require__(9980);
-
-/**
- * Sets the map `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf MapCache
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the map cache instance.
- */
-function mapCacheSet(key, value) {
-  var data = getMapData(this, key),
-      size = data.size;
-
-  data.set(key, value);
-  this.size += data.size == size ? 0 : 1;
-  return this;
-}
-
-module.exports = mapCacheSet;
-
-
-/***/ }),
-
-/***/ 5853:
-/***/ ((module) => {
-
-/**
- * Converts `map` to its key-value pairs.
- *
- * @private
- * @param {Object} map The map to convert.
- * @returns {Array} Returns the key-value pairs.
- */
-function mapToArray(map) {
-  var index = -1,
-      result = Array(map.size);
-
-  map.forEach(function(value, key) {
-    result[++index] = [key, value];
-  });
-  return result;
-}
-
-module.exports = mapToArray;
-
-
-/***/ }),
-
-/***/ 3509:
-/***/ ((module) => {
-
-/**
- * A specialized version of `matchesProperty` for source values suitable
- * for strict equality comparisons, i.e. `===`.
- *
- * @private
- * @param {string} key The key of the property to get.
- * @param {*} srcValue The value to match.
- * @returns {Function} Returns the new spec function.
- */
-function matchesStrictComparable(key, srcValue) {
-  return function(object) {
-    if (object == null) {
-      return false;
-    }
-    return object[key] === srcValue &&
-      (srcValue !== undefined || (key in Object(object)));
-  };
-}
-
-module.exports = matchesStrictComparable;
-
-
-/***/ }),
-
-/***/ 9422:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var memoize = __nccwpck_require__(9885);
-
-/** Used as the maximum memoize cache size. */
-var MAX_MEMOIZE_SIZE = 500;
-
-/**
- * A specialized version of `_.memoize` which clears the memoized function's
- * cache when it exceeds `MAX_MEMOIZE_SIZE`.
- *
- * @private
- * @param {Function} func The function to have its output memoized.
- * @returns {Function} Returns the new memoized function.
- */
-function memoizeCapped(func) {
-  var result = memoize(func, function(key) {
-    if (cache.size === MAX_MEMOIZE_SIZE) {
-      cache.clear();
-    }
-    return key;
-  });
-
-  var cache = result.cache;
-  return result;
-}
-
-module.exports = memoizeCapped;
-
-
-/***/ }),
-
-/***/ 3041:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var getNative = __nccwpck_require__(4479);
-
-/* Built-in method references that are verified to be native. */
-var nativeCreate = getNative(Object, 'create');
-
-module.exports = nativeCreate;
-
-
-/***/ }),
-
-/***/ 5778:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var overArg = __nccwpck_require__(6320);
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeKeys = overArg(Object.keys, Object);
-
-module.exports = nativeKeys;
-
-
-/***/ }),
-
-/***/ 4643:
-/***/ ((module, exports, __nccwpck_require__) => {
-
-/* module decorator */ module = __nccwpck_require__.nmd(module);
-var freeGlobal = __nccwpck_require__(2085);
-
-/** Detect free variable `exports`. */
-var freeExports =  true && exports && !exports.nodeType && exports;
-
-/** Detect free variable `module`. */
-var freeModule = freeExports && "object" == 'object' && module && !module.nodeType && module;
-
-/** Detect the popular CommonJS extension `module.exports`. */
-var moduleExports = freeModule && freeModule.exports === freeExports;
-
-/** Detect free variable `process` from Node.js. */
-var freeProcess = moduleExports && freeGlobal.process;
-
-/** Used to access faster Node.js helpers. */
-var nodeUtil = (function() {
-  try {
-    // Use `util.types` for Node.js 10+.
-    var types = freeModule && freeModule.require && freeModule.require('util').types;
-
-    if (types) {
-      return types;
-    }
-
-    // Legacy `process.binding('util')` for Node.js < 10.
-    return freeProcess && freeProcess.binding && freeProcess.binding('util');
-  } catch (e) {}
-}());
-
-module.exports = nodeUtil;
-
-
-/***/ }),
-
-/***/ 4200:
-/***/ ((module) => {
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var nativeObjectToString = objectProto.toString;
-
-/**
- * Converts `value` to a string using `Object.prototype.toString`.
- *
- * @private
- * @param {*} value The value to convert.
- * @returns {string} Returns the converted string.
- */
-function objectToString(value) {
-  return nativeObjectToString.call(value);
-}
-
-module.exports = objectToString;
-
-
-/***/ }),
-
-/***/ 6320:
-/***/ ((module) => {
-
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
-function overArg(func, transform) {
-  return function(arg) {
-    return func(transform(arg));
-  };
-}
-
-module.exports = overArg;
-
-
-/***/ }),
-
-/***/ 9882:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var freeGlobal = __nccwpck_require__(2085);
-
-/** Detect free variable `self`. */
-var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-/** Used as a reference to the global object. */
-var root = freeGlobal || freeSelf || Function('return this')();
-
-module.exports = root;
-
-
-/***/ }),
-
-/***/ 6895:
-/***/ ((module) => {
-
-/** Used to stand-in for `undefined` hash values. */
-var HASH_UNDEFINED = '__lodash_hash_undefined__';
-
-/**
- * Adds `value` to the array cache.
- *
- * @private
- * @name add
- * @memberOf SetCache
- * @alias push
- * @param {*} value The value to cache.
- * @returns {Object} Returns the cache instance.
- */
-function setCacheAdd(value) {
-  this.__data__.set(value, HASH_UNDEFINED);
-  return this;
-}
-
-module.exports = setCacheAdd;
-
-
-/***/ }),
-
-/***/ 804:
-/***/ ((module) => {
-
-/**
- * Checks if `value` is in the array cache.
- *
- * @private
- * @name has
- * @memberOf SetCache
- * @param {*} value The value to search for.
- * @returns {number} Returns `true` if `value` is found, else `false`.
- */
-function setCacheHas(value) {
-  return this.__data__.has(value);
-}
-
-module.exports = setCacheHas;
-
-
-/***/ }),
-
-/***/ 9553:
-/***/ ((module) => {
-
-/**
- * Converts `set` to an array of its values.
- *
- * @private
- * @param {Object} set The set to convert.
- * @returns {Array} Returns the values.
- */
-function setToArray(set) {
-  var index = -1,
-      result = Array(set.size);
-
-  set.forEach(function(value) {
-    result[++index] = value;
-  });
-  return result;
-}
-
-module.exports = setToArray;
-
-
-/***/ }),
-
-/***/ 2843:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var ListCache = __nccwpck_require__(6608);
-
-/**
- * Removes all key-value entries from the stack.
- *
- * @private
- * @name clear
- * @memberOf Stack
- */
-function stackClear() {
-  this.__data__ = new ListCache;
-  this.size = 0;
-}
-
-module.exports = stackClear;
-
-
-/***/ }),
-
-/***/ 4717:
-/***/ ((module) => {
-
-/**
- * Removes `key` and its value from the stack.
- *
- * @private
- * @name delete
- * @memberOf Stack
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */
-function stackDelete(key) {
-  var data = this.__data__,
-      result = data['delete'](key);
-
-  this.size = data.size;
-  return result;
-}
-
-module.exports = stackDelete;
-
-
-/***/ }),
-
-/***/ 21:
-/***/ ((module) => {
-
-/**
- * Gets the stack value for `key`.
- *
- * @private
- * @name get
- * @memberOf Stack
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */
-function stackGet(key) {
-  return this.__data__.get(key);
-}
-
-module.exports = stackGet;
-
-
-/***/ }),
-
-/***/ 3910:
-/***/ ((module) => {
-
-/**
- * Checks if a stack value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf Stack
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */
-function stackHas(key) {
-  return this.__data__.has(key);
-}
-
-module.exports = stackHas;
-
-
-/***/ }),
-
-/***/ 9955:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var ListCache = __nccwpck_require__(6608),
-    Map = __nccwpck_require__(881),
-    MapCache = __nccwpck_require__(938);
-
-/** Used as the size to enable large array optimizations. */
-var LARGE_ARRAY_SIZE = 200;
-
-/**
- * Sets the stack `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf Stack
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the stack cache instance.
- */
-function stackSet(key, value) {
-  var data = this.__data__;
-  if (data instanceof ListCache) {
-    var pairs = data.__data__;
-    if (!Map || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
-      pairs.push([key, value]);
-      this.size = ++data.size;
-      return this;
-    }
-    data = this.__data__ = new MapCache(pairs);
-  }
-  data.set(key, value);
-  this.size = data.size;
-  return this;
-}
-
-module.exports = stackSet;
-
-
-/***/ }),
-
-/***/ 1296:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var asciiToArray = __nccwpck_require__(2187),
-    hasUnicode = __nccwpck_require__(9489),
-    unicodeToArray = __nccwpck_require__(1990);
-
-/**
- * Converts `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function stringToArray(string) {
-  return hasUnicode(string)
-    ? unicodeToArray(string)
-    : asciiToArray(string);
-}
-
-module.exports = stringToArray;
-
-
-/***/ }),
-
-/***/ 1853:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var memoizeCapped = __nccwpck_require__(9422);
-
-/** Used to match property names within property paths. */
-var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
-
-/** Used to match backslashes in property paths. */
-var reEscapeChar = /\\(\\)?/g;
-
-/**
- * Converts `string` to a property path array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the property path array.
- */
-var stringToPath = memoizeCapped(function(string) {
-  var result = [];
-  if (string.charCodeAt(0) === 46 /* . */) {
-    result.push('');
-  }
-  string.replace(rePropName, function(match, number, quote, subString) {
-    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
-  });
-  return result;
-});
-
-module.exports = stringToPath;
-
-
-/***/ }),
-
-/***/ 9071:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isSymbol = __nccwpck_require__(6403);
-
-/** Used as references for various `Number` constants. */
-var INFINITY = 1 / 0;
-
-/**
- * Converts `value` to a string key if it's not a string or symbol.
- *
- * @private
- * @param {*} value The value to inspect.
- * @returns {string|symbol} Returns the key.
- */
-function toKey(value) {
-  if (typeof value == 'string' || isSymbol(value)) {
-    return value;
-  }
-  var result = (value + '');
-  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
-}
-
-module.exports = toKey;
-
-
-/***/ }),
-
-/***/ 6928:
-/***/ ((module) => {
-
-/** Used for built-in method references. */
-var funcProto = Function.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var funcToString = funcProto.toString;
-
-/**
- * Converts `func` to its source code.
- *
- * @private
- * @param {Function} func The function to convert.
- * @returns {string} Returns the source code.
- */
-function toSource(func) {
-  if (func != null) {
-    try {
-      return funcToString.call(func);
-    } catch (e) {}
-    try {
-      return (func + '');
-    } catch (e) {}
-  }
-  return '';
-}
-
-module.exports = toSource;
-
-
-/***/ }),
-
-/***/ 1990:
-/***/ ((module) => {
-
-/** Used to compose unicode character classes. */
-var rsAstralRange = '\\ud800-\\udfff',
-    rsComboMarksRange = '\\u0300-\\u036f',
-    reComboHalfMarksRange = '\\ufe20-\\ufe2f',
-    rsComboSymbolsRange = '\\u20d0-\\u20ff',
-    rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange,
-    rsVarRange = '\\ufe0e\\ufe0f';
-
-/** Used to compose unicode capture groups. */
-var rsAstral = '[' + rsAstralRange + ']',
-    rsCombo = '[' + rsComboRange + ']',
-    rsFitz = '\\ud83c[\\udffb-\\udfff]',
-    rsModifier = '(?:' + rsCombo + '|' + rsFitz + ')',
-    rsNonAstral = '[^' + rsAstralRange + ']',
-    rsRegional = '(?:\\ud83c[\\udde6-\\uddff]){2}',
-    rsSurrPair = '[\\ud800-\\udbff][\\udc00-\\udfff]',
-    rsZWJ = '\\u200d';
-
-/** Used to compose unicode regexes. */
-var reOptMod = rsModifier + '?',
-    rsOptVar = '[' + rsVarRange + ']?',
-    rsOptJoin = '(?:' + rsZWJ + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*',
-    rsSeq = rsOptVar + reOptMod + rsOptJoin,
-    rsSymbol = '(?:' + [rsNonAstral + rsCombo + '?', rsCombo, rsRegional, rsSurrPair, rsAstral].join('|') + ')';
-
-/** Used to match [string symbols](https://mathiasbynens.be/notes/javascript-unicode). */
-var reUnicode = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
-
-/**
- * Converts a Unicode `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function unicodeToArray(string) {
-  return string.match(reUnicode) || [];
-}
-
-module.exports = unicodeToArray;
-
-
-/***/ }),
-
-/***/ 5423:
-/***/ ((module) => {
-
-/** Used to compose unicode character classes. */
-var rsAstralRange = '\\ud800-\\udfff',
-    rsComboMarksRange = '\\u0300-\\u036f',
-    reComboHalfMarksRange = '\\ufe20-\\ufe2f',
-    rsComboSymbolsRange = '\\u20d0-\\u20ff',
-    rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange,
-    rsDingbatRange = '\\u2700-\\u27bf',
-    rsLowerRange = 'a-z\\xdf-\\xf6\\xf8-\\xff',
-    rsMathOpRange = '\\xac\\xb1\\xd7\\xf7',
-    rsNonCharRange = '\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf',
-    rsPunctuationRange = '\\u2000-\\u206f',
-    rsSpaceRange = ' \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000',
-    rsUpperRange = 'A-Z\\xc0-\\xd6\\xd8-\\xde',
-    rsVarRange = '\\ufe0e\\ufe0f',
-    rsBreakRange = rsMathOpRange + rsNonCharRange + rsPunctuationRange + rsSpaceRange;
-
-/** Used to compose unicode capture groups. */
-var rsApos = "['\u2019]",
-    rsBreak = '[' + rsBreakRange + ']',
-    rsCombo = '[' + rsComboRange + ']',
-    rsDigits = '\\d+',
-    rsDingbat = '[' + rsDingbatRange + ']',
-    rsLower = '[' + rsLowerRange + ']',
-    rsMisc = '[^' + rsAstralRange + rsBreakRange + rsDigits + rsDingbatRange + rsLowerRange + rsUpperRange + ']',
-    rsFitz = '\\ud83c[\\udffb-\\udfff]',
-    rsModifier = '(?:' + rsCombo + '|' + rsFitz + ')',
-    rsNonAstral = '[^' + rsAstralRange + ']',
-    rsRegional = '(?:\\ud83c[\\udde6-\\uddff]){2}',
-    rsSurrPair = '[\\ud800-\\udbff][\\udc00-\\udfff]',
-    rsUpper = '[' + rsUpperRange + ']',
-    rsZWJ = '\\u200d';
-
-/** Used to compose unicode regexes. */
-var rsMiscLower = '(?:' + rsLower + '|' + rsMisc + ')',
-    rsMiscUpper = '(?:' + rsUpper + '|' + rsMisc + ')',
-    rsOptContrLower = '(?:' + rsApos + '(?:d|ll|m|re|s|t|ve))?',
-    rsOptContrUpper = '(?:' + rsApos + '(?:D|LL|M|RE|S|T|VE))?',
-    reOptMod = rsModifier + '?',
-    rsOptVar = '[' + rsVarRange + ']?',
-    rsOptJoin = '(?:' + rsZWJ + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*',
-    rsOrdLower = '\\d*(?:1st|2nd|3rd|(?![123])\\dth)(?=\\b|[A-Z_])',
-    rsOrdUpper = '\\d*(?:1ST|2ND|3RD|(?![123])\\dTH)(?=\\b|[a-z_])',
-    rsSeq = rsOptVar + reOptMod + rsOptJoin,
-    rsEmoji = '(?:' + [rsDingbat, rsRegional, rsSurrPair].join('|') + ')' + rsSeq;
-
-/** Used to match complex or compound words. */
-var reUnicodeWord = RegExp([
-  rsUpper + '?' + rsLower + '+' + rsOptContrLower + '(?=' + [rsBreak, rsUpper, '$'].join('|') + ')',
-  rsMiscUpper + '+' + rsOptContrUpper + '(?=' + [rsBreak, rsUpper + rsMiscLower, '$'].join('|') + ')',
-  rsUpper + '?' + rsMiscLower + '+' + rsOptContrLower,
-  rsUpper + '+' + rsOptContrUpper,
-  rsOrdUpper,
-  rsOrdLower,
-  rsDigits,
-  rsEmoji
-].join('|'), 'g');
-
-/**
- * Splits a Unicode `string` into an array of its words.
- *
- * @private
- * @param {string} The string to inspect.
- * @returns {Array} Returns the words of `string`.
- */
-function unicodeWords(string) {
-  return string.match(reUnicodeWord) || [];
-}
-
-module.exports = unicodeWords;
-
-
-/***/ }),
-
-/***/ 5769:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var capitalize = __nccwpck_require__(3622),
-    createCompounder = __nccwpck_require__(3702);
-
-/**
- * Converts `string` to [camel case](https://en.wikipedia.org/wiki/CamelCase).
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to convert.
- * @returns {string} Returns the camel cased string.
- * @example
- *
- * _.camelCase('Foo Bar');
- * // => 'fooBar'
- *
- * _.camelCase('--foo-bar--');
- * // => 'fooBar'
- *
- * _.camelCase('__FOO_BAR__');
- * // => 'fooBar'
- */
-var camelCase = createCompounder(function(result, word, index) {
-  word = word.toLowerCase();
-  return result + (index ? capitalize(word) : word);
-});
-
-module.exports = camelCase;
-
-
-/***/ }),
-
-/***/ 3622:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var toString = __nccwpck_require__(2931),
-    upperFirst = __nccwpck_require__(2598);
-
-/**
- * Converts the first character of `string` to upper case and the remaining
- * to lower case.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to capitalize.
- * @returns {string} Returns the capitalized string.
- * @example
- *
- * _.capitalize('FRED');
- * // => 'Fred'
- */
-function capitalize(string) {
-  return upperFirst(toString(string).toLowerCase());
-}
-
-module.exports = capitalize;
-
-
-/***/ }),
-
-/***/ 833:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var deburrLetter = __nccwpck_require__(1683),
-    toString = __nccwpck_require__(2931);
-
-/** Used to match Latin Unicode letters (excluding mathematical operators). */
-var reLatin = /[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g;
-
-/** Used to compose unicode character classes. */
-var rsComboMarksRange = '\\u0300-\\u036f',
-    reComboHalfMarksRange = '\\ufe20-\\ufe2f',
-    rsComboSymbolsRange = '\\u20d0-\\u20ff',
-    rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange;
-
-/** Used to compose unicode capture groups. */
-var rsCombo = '[' + rsComboRange + ']';
-
-/**
- * Used to match [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks) and
- * [combining diacritical marks for symbols](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks_for_Symbols).
- */
-var reComboMark = RegExp(rsCombo, 'g');
-
-/**
- * Deburrs `string` by converting
- * [Latin-1 Supplement](https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)#Character_table)
- * and [Latin Extended-A](https://en.wikipedia.org/wiki/Latin_Extended-A)
- * letters to basic Latin letters and removing
- * [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks).
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to deburr.
- * @returns {string} Returns the deburred string.
- * @example
- *
- * _.deburr('déjà vu');
- * // => 'deja vu'
- */
-function deburr(string) {
-  string = toString(string);
-  return string && string.replace(reLatin, deburrLetter).replace(reComboMark, '');
-}
-
-module.exports = deburr;
-
-
-/***/ }),
-
-/***/ 1901:
-/***/ ((module) => {
-
-/**
- * Performs a
- * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * comparison between two values to determine if they are equivalent.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- * @example
- *
- * var object = { 'a': 1 };
- * var other = { 'a': 1 };
- *
- * _.eq(object, object);
- * // => true
- *
- * _.eq(object, other);
- * // => false
- *
- * _.eq('a', 'a');
- * // => true
- *
- * _.eq('a', Object('a'));
- * // => false
- *
- * _.eq(NaN, NaN);
- * // => true
- */
-function eq(value, other) {
-  return value === other || (value !== value && other !== other);
-}
-
-module.exports = eq;
-
-
-/***/ }),
-
-/***/ 6908:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGet = __nccwpck_require__(5758);
-
-/**
- * Gets the value at `path` of `object`. If the resolved value is
- * `undefined`, the `defaultValue` is returned in its place.
- *
- * @static
- * @memberOf _
- * @since 3.7.0
- * @category Object
- * @param {Object} object The object to query.
- * @param {Array|string} path The path of the property to get.
- * @param {*} [defaultValue] The value returned for `undefined` resolved values.
- * @returns {*} Returns the resolved value.
- * @example
- *
- * var object = { 'a': [{ 'b': { 'c': 3 } }] };
- *
- * _.get(object, 'a[0].b.c');
- * // => 3
- *
- * _.get(object, ['a', '0', 'b', 'c']);
- * // => 3
- *
- * _.get(object, 'a.b.c', 'default');
- * // => 'default'
- */
-function get(object, path, defaultValue) {
-  var result = object == null ? undefined : baseGet(object, path);
-  return result === undefined ? defaultValue : result;
-}
-
-module.exports = get;
-
-
-/***/ }),
-
-/***/ 7198:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseHas = __nccwpck_require__(351),
-    hasPath = __nccwpck_require__(7658);
-
-/**
- * Checks if `path` is a direct property of `object`.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @param {Array|string} path The path to check.
- * @returns {boolean} Returns `true` if `path` exists, else `false`.
- * @example
- *
- * var object = { 'a': { 'b': 2 } };
- * var other = _.create({ 'a': _.create({ 'b': 2 }) });
- *
- * _.has(object, 'a');
- * // => true
- *
- * _.has(object, 'a.b');
- * // => true
- *
- * _.has(object, ['a', 'b']);
- * // => true
- *
- * _.has(other, 'a');
- * // => false
- */
-function has(object, path) {
-  return object != null && hasPath(object, path, baseHas);
-}
-
-module.exports = has;
-
-
-/***/ }),
-
-/***/ 9409:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseHasIn = __nccwpck_require__(4129),
-    hasPath = __nccwpck_require__(7658);
-
-/**
- * Checks if `path` is a direct or inherited property of `object`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Object
- * @param {Object} object The object to query.
- * @param {Array|string} path The path to check.
- * @returns {boolean} Returns `true` if `path` exists, else `false`.
- * @example
- *
- * var object = _.create({ 'a': _.create({ 'b': 2 }) });
- *
- * _.hasIn(object, 'a');
- * // => true
- *
- * _.hasIn(object, 'a.b');
- * // => true
- *
- * _.hasIn(object, ['a', 'b']);
- * // => true
- *
- * _.hasIn(object, 'b');
- * // => false
- */
-function hasIn(object, path) {
-  return object != null && hasPath(object, path, baseHasIn);
-}
-
-module.exports = hasIn;
-
-
-/***/ }),
-
-/***/ 7822:
-/***/ ((module) => {
-
-/**
- * This method returns the first argument it receives.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Util
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'a': 1 };
- *
- * console.log(_.identity(object) === object);
- * // => true
- */
-function identity(value) {
-  return value;
-}
-
-module.exports = identity;
-
-
-/***/ }),
-
-/***/ 8495:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseIsArguments = __nccwpck_require__(2177),
-    isObjectLike = __nccwpck_require__(5926);
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/** Built-in value references. */
-var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-/**
- * Checks if `value` is likely an `arguments` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- *  else `false`.
- * @example
- *
- * _.isArguments(function() { return arguments; }());
- * // => true
- *
- * _.isArguments([1, 2, 3]);
- * // => false
- */
-var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsArguments : function(value) {
-  return isObjectLike(value) && hasOwnProperty.call(value, 'callee') &&
-    !propertyIsEnumerable.call(value, 'callee');
-};
-
-module.exports = isArguments;
-
-
-/***/ }),
-
-/***/ 4869:
-/***/ ((module) => {
-
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
-
-module.exports = isArray;
-
-
-/***/ }),
-
-/***/ 8017:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var isFunction = __nccwpck_require__(7799),
-    isLength = __nccwpck_require__(4530);
-
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */
-function isArrayLike(value) {
-  return value != null && isLength(value.length) && !isFunction(value);
-}
-
-module.exports = isArrayLike;
-
-
-/***/ }),
-
-/***/ 4190:
-/***/ ((module, exports, __nccwpck_require__) => {
-
-/* module decorator */ module = __nccwpck_require__.nmd(module);
-var root = __nccwpck_require__(9882),
-    stubFalse = __nccwpck_require__(7744);
-
-/** Detect free variable `exports`. */
-var freeExports =  true && exports && !exports.nodeType && exports;
-
-/** Detect free variable `module`. */
-var freeModule = freeExports && "object" == 'object' && module && !module.nodeType && module;
-
-/** Detect the popular CommonJS extension `module.exports`. */
-var moduleExports = freeModule && freeModule.exports === freeExports;
-
-/** Built-in value references. */
-var Buffer = moduleExports ? root.Buffer : undefined;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined;
-
-/**
- * Checks if `value` is a buffer.
- *
- * @static
- * @memberOf _
- * @since 4.3.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
- * @example
- *
- * _.isBuffer(new Buffer(2));
- * // => true
- *
- * _.isBuffer(new Uint8Array(2));
- * // => false
- */
-var isBuffer = nativeIsBuffer || stubFalse;
-
-module.exports = isBuffer;
-
-
-/***/ }),
-
-/***/ 7799:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGetTag = __nccwpck_require__(7497),
-    isObject = __nccwpck_require__(3334);
-
-/** `Object#toString` result references. */
-var asyncTag = '[object AsyncFunction]',
-    funcTag = '[object Function]',
-    genTag = '[object GeneratorFunction]',
-    proxyTag = '[object Proxy]';
-
-/**
- * Checks if `value` is classified as a `Function` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a function, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- *
- * _.isFunction(/abc/);
- * // => false
- */
-function isFunction(value) {
-  if (!isObject(value)) {
-    return false;
-  }
-  // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 9 which returns 'object' for typed arrays and other constructors.
-  var tag = baseGetTag(value);
-  return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
-}
-
-module.exports = isFunction;
-
-
-/***/ }),
-
-/***/ 4530:
-/***/ ((module) => {
-
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER = 9007199254740991;
-
-/**
- * Checks if `value` is a valid array-like length.
- *
- * **Note:** This method is loosely based on
- * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- * @example
- *
- * _.isLength(3);
- * // => true
- *
- * _.isLength(Number.MIN_VALUE);
- * // => false
- *
- * _.isLength(Infinity);
- * // => false
- *
- * _.isLength('3');
- * // => false
- */
-function isLength(value) {
-  return typeof value == 'number' &&
-    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-}
-
-module.exports = isLength;
-
-
-/***/ }),
-
-/***/ 3334:
-/***/ ((module) => {
-
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return value != null && (type == 'object' || type == 'function');
-}
-
-module.exports = isObject;
-
-
-/***/ }),
-
-/***/ 5926:
-/***/ ((module) => {
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return value != null && typeof value == 'object';
-}
-
-module.exports = isObjectLike;
-
-
-/***/ }),
-
-/***/ 6403:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseGetTag = __nccwpck_require__(7497),
-    isObjectLike = __nccwpck_require__(5926);
-
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && baseGetTag(value) == symbolTag);
-}
-
-module.exports = isSymbol;
-
-
-/***/ }),
-
-/***/ 2496:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseIsTypedArray = __nccwpck_require__(1528),
-    baseUnary = __nccwpck_require__(9258),
-    nodeUtil = __nccwpck_require__(4643);
-
-/* Node.js helper references. */
-var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
-
-/**
- * Checks if `value` is classified as a typed array.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
- * @example
- *
- * _.isTypedArray(new Uint8Array);
- * // => true
- *
- * _.isTypedArray([]);
- * // => false
- */
-var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
-
-module.exports = isTypedArray;
-
-
-/***/ }),
-
-/***/ 7645:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var arrayLikeKeys = __nccwpck_require__(2237),
-    baseKeys = __nccwpck_require__(7164),
-    isArrayLike = __nccwpck_require__(8017);
-
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * for more details.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
-function keys(object) {
-  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
-}
-
-module.exports = keys;
 
 
 /***/ }),
@@ -45139,414 +41528,6 @@ module.exports = keys;
 
 /***/ }),
 
-/***/ 2221:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseAssignValue = __nccwpck_require__(3868),
-    baseForOwn = __nccwpck_require__(5712),
-    baseIteratee = __nccwpck_require__(427);
-
-/**
- * The opposite of `_.mapValues`; this method creates an object with the
- * same values as `object` and keys generated by running each own enumerable
- * string keyed property of `object` thru `iteratee`. The iteratee is invoked
- * with three arguments: (value, key, object).
- *
- * @static
- * @memberOf _
- * @since 3.8.0
- * @category Object
- * @param {Object} object The object to iterate over.
- * @param {Function} [iteratee=_.identity] The function invoked per iteration.
- * @returns {Object} Returns the new mapped object.
- * @see _.mapValues
- * @example
- *
- * _.mapKeys({ 'a': 1, 'b': 2 }, function(value, key) {
- *   return key + value;
- * });
- * // => { 'a1': 1, 'b2': 2 }
- */
-function mapKeys(object, iteratee) {
-  var result = {};
-  iteratee = baseIteratee(iteratee, 3);
-
-  baseForOwn(object, function(value, key, object) {
-    baseAssignValue(result, iteratee(value, key, object), value);
-  });
-  return result;
-}
-
-module.exports = mapKeys;
-
-
-/***/ }),
-
-/***/ 668:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseAssignValue = __nccwpck_require__(3868),
-    baseForOwn = __nccwpck_require__(5712),
-    baseIteratee = __nccwpck_require__(427);
-
-/**
- * Creates an object with the same keys as `object` and values generated
- * by running each own enumerable string keyed property of `object` thru
- * `iteratee`. The iteratee is invoked with three arguments:
- * (value, key, object).
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Object
- * @param {Object} object The object to iterate over.
- * @param {Function} [iteratee=_.identity] The function invoked per iteration.
- * @returns {Object} Returns the new mapped object.
- * @see _.mapKeys
- * @example
- *
- * var users = {
- *   'fred':    { 'user': 'fred',    'age': 40 },
- *   'pebbles': { 'user': 'pebbles', 'age': 1 }
- * };
- *
- * _.mapValues(users, function(o) { return o.age; });
- * // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
- *
- * // The `_.property` iteratee shorthand.
- * _.mapValues(users, 'age');
- * // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
- */
-function mapValues(object, iteratee) {
-  var result = {};
-  iteratee = baseIteratee(iteratee, 3);
-
-  baseForOwn(object, function(value, key, object) {
-    baseAssignValue(result, key, iteratee(value, key, object));
-  });
-  return result;
-}
-
-module.exports = mapValues;
-
-
-/***/ }),
-
-/***/ 9885:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var MapCache = __nccwpck_require__(938);
-
-/** Error message constants. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/**
- * Creates a function that memoizes the result of `func`. If `resolver` is
- * provided, it determines the cache key for storing the result based on the
- * arguments provided to the memoized function. By default, the first argument
- * provided to the memoized function is used as the map cache key. The `func`
- * is invoked with the `this` binding of the memoized function.
- *
- * **Note:** The cache is exposed as the `cache` property on the memoized
- * function. Its creation may be customized by replacing the `_.memoize.Cache`
- * constructor with one whose instances implement the
- * [`Map`](http://ecma-international.org/ecma-262/7.0/#sec-properties-of-the-map-prototype-object)
- * method interface of `clear`, `delete`, `get`, `has`, and `set`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to have its output memoized.
- * @param {Function} [resolver] The function to resolve the cache key.
- * @returns {Function} Returns the new memoized function.
- * @example
- *
- * var object = { 'a': 1, 'b': 2 };
- * var other = { 'c': 3, 'd': 4 };
- *
- * var values = _.memoize(_.values);
- * values(object);
- * // => [1, 2]
- *
- * values(other);
- * // => [3, 4]
- *
- * object.a = 2;
- * values(object);
- * // => [1, 2]
- *
- * // Modify the result cache.
- * values.cache.set(object, ['a', 'b']);
- * values(object);
- * // => ['a', 'b']
- *
- * // Replace `_.memoize.Cache`.
- * _.memoize.Cache = WeakMap;
- */
-function memoize(func, resolver) {
-  if (typeof func != 'function' || (resolver != null && typeof resolver != 'function')) {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  var memoized = function() {
-    var args = arguments,
-        key = resolver ? resolver.apply(this, args) : args[0],
-        cache = memoized.cache;
-
-    if (cache.has(key)) {
-      return cache.get(key);
-    }
-    var result = func.apply(this, args);
-    memoized.cache = cache.set(key, result) || cache;
-    return result;
-  };
-  memoized.cache = new (memoize.Cache || MapCache);
-  return memoized;
-}
-
-// Expose `MapCache`.
-memoize.Cache = MapCache;
-
-module.exports = memoize;
-
-
-/***/ }),
-
-/***/ 7261:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseProperty = __nccwpck_require__(6829),
-    basePropertyDeep = __nccwpck_require__(974),
-    isKey = __nccwpck_require__(9084),
-    toKey = __nccwpck_require__(9071);
-
-/**
- * Creates a function that returns the value at `path` of a given object.
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Util
- * @param {Array|string} path The path of the property to get.
- * @returns {Function} Returns the new accessor function.
- * @example
- *
- * var objects = [
- *   { 'a': { 'b': 2 } },
- *   { 'a': { 'b': 1 } }
- * ];
- *
- * _.map(objects, _.property('a.b'));
- * // => [2, 1]
- *
- * _.map(_.sortBy(objects, _.property(['a', 'b'])), 'a.b');
- * // => [1, 2]
- */
-function property(path) {
-  return isKey(path) ? baseProperty(toKey(path)) : basePropertyDeep(path);
-}
-
-module.exports = property;
-
-
-/***/ }),
-
-/***/ 1419:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var createCompounder = __nccwpck_require__(3702);
-
-/**
- * Converts `string` to
- * [snake case](https://en.wikipedia.org/wiki/Snake_case).
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to convert.
- * @returns {string} Returns the snake cased string.
- * @example
- *
- * _.snakeCase('Foo Bar');
- * // => 'foo_bar'
- *
- * _.snakeCase('fooBar');
- * // => 'foo_bar'
- *
- * _.snakeCase('--FOO-BAR--');
- * // => 'foo_bar'
- */
-var snakeCase = createCompounder(function(result, word, index) {
-  return result + (index ? '_' : '') + word.toLowerCase();
-});
-
-module.exports = snakeCase;
-
-
-/***/ }),
-
-/***/ 8634:
-/***/ ((module) => {
-
-/**
- * This method returns a new empty array.
- *
- * @static
- * @memberOf _
- * @since 4.13.0
- * @category Util
- * @returns {Array} Returns the new empty array.
- * @example
- *
- * var arrays = _.times(2, _.stubArray);
- *
- * console.log(arrays);
- * // => [[], []]
- *
- * console.log(arrays[0] === arrays[1]);
- * // => false
- */
-function stubArray() {
-  return [];
-}
-
-module.exports = stubArray;
-
-
-/***/ }),
-
-/***/ 7744:
-/***/ ((module) => {
-
-/**
- * This method returns `false`.
- *
- * @static
- * @memberOf _
- * @since 4.13.0
- * @category Util
- * @returns {boolean} Returns `false`.
- * @example
- *
- * _.times(2, _.stubFalse);
- * // => [false, false]
- */
-function stubFalse() {
-  return false;
-}
-
-module.exports = stubFalse;
-
-
-/***/ }),
-
-/***/ 2931:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var baseToString = __nccwpck_require__(6792);
-
-/**
- * Converts `value` to a string. An empty string is returned for `null`
- * and `undefined` values. The sign of `-0` is preserved.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {string} Returns the converted string.
- * @example
- *
- * _.toString(null);
- * // => ''
- *
- * _.toString(-0);
- * // => '-0'
- *
- * _.toString([1, 2, 3]);
- * // => '1,2,3'
- */
-function toString(value) {
-  return value == null ? '' : baseToString(value);
-}
-
-module.exports = toString;
-
-
-/***/ }),
-
-/***/ 2598:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var createCaseFirst = __nccwpck_require__(5898);
-
-/**
- * Converts the first character of `string` to upper case.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category String
- * @param {string} [string=''] The string to convert.
- * @returns {string} Returns the converted string.
- * @example
- *
- * _.upperFirst('fred');
- * // => 'Fred'
- *
- * _.upperFirst('FRED');
- * // => 'FRED'
- */
-var upperFirst = createCaseFirst('toUpperCase');
-
-module.exports = upperFirst;
-
-
-/***/ }),
-
-/***/ 6454:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var asciiWords = __nccwpck_require__(2560),
-    hasUnicodeWord = __nccwpck_require__(4632),
-    toString = __nccwpck_require__(2931),
-    unicodeWords = __nccwpck_require__(5423);
-
-/**
- * Splits `string` into an array of its words.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to inspect.
- * @param {RegExp|string} [pattern] The pattern to match words.
- * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
- * @returns {Array} Returns the words of `string`.
- * @example
- *
- * _.words('fred, barney, & pebbles');
- * // => ['fred', 'barney', 'pebbles']
- *
- * _.words('fred, barney, & pebbles', /[^, ]+/g);
- * // => ['fred', 'barney', '&', 'pebbles']
- */
-function words(string, pattern, guard) {
-  string = toString(string);
-  pattern = guard ? undefined : pattern;
-
-  if (pattern === undefined) {
-    return hasUnicodeWord(string) ? unicodeWords(string) : asciiWords(string);
-  }
-  return string.match(pattern) || [];
-}
-
-module.exports = words;
-
-
-/***/ }),
-
 /***/ 3973:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -46729,87 +42710,6 @@ function isNumber (x) {
 
 /***/ }),
 
-/***/ 1754:
-/***/ ((module) => {
-
-"use strict";
-
-
-// ES6 Map
-var map;
-try {
-  map = Map;
-} catch (_) { }
-var set;
-
-// ES6 Set
-try {
-  set = Set;
-} catch (_) { }
-
-function baseClone (src, circulars, clones) {
-  // Null/undefined/functions/etc
-  if (!src || typeof src !== 'object' || typeof src === 'function') {
-    return src
-  }
-
-  // DOM Node
-  if (src.nodeType && 'cloneNode' in src) {
-    return src.cloneNode(true)
-  }
-
-  // Date
-  if (src instanceof Date) {
-    return new Date(src.getTime())
-  }
-
-  // RegExp
-  if (src instanceof RegExp) {
-    return new RegExp(src)
-  }
-
-  // Arrays
-  if (Array.isArray(src)) {
-    return src.map(clone)
-  }
-
-  // ES6 Maps
-  if (map && src instanceof map) {
-    return new Map(Array.from(src.entries()))
-  }
-
-  // ES6 Sets
-  if (set && src instanceof set) {
-    return new Set(Array.from(src.values()))
-  }
-
-  // Object
-  if (src instanceof Object) {
-    circulars.push(src);
-    var obj = Object.create(src);
-    clones.push(obj);
-    for (var key in src) {
-      var idx = circulars.findIndex(function (i) {
-        return i === src[key]
-      });
-      obj[key] = idx > -1 ? clones[idx] : baseClone(src[key], circulars, clones);
-    }
-    return obj
-  }
-
-  // ???
-  return src
-}
-
-function clone (src) {
-  return baseClone(src, [], [])
-}
-
-module.exports = clone;
-
-
-/***/ }),
-
 /***/ 1223:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -46887,273 +42787,282 @@ module.exports.win32 = win32;
 
 /***/ }),
 
-/***/ 435:
-/***/ ((module) => {
+/***/ 4294:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-/**
- * Based on Kendo UI Core expression code <https://github.com/telerik/kendo-ui-core#license-information>
- */
-
-
-function Cache(maxSize) {
-  this._maxSize = maxSize
-  this.clear()
-}
-Cache.prototype.clear = function () {
-  this._size = 0
-  this._values = Object.create(null)
-}
-Cache.prototype.get = function (key) {
-  return this._values[key]
-}
-Cache.prototype.set = function (key, value) {
-  this._size >= this._maxSize && this.clear()
-  if (!(key in this._values)) this._size++
-
-  return (this._values[key] = value)
-}
-
-var SPLIT_REGEX = /[^.^\]^[]+|(?=\[\]|\.\.)/g,
-  DIGIT_REGEX = /^\d+$/,
-  LEAD_DIGIT_REGEX = /^\d/,
-  SPEC_CHAR_REGEX = /[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g,
-  CLEAN_QUOTES_REGEX = /^\s*(['"]?)(.*?)(\1)\s*$/,
-  MAX_CACHE_SIZE = 512
-
-var pathCache = new Cache(MAX_CACHE_SIZE),
-  setCache = new Cache(MAX_CACHE_SIZE),
-  getCache = new Cache(MAX_CACHE_SIZE)
-
-var config
-
-module.exports = {
-  Cache: Cache,
-
-  split: split,
-
-  normalizePath: normalizePath,
-
-  setter: function (path) {
-    var parts = normalizePath(path)
-
-    return (
-      setCache.get(path) ||
-      setCache.set(path, function setter(obj, value) {
-        var index = 0
-        var len = parts.length
-        var data = obj
-
-        while (index < len - 1) {
-          var part = parts[index]
-          if (
-            part === '__proto__' ||
-            part === 'constructor' ||
-            part === 'prototype'
-          ) {
-            return obj
-          }
-
-          data = data[parts[index++]]
-        }
-        data[parts[index]] = value
-      })
-    )
-  },
-
-  getter: function (path, safe) {
-    var parts = normalizePath(path)
-    return (
-      getCache.get(path) ||
-      getCache.set(path, function getter(data) {
-        var index = 0,
-          len = parts.length
-        while (index < len) {
-          if (data != null || !safe) data = data[parts[index++]]
-          else return
-        }
-        return data
-      })
-    )
-  },
-
-  join: function (segments) {
-    return segments.reduce(function (path, part) {
-      return (
-        path +
-        (isQuoted(part) || DIGIT_REGEX.test(part)
-          ? '[' + part + ']'
-          : (path ? '.' : '') + part)
-      )
-    }, '')
-  },
-
-  forEach: function (path, cb, thisArg) {
-    forEach(Array.isArray(path) ? path : split(path), cb, thisArg)
-  },
-}
-
-function normalizePath(path) {
-  return (
-    pathCache.get(path) ||
-    pathCache.set(
-      path,
-      split(path).map(function (part) {
-        return part.replace(CLEAN_QUOTES_REGEX, '$2')
-      })
-    )
-  )
-}
-
-function split(path) {
-  return path.match(SPLIT_REGEX)
-}
-
-function forEach(parts, iter, thisArg) {
-  var len = parts.length,
-    part,
-    idx,
-    isArray,
-    isBracket
-
-  for (idx = 0; idx < len; idx++) {
-    part = parts[idx]
-
-    if (part) {
-      if (shouldBeQuoted(part)) {
-        part = '"' + part + '"'
-      }
-
-      isBracket = isQuoted(part)
-      isArray = !isBracket && /^\d+$/.test(part)
-
-      iter.call(thisArg, part, isBracket, isArray, idx, parts)
-    }
-  }
-}
-
-function isQuoted(str) {
-  return (
-    typeof str === 'string' && str && ["'", '"'].indexOf(str.charAt(0)) !== -1
-  )
-}
-
-function hasLeadingNumber(part) {
-  return part.match(LEAD_DIGIT_REGEX) && !part.match(DIGIT_REGEX)
-}
-
-function hasSpecialChars(part) {
-  return SPEC_CHAR_REGEX.test(part)
-}
-
-function shouldBeQuoted(part) {
-  return !isQuoted(part) && (hasLeadingNumber(part) || hasSpecialChars(part))
-}
+module.exports = __nccwpck_require__(4219);
 
 
 /***/ }),
 
-/***/ 3889:
-/***/ ((module) => {
+/***/ 4219:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
 
 
-/**
- * Topological sorting function
- *
- * @param {Array} edges
- * @returns {Array}
- */
+var net = __nccwpck_require__(1631);
+var tls = __nccwpck_require__(4016);
+var http = __nccwpck_require__(8605);
+var https = __nccwpck_require__(7211);
+var events = __nccwpck_require__(8614);
+var assert = __nccwpck_require__(2357);
+var util = __nccwpck_require__(1669);
 
-module.exports = function(edges) {
-  return toposort(uniqueNodes(edges), edges)
+
+exports.httpOverHttp = httpOverHttp;
+exports.httpsOverHttp = httpsOverHttp;
+exports.httpOverHttps = httpOverHttps;
+exports.httpsOverHttps = httpsOverHttps;
+
+
+function httpOverHttp(options) {
+  var agent = new TunnelingAgent(options);
+  agent.request = http.request;
+  return agent;
 }
 
-module.exports.array = toposort
+function httpsOverHttp(options) {
+  var agent = new TunnelingAgent(options);
+  agent.request = http.request;
+  agent.createSocket = createSecureSocket;
+  agent.defaultPort = 443;
+  return agent;
+}
 
-function toposort(nodes, edges) {
-  var cursor = nodes.length
-    , sorted = new Array(cursor)
-    , visited = {}
-    , i = cursor
-    // Better data structures make algorithm much faster.
-    , outgoingEdges = makeOutgoingEdges(edges)
-    , nodesHash = makeNodesHash(nodes)
+function httpOverHttps(options) {
+  var agent = new TunnelingAgent(options);
+  agent.request = https.request;
+  return agent;
+}
 
-  // check for unknown nodes
-  edges.forEach(function(edge) {
-    if (!nodesHash.has(edge[0]) || !nodesHash.has(edge[1])) {
-      throw new Error('Unknown node. There is an unknown node in the supplied edges.')
-    }
-  })
+function httpsOverHttps(options) {
+  var agent = new TunnelingAgent(options);
+  agent.request = https.request;
+  agent.createSocket = createSecureSocket;
+  agent.defaultPort = 443;
+  return agent;
+}
 
-  while (i--) {
-    if (!visited[i]) visit(nodes[i], i, new Set())
-  }
 
-  return sorted
+function TunnelingAgent(options) {
+  var self = this;
+  self.options = options || {};
+  self.proxyOptions = self.options.proxy || {};
+  self.maxSockets = self.options.maxSockets || http.Agent.defaultMaxSockets;
+  self.requests = [];
+  self.sockets = [];
 
-  function visit(node, i, predecessors) {
-    if(predecessors.has(node)) {
-      var nodeRep
-      try {
-        nodeRep = ", node was:" + JSON.stringify(node)
-      } catch(e) {
-        nodeRep = ""
+  self.on('free', function onFree(socket, host, port, localAddress) {
+    var options = toOptions(host, port, localAddress);
+    for (var i = 0, len = self.requests.length; i < len; ++i) {
+      var pending = self.requests[i];
+      if (pending.host === options.host && pending.port === options.port) {
+        // Detect the request to connect same origin server,
+        // reuse the connection.
+        self.requests.splice(i, 1);
+        pending.request.onSocket(socket);
+        return;
       }
-      throw new Error('Cyclic dependency' + nodeRep)
+    }
+    socket.destroy();
+    self.removeSocket(socket);
+  });
+}
+util.inherits(TunnelingAgent, events.EventEmitter);
+
+TunnelingAgent.prototype.addRequest = function addRequest(req, host, port, localAddress) {
+  var self = this;
+  var options = mergeOptions({request: req}, self.options, toOptions(host, port, localAddress));
+
+  if (self.sockets.length >= this.maxSockets) {
+    // We are over limit so we'll add it to the queue.
+    self.requests.push(options);
+    return;
+  }
+
+  // If we are under maxSockets create a new one.
+  self.createSocket(options, function(socket) {
+    socket.on('free', onFree);
+    socket.on('close', onCloseOrRemove);
+    socket.on('agentRemove', onCloseOrRemove);
+    req.onSocket(socket);
+
+    function onFree() {
+      self.emit('free', socket, options);
     }
 
-    if (!nodesHash.has(node)) {
-      throw new Error('Found unknown node. Make sure to provided all involved nodes. Unknown node: '+JSON.stringify(node))
+    function onCloseOrRemove(err) {
+      self.removeSocket(socket);
+      socket.removeListener('free', onFree);
+      socket.removeListener('close', onCloseOrRemove);
+      socket.removeListener('agentRemove', onCloseOrRemove);
     }
+  });
+};
 
-    if (visited[i]) return;
-    visited[i] = true
+TunnelingAgent.prototype.createSocket = function createSocket(options, cb) {
+  var self = this;
+  var placeholder = {};
+  self.sockets.push(placeholder);
 
-    var outgoing = outgoingEdges.get(node) || new Set()
-    outgoing = Array.from(outgoing)
-
-    if (i = outgoing.length) {
-      predecessors.add(node)
-      do {
-        var child = outgoing[--i]
-        visit(child, nodesHash.get(child), predecessors)
-      } while (i)
-      predecessors.delete(node)
+  var connectOptions = mergeOptions({}, self.proxyOptions, {
+    method: 'CONNECT',
+    path: options.host + ':' + options.port,
+    agent: false,
+    headers: {
+      host: options.host + ':' + options.port
     }
-
-    sorted[--cursor] = node
+  });
+  if (options.localAddress) {
+    connectOptions.localAddress = options.localAddress;
   }
+  if (connectOptions.proxyAuth) {
+    connectOptions.headers = connectOptions.headers || {};
+    connectOptions.headers['Proxy-Authorization'] = 'Basic ' +
+        new Buffer(connectOptions.proxyAuth).toString('base64');
+  }
+
+  debug('making CONNECT request');
+  var connectReq = self.request(connectOptions);
+  connectReq.useChunkedEncodingByDefault = false; // for v0.6
+  connectReq.once('response', onResponse); // for v0.6
+  connectReq.once('upgrade', onUpgrade);   // for v0.6
+  connectReq.once('connect', onConnect);   // for v0.7 or later
+  connectReq.once('error', onError);
+  connectReq.end();
+
+  function onResponse(res) {
+    // Very hacky. This is necessary to avoid http-parser leaks.
+    res.upgrade = true;
+  }
+
+  function onUpgrade(res, socket, head) {
+    // Hacky.
+    process.nextTick(function() {
+      onConnect(res, socket, head);
+    });
+  }
+
+  function onConnect(res, socket, head) {
+    connectReq.removeAllListeners();
+    socket.removeAllListeners();
+
+    if (res.statusCode !== 200) {
+      debug('tunneling socket could not be established, statusCode=%d',
+        res.statusCode);
+      socket.destroy();
+      var error = new Error('tunneling socket could not be established, ' +
+        'statusCode=' + res.statusCode);
+      error.code = 'ECONNRESET';
+      options.request.emit('error', error);
+      self.removeSocket(placeholder);
+      return;
+    }
+    if (head.length > 0) {
+      debug('got illegal response body from proxy');
+      socket.destroy();
+      var error = new Error('got illegal response body from proxy');
+      error.code = 'ECONNRESET';
+      options.request.emit('error', error);
+      self.removeSocket(placeholder);
+      return;
+    }
+    debug('tunneling connection has established');
+    self.sockets[self.sockets.indexOf(placeholder)] = socket;
+    return cb(socket);
+  }
+
+  function onError(cause) {
+    connectReq.removeAllListeners();
+
+    debug('tunneling socket could not be established, cause=%s\n',
+          cause.message, cause.stack);
+    var error = new Error('tunneling socket could not be established, ' +
+                          'cause=' + cause.message);
+    error.code = 'ECONNRESET';
+    options.request.emit('error', error);
+    self.removeSocket(placeholder);
+  }
+};
+
+TunnelingAgent.prototype.removeSocket = function removeSocket(socket) {
+  var pos = this.sockets.indexOf(socket)
+  if (pos === -1) {
+    return;
+  }
+  this.sockets.splice(pos, 1);
+
+  var pending = this.requests.shift();
+  if (pending) {
+    // If we have pending requests and a socket gets closed a new one
+    // needs to be created to take over in the pool for the one that closed.
+    this.createSocket(pending, function(socket) {
+      pending.request.onSocket(socket);
+    });
+  }
+};
+
+function createSecureSocket(options, cb) {
+  var self = this;
+  TunnelingAgent.prototype.createSocket.call(self, options, function(socket) {
+    var hostHeader = options.request.getHeader('host');
+    var tlsOptions = mergeOptions({}, self.options, {
+      socket: socket,
+      servername: hostHeader ? hostHeader.replace(/:.*$/, '') : options.host
+    });
+
+    // 0 is dummy port for v0.6
+    var secureSocket = tls.connect(0, tlsOptions);
+    self.sockets[self.sockets.indexOf(socket)] = secureSocket;
+    cb(secureSocket);
+  });
 }
 
-function uniqueNodes(arr){
-  var res = new Set()
-  for (var i = 0, len = arr.length; i < len; i++) {
-    var edge = arr[i]
-    res.add(edge[0])
-    res.add(edge[1])
+
+function toOptions(host, port, localAddress) {
+  if (typeof host === 'string') { // since v0.10
+    return {
+      host: host,
+      port: port,
+      localAddress: localAddress
+    };
   }
-  return Array.from(res)
+  return host; // for v0.11 or later
 }
 
-function makeOutgoingEdges(arr){
-  var edges = new Map()
-  for (var i = 0, len = arr.length; i < len; i++) {
-    var edge = arr[i]
-    if (!edges.has(edge[0])) edges.set(edge[0], new Set())
-    if (!edges.has(edge[1])) edges.set(edge[1], new Set())
-    edges.get(edge[0]).add(edge[1])
+function mergeOptions(target) {
+  for (var i = 1, len = arguments.length; i < len; ++i) {
+    var overrides = arguments[i];
+    if (typeof overrides === 'object') {
+      var keys = Object.keys(overrides);
+      for (var j = 0, keyLen = keys.length; j < keyLen; ++j) {
+        var k = keys[j];
+        if (overrides[k] !== undefined) {
+          target[k] = overrides[k];
+        }
+      }
+    }
   }
-  return edges
+  return target;
 }
 
-function makeNodesHash(arr){
-  var res = new Map()
-  for (var i = 0, len = arr.length; i < len; i++) {
-    res.set(arr[i], i)
+
+var debug;
+if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
+  debug = function() {
+    var args = Array.prototype.slice.call(arguments);
+    if (typeof args[0] === 'string') {
+      args[0] = 'TUNNEL: ' + args[0];
+    } else {
+      args.unshift('TUNNEL:');
+    }
+    console.error.apply(console, args);
   }
-  return res
+} else {
+  debug = function() {};
 }
+exports.debug = debug; // for test
 
 
 /***/ }),
@@ -49016,7 +44925,7 @@ function wrappy (fn, cb) {
 
 const core = __nccwpck_require__(2186);
 const glob = __nccwpck_require__(1957);
-const { validateFromFile } = __nccwpck_require__(5570);
+const { validateFromFile } = __nccwpck_require__(2105);
 
 const usage = `
 Usage: validate-entity [OPTION] [FILE]
@@ -49155,6 +45064,30 @@ module.exports = require("fs");;
 
 /***/ }),
 
+/***/ 8605:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("http");;
+
+/***/ }),
+
+/***/ 7211:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("https");;
+
+/***/ }),
+
+/***/ 1631:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("net");;
+
+/***/ }),
+
 /***/ 2087:
 /***/ ((module) => {
 
@@ -49168,6 +45101,14 @@ module.exports = require("os");;
 
 "use strict";
 module.exports = require("path");;
+
+/***/ }),
+
+/***/ 4016:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("tls");;
 
 /***/ }),
 
