@@ -24,7 +24,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@actions/core": "^1.10.0",
+    "@actions/core": "^1.9.1",
     "@backstage/catalog-model": "^1.2.0",
     "@roadiehq/roadie-backstage-entity-validator": "^2.2.4",
     "ajv": "^8.4.0",
