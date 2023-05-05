@@ -15860,11 +15860,27 @@ function modifyPlaceholders(obj) {
   }
 }
 
-const validate = async (fileContents, verbose = true) => {
+const validate = async (
+  fileContents,
+  verbose = true,
+  customAnnotationSchemaLocation = '',
+) => {
   let validator;
   const validateAnnotations = (entity, idx) => {
     if (!validator) {
-      validator = validator_ajv.compile(annotations_schema_namespaceObject);
+      if (customAnnotationSchemaLocation) {
+        console.log(
+          `Using validation schema from ${customAnnotationSchemaLocation}...`,
+        );
+        const customAnnotationSchema = JSON.parse(external_fs_default().readFileSync(customAnnotationSchemaLocation));
+        validator = validator_ajv.getSchema(customAnnotationSchema.$id);
+
+        if (!validator) {
+          validator = validator_ajv.compile(customAnnotationSchema);
+        }
+      } else {
+        validator = validator_ajv.compile(annotations_schema_namespaceObject);
+      }
     }
     if (verbose) {
       console.log(`Validating entity annotations for file document ${idx}`);
@@ -15918,9 +15934,8 @@ const validate = async (fileContents, verbose = true) => {
       return Object.values(results[0]).filter(r => r === false).length > 0;
     };
     const validKind = await validateEntities(data);
-    const validAnnotations = data.map((it, idx) =>
-      validateAnnotations(it, idx),
-    );
+    const validAnnotations = data.map((it, idx) => 
+      validateAnnotations(it, idx));
 
     if (validKind && validAnnotations && verbose) {
       console.log('Entity Schema policies validated\n');
@@ -15931,13 +15946,17 @@ const validate = async (fileContents, verbose = true) => {
   }
 };
 
-const validateFromFile = async (filepath, verbose = true) => {
+const validateFromFile = async (
+  filepath,
+  verbose = true,
+  customAnnotationSchemaLocation = '',
+) => {
   const fileContents = external_fs_default().readFileSync(filepath, 'utf8');
   if (verbose) {
     console.log(`Validating Entity Schema policies for file ${filepath}`);
   }
 
-  await validate(fileContents, verbose);
+  await validate(fileContents, verbose, customAnnotationSchemaLocation);
   await relativeSpaceValidation(fileContents, filepath, verbose);
 };
 
@@ -44937,15 +44956,17 @@ OPTION:
 -h  display help
 -q  minimal output while validating entities
 -i  validate files provided over standard input
+-l  location of custom validation schema file
 `.trim();
 
-async function validate(files, { github, verbose }) {
+async function validate(files, { github, verbose, validationSchemaFileLocation }) {
   for (const file of files) {
     try {
       if (github) {
         core.setOutput('time', new Date().toTimeString());
       }
-      await validateFromFile(file, verbose);
+ 
+      await validateFromFile(file, verbose, validationSchemaFileLocation);
     } catch (err) {
       if (github) {
         core.setFailed(`Action failed with error: ${err.message}`);
@@ -44979,6 +45000,7 @@ async function main() {
   const options = {
     verbose: !argv.q,
     github: false,
+    validationSchemaFileLocation: argv.l
   };
 
   // files to validate
@@ -44995,6 +45017,11 @@ async function main() {
   const ghVerbose = core.getInput('verbose');
   if (ghVerbose) {
     options.verbose = ghVerbose === 'true';
+  }
+
+  const ghValidationSchemaFileLocation = core.getInput('validationSchemaFileLocation');
+  if (ghValidationSchemaFileLocation) {
+    options.validationSchemaFileLocation = ghValidationSchemaFileLocation;
   }
 
   // add files specified as arguments

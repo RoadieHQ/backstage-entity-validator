@@ -14,6 +14,9 @@ This package can be used as a GitHub action or a standalone node.js module
 
 **Optional** Specify whether the output should be verbose. Default `true`.
 
+### `validationSchemaFileLocation`
+**Optional** Specify the location of the validation schema file.
+
 ### Outputs
 
 None. Prints out the validated YAML on success. Prints out errors on invalid YAML
@@ -35,6 +38,13 @@ None. Prints out the validated YAML on success. Prints out errors on invalid YAM
 - uses:  RoadieHQ/backstage-entity-validator@v0.3.11
   with:
     path: 'catalog-info-*.yaml,services/**/*/catalog-info.yaml'
+```
+
+```
+- uses:  RoadieHQ/backstage-entity-validator@v0.3.2
+  with:
+    path: 'catalog-info-*.yaml,services/**/*/catalog-info.yaml'
+    validationSchemaFileLocation: 'custom-validation-schema.json'
 ```
 
 ## CircleCI Orb
@@ -79,6 +89,7 @@ OPTION:
 -h  display help
 -q  minimal output while validating entities
 -i  validate files provided over standard input
+-l  location of custom validation schema file
 ```
 
 Examples:

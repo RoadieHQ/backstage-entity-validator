@@ -13,6 +13,9 @@ inputs:
     description: 'Specify whether the output should be verbose'
     required: false
     default: "true"
+  validationSchemaFileLocation:
+    description: 'Specify the location of the validation schema file'
+    required: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
