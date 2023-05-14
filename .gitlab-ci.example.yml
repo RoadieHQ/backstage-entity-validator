@@ -1,0 +1,5 @@
+validate-yaml:
+  stage: test
+  image: roadiehq/backstage-entity-validator
+  script:
+  - validate-entity catalog-info.yaml
