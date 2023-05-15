@@ -12,15 +12,17 @@ OPTION:
 -h  display help
 -q  minimal output while validating entities
 -i  validate files provided over standard input
+-l  location of custom validation schema file
 `.trim();
 
-async function validate(files, { github, verbose }) {
+async function validate(files, { github, verbose, validationSchemaFileLocation }) {
   for (const file of files) {
     try {
       if (github) {
         core.setOutput('time', new Date().toTimeString());
       }
-      await validateFromFile(file, verbose);
+ 
+      await validateFromFile(file, verbose, validationSchemaFileLocation);
     } catch (err) {
       if (github) {
         core.setFailed(`Action failed with error: ${err.message}`);
@@ -54,6 +56,7 @@ async function main() {
   const options = {
     verbose: !argv.q,
     github: false,
+    validationSchemaFileLocation: argv.l
   };
 
   // files to validate
@@ -70,6 +73,11 @@ async function main() {
   const ghVerbose = core.getInput('verbose');
   if (ghVerbose) {
     options.verbose = ghVerbose === 'true';
+  }
+
+  const ghValidationSchemaFileLocation = core.getInput('validationSchemaFileLocation');
+  if (ghValidationSchemaFileLocation) {
+    options.validationSchemaFileLocation = ghValidationSchemaFileLocation;
   }
 
   // add files specified as arguments

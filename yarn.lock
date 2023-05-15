@@ -10,11 +10,6 @@
     "@actions/http-client" "^2.0.1"
     uuid "^8.3.2"
 
-"@actions/core@^1.2.7":
-  version "1.2.7"
-  resolved "https://registry.npmjs.org/@actions/core/-/core-1.2.7.tgz"
-  integrity sha512-kzLFD5BgEvq6ubcxdgPbRKGD2Qrgya/5j+wh4LZzqT915I0V3rED+MvjH6NXghbvk1MXknpNNQ3uKjXSEN00Ig==
-
 "@actions/http-client@^2.0.1":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-2.1.0.tgz#b6d8c3934727d6a50d10d19f00a711a964599a9f"
@@ -309,10 +304,23 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@backstage/catalog-model@^1.2.0", "@backstage/catalog-model@^1.2.1":
+"@backstage/catalog-model@^1.2.0":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-1.2.1.tgz#ee3fa9ec404cef4a6b639160c7c016fbdd53229f"
   integrity sha512-pbH67Nov/bgJYIOl78ncjUfCPbjAI+VScfGRhGmcFubqK+w9pygy6Y/sYg10u5NFJxKCoSnbYZehO0451UbqhA==
+  dependencies:
+    "@backstage/config" "^1.0.7"
+    "@backstage/errors" "^1.1.5"
+    "@backstage/types" "^1.0.2"
+    ajv "^8.10.0"
+    json-schema "^0.4.0"
+    lodash "^4.17.21"
+    uuid "^8.0.0"
+
+"@backstage/catalog-model@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-1.3.0.tgz#3d926b4e9d3d871f37e88295788cdce3b4ec17d3"
+  integrity sha512-QFoLho/SvzNepFHDUBL58fdcktAtshQQQ1FABpDbnBR954iQ7MGQlSPP+2uSrQ5wGpZylIjpFnsH3NB/k06i6g==
   dependencies:
     "@backstage/config" "^1.0.7"
     "@backstage/errors" "^1.1.5"
@@ -339,12 +347,25 @@
     cross-fetch "^3.1.5"
     serialize-error "^8.0.1"
 
-"@backstage/plugin-scaffolder-common@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-scaffolder-common/-/plugin-scaffolder-common-1.2.6.tgz#30714d31bbaf60bbebf6352c6be01e9206dd3776"
-  integrity sha512-quuPkh0Zxs6sD5/2/PzcylXe3UeEngxcc/xGHVn34y4t8j6bF1IsDeUPL4Om6cCLE6PdYw8rYEYL2P9vXherBw==
+"@backstage/plugin-permission-common@^0.7.5":
+  version "0.7.5"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-common/-/plugin-permission-common-0.7.5.tgz#6403446a98a665f813e2b550d9e47c9059566dcc"
+  integrity sha512-7kltlP+p79tiyOgxao90+yme6HtWtxY6lIl3lksYD2XMb19FFcJaxtYmx3DPlDzecaVAoUK8gQG9NrGtbQJeTQ==
   dependencies:
-    "@backstage/catalog-model" "^1.2.1"
+    "@backstage/config" "^1.0.7"
+    "@backstage/errors" "^1.1.5"
+    "@backstage/types" "^1.0.2"
+    cross-fetch "^3.1.5"
+    uuid "^8.0.0"
+    zod "^3.21.4"
+
+"@backstage/plugin-scaffolder-common@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.npmjs.org/@backstage/plugin-scaffolder-common/-/plugin-scaffolder-common-1.2.7.tgz#a61ab8f1360e6882164430ae19edc657e342d286"
+  integrity sha512-5Hk7/cNozs7ZQtpcytgwCxoPWXLLJTr2hhmALw0/AU1P/aOtXvI/4BeYpazeeoRcUVFT9oszjUGBgYfNIEXeoQ==
+  dependencies:
+    "@backstage/catalog-model" "^1.3.0"
+    "@backstage/plugin-permission-common" "^0.7.5"
     "@backstage/types" "^1.0.2"
 
 "@backstage/types@^1.0.2":
@@ -543,14 +564,14 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@roadiehq/roadie-backstage-entity-validator@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@roadiehq/roadie-backstage-entity-validator/-/roadie-backstage-entity-validator-2.2.4.tgz#04933cc81716f7507f01c528b917f11e81da562b"
-  integrity sha512-xtjbjs1PvhPL1OHreh7KDLYuCEU1a+ZhmiPFUc964E4borQaV3nOReqU02c/UBefr4UJsXk06vFdkEFbg9Qt6Q==
+"@roadiehq/roadie-backstage-entity-validator@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/@roadiehq/roadie-backstage-entity-validator/-/roadie-backstage-entity-validator-2.3.0.tgz#acae4fb25fcdb7f61672e1855058e66c8b2d15d9"
+  integrity sha512-pQ5s2Q6zPYW2MS/YU7srUsUVA17QOoX/jAAVtwTI7YKxpKbTsrL5LUfmtjoQhdgzhkziJzC4a3HXCLIpjm3HgA==
   dependencies:
-    "@actions/core" "^1.2.7"
-    "@backstage/catalog-model" "^1.2.1"
-    "@backstage/plugin-scaffolder-common" "^1.2.6"
+    "@actions/core" "^1.10.0"
+    "@backstage/catalog-model" "^1.3.0"
+    "@backstage/plugin-scaffolder-common" "^1.2.7"
     ajv "^8.4.0"
     ajv-formats "^2.1.0"
     glob "^7.1.7"
@@ -2704,3 +2725,8 @@ yargs@^16.0.3:
     string-width "^4.2.0"
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
+
+zod@^3.21.4:
+  version "3.21.4"
+  resolved "https://registry.npmjs.org/zod/-/zod-3.21.4.tgz#10882231d992519f0a10b5dd58a38c9dabbb64db"
+  integrity sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==
