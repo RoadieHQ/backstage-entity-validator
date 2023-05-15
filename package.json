@@ -1,6 +1,6 @@
 {
   "name": "@roadiehq/backstage-entity-validator",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "author": "RoadieHQ",
   "description": "Backstage entity validator",
   "main": "dist/index.js",
