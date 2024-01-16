@@ -11672,7 +11672,7 @@ const anyOf_1 = __nccwpck_require__(9286);
 const oneOf_1 = __nccwpck_require__(7630);
 const allOf_1 = __nccwpck_require__(9406);
 const if_1 = __nccwpck_require__(7706);
-const thenElse_1 = __nccwpck_require__(8720);
+const thenElse_1 = __nccwpck_require__(8725);
 function getApplicator(draft2020 = false) {
     const applicator = [
         // any
@@ -12105,7 +12105,7 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 8720:
+/***/ 8725:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -17108,8 +17108,15 @@ const ANNOTATION_KUBERNETES_API_SERVER = "kubernetes.io/api-server";
 const ANNOTATION_KUBERNETES_API_SERVER_CA = "kubernetes.io/api-server-certificate-authority";
 const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
 
+var __defProp$4 = Object.defineProperty;
+var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$4 = (obj, key, value) => {
+  __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class DefaultNamespaceEntityPolicy {
   constructor(namespace = DEFAULT_NAMESPACE) {
+    __publicField$4(this, "namespace");
     this.namespace = namespace;
   }
   async enforce(entity) {
@@ -17198,8 +17205,15 @@ function stringifyEntityRef(ref) {
   )}/${name.toLocaleLowerCase("en-US")}`;
 }
 
+var __defProp$3 = Object.defineProperty;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$3 = (obj, key, value) => {
+  __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class GroupDefaultParentEntityPolicy {
   constructor(parentEntityRef) {
+    __publicField$3(this, "parentRef");
     const { kind, namespace, name } = parseEntityRef(parentEntityRef, {
       defaultKind: "Group",
       defaultNamespace: DEFAULT_NAMESPACE
@@ -17697,7 +17711,7 @@ var definitions = {
 		description: "A directed relation from one entity to another.",
 		required: [
 			"type",
-			"target"
+			"targetRef"
 		],
 		additionalProperties: false,
 		properties: {
@@ -17708,7 +17722,8 @@ var definitions = {
 				description: "The type of relation."
 			},
 			target: {
-				$ref: "#reference"
+				$ref: "#reference",
+				deprecated: true
 			},
 			targetRef: {
 				type: "string",
@@ -18000,13 +18015,20 @@ function makeValidator(overrides = {}) {
   };
 }
 
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$2 = (obj, key, value) => {
+  __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class FieldFormatEntityPolicy {
   constructor(validators = makeValidator()) {
+    __publicField$2(this, "validators");
     this.validators = validators;
   }
   async enforce(entity) {
     var _a, _b, _c, _d, _e, _f, _g;
-    function require(field, value, validator) {
+    function require2(field, value, validator) {
       if (value === void 0 || value === null) {
         throw new Error(`${field} must have a value`);
       }
@@ -18059,31 +18081,31 @@ class FieldFormatEntityPolicy {
       }
     }
     function optional(field, value, validator) {
-      return value === void 0 || require(field, value, validator);
+      return value === void 0 || require2(field, value, validator);
     }
-    require("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
-    require("kind", entity.kind, this.validators.isValidKind);
-    require("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
+    require2("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
+    require2("kind", entity.kind, this.validators.isValidKind);
+    require2("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
     optional(
       "metadata.namespace",
       entity.metadata.namespace,
       this.validators.isValidNamespace
     );
     for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
-      require(`labels.${k}`, k, this.validators.isValidLabelKey);
-      require(`labels.${k}`, v, this.validators.isValidLabelValue);
+      require2(`labels.${k}`, k, this.validators.isValidLabelKey);
+      require2(`labels.${k}`, v, this.validators.isValidLabelValue);
     }
     for (const [k, v] of Object.entries((_b = entity.metadata.annotations) != null ? _b : [])) {
-      require(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
-      require(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
+      require2(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
+      require2(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
     }
     const tags = (_c = entity.metadata.tags) != null ? _c : [];
     for (let i = 0; i < tags.length; ++i) {
-      require(`tags.${i}`, tags[i], this.validators.isValidTag);
+      require2(`tags.${i}`, tags[i], this.validators.isValidTag);
     }
     const links = (_d = entity.metadata.links) != null ? _d : [];
     for (let i = 0; i < links.length; ++i) {
-      require(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
+      require2(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
       optional(
         `links.${i}.title`,
         (_f = links[i]) == null ? void 0 : _f.title,
@@ -18099,9 +18121,16 @@ class FieldFormatEntityPolicy {
   }
 }
 
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$1 = (obj, key, value) => {
+  __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 const defaultKnownFields = ["apiVersion", "kind", "metadata", "spec"];
 class NoForeignRootFieldsEntityPolicy {
   constructor(knownFields = defaultKnownFields) {
+    __publicField$1(this, "knownFields");
     this.knownFields = knownFields;
   }
   async enforce(entity) {
@@ -18114,7 +18143,16 @@ class NoForeignRootFieldsEntityPolicy {
   }
 }
 
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class SchemaValidEntityPolicy {
+  constructor() {
+    __publicField(this, "validate");
+  }
   async enforce(entity) {
     if (!this.validate) {
       const ajv = new (ajv_default())({ allowUnionTypes: true });
@@ -19136,8 +19174,15 @@ const index_esm_ANNOTATION_KUBERNETES_API_SERVER = "kubernetes.io/api-server";
 const index_esm_ANNOTATION_KUBERNETES_API_SERVER_CA = "kubernetes.io/api-server-certificate-authority";
 const index_esm_ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
 
+var index_esm_defProp$4 = Object.defineProperty;
+var index_esm_defNormalProp$4 = (obj, key, value) => key in obj ? index_esm_defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var index_esm_publicField$4 = (obj, key, value) => {
+  index_esm_defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class index_esm_DefaultNamespaceEntityPolicy {
   constructor(namespace = index_esm_DEFAULT_NAMESPACE) {
+    index_esm_publicField$4(this, "namespace");
     this.namespace = namespace;
   }
   async enforce(entity) {
@@ -19226,8 +19271,15 @@ function index_esm_stringifyEntityRef(ref) {
   )}/${name.toLocaleLowerCase("en-US")}`;
 }
 
+var index_esm_defProp$3 = Object.defineProperty;
+var index_esm_defNormalProp$3 = (obj, key, value) => key in obj ? index_esm_defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var index_esm_publicField$3 = (obj, key, value) => {
+  index_esm_defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class index_esm_GroupDefaultParentEntityPolicy {
   constructor(parentEntityRef) {
+    index_esm_publicField$3(this, "parentRef");
     const { kind, namespace, name } = index_esm_parseEntityRef(parentEntityRef, {
       defaultKind: "Group",
       defaultNamespace: index_esm_DEFAULT_NAMESPACE
@@ -19725,7 +19777,7 @@ var index_esm_definitions = {
 		description: "A directed relation from one entity to another.",
 		required: [
 			"type",
-			"target"
+			"targetRef"
 		],
 		additionalProperties: false,
 		properties: {
@@ -19736,7 +19788,8 @@ var index_esm_definitions = {
 				description: "The type of relation."
 			},
 			target: {
-				$ref: "#reference"
+				$ref: "#reference",
+				deprecated: true
 			},
 			targetRef: {
 				type: "string",
@@ -20028,13 +20081,20 @@ function index_esm_makeValidator(overrides = {}) {
   };
 }
 
+var index_esm_defProp$2 = Object.defineProperty;
+var index_esm_defNormalProp$2 = (obj, key, value) => key in obj ? index_esm_defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var index_esm_publicField$2 = (obj, key, value) => {
+  index_esm_defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class index_esm_FieldFormatEntityPolicy {
   constructor(validators = index_esm_makeValidator()) {
+    index_esm_publicField$2(this, "validators");
     this.validators = validators;
   }
   async enforce(entity) {
     var _a, _b, _c, _d, _e, _f, _g;
-    function require(field, value, validator) {
+    function require2(field, value, validator) {
       if (value === void 0 || value === null) {
         throw new Error(`${field} must have a value`);
       }
@@ -20087,31 +20147,31 @@ class index_esm_FieldFormatEntityPolicy {
       }
     }
     function optional(field, value, validator) {
-      return value === void 0 || require(field, value, validator);
+      return value === void 0 || require2(field, value, validator);
     }
-    require("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
-    require("kind", entity.kind, this.validators.isValidKind);
-    require("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
+    require2("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
+    require2("kind", entity.kind, this.validators.isValidKind);
+    require2("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
     optional(
       "metadata.namespace",
       entity.metadata.namespace,
       this.validators.isValidNamespace
     );
     for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
-      require(`labels.${k}`, k, this.validators.isValidLabelKey);
-      require(`labels.${k}`, v, this.validators.isValidLabelValue);
+      require2(`labels.${k}`, k, this.validators.isValidLabelKey);
+      require2(`labels.${k}`, v, this.validators.isValidLabelValue);
     }
     for (const [k, v] of Object.entries((_b = entity.metadata.annotations) != null ? _b : [])) {
-      require(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
-      require(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
+      require2(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
+      require2(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
     }
     const tags = (_c = entity.metadata.tags) != null ? _c : [];
     for (let i = 0; i < tags.length; ++i) {
-      require(`tags.${i}`, tags[i], this.validators.isValidTag);
+      require2(`tags.${i}`, tags[i], this.validators.isValidTag);
     }
     const links = (_d = entity.metadata.links) != null ? _d : [];
     for (let i = 0; i < links.length; ++i) {
-      require(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, index_esm_CommonValidatorFunctions.isValidUrl);
+      require2(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, index_esm_CommonValidatorFunctions.isValidUrl);
       optional(
         `links.${i}.title`,
         (_f = links[i]) == null ? void 0 : _f.title,
@@ -20127,9 +20187,16 @@ class index_esm_FieldFormatEntityPolicy {
   }
 }
 
+var index_esm_defProp$1 = Object.defineProperty;
+var index_esm_defNormalProp$1 = (obj, key, value) => key in obj ? index_esm_defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var index_esm_publicField$1 = (obj, key, value) => {
+  index_esm_defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 const index_esm_defaultKnownFields = (/* unused pure expression or super */ null && (["apiVersion", "kind", "metadata", "spec"]));
 class index_esm_NoForeignRootFieldsEntityPolicy {
   constructor(knownFields = index_esm_defaultKnownFields) {
+    index_esm_publicField$1(this, "knownFields");
     this.knownFields = knownFields;
   }
   async enforce(entity) {
@@ -20142,7 +20209,16 @@ class index_esm_NoForeignRootFieldsEntityPolicy {
   }
 }
 
+var index_esm_defProp = Object.defineProperty;
+var index_esm_defNormalProp = (obj, key, value) => key in obj ? index_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var index_esm_publicField = (obj, key, value) => {
+  index_esm_defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class index_esm_SchemaValidEntityPolicy {
+  constructor() {
+    index_esm_publicField(this, "validate");
+  }
   async enforce(entity) {
     if (!this.validate) {
       const ajv = new Ajv({ allowUnionTypes: true });
@@ -21145,6 +21221,7 @@ var dist_index_esm_examples = [
 		},
 		spec: {
 			owner: "artist-relations-team",
+			type: "website",
 			parameters: {
 				required: [
 					"name",
@@ -21292,6 +21369,24 @@ var dist_index_esm_allOf = [
 							}
 						]
 					},
+					presentation: {
+						type: "object",
+						description: "A way to redefine the labels for actionable buttons.",
+						properties: {
+							backButtonText: {
+								type: "string",
+								description: "A button which return the user to one step back."
+							},
+							createButtonText: {
+								type: "string",
+								description: "A button which start the execution of the template."
+							},
+							reviewButtonText: {
+								type: "string",
+								description: "A button which open the review step to verify the input prior to start the execution."
+							}
+						}
+					},
 					steps: {
 						type: "array",
 						description: "A list of steps to execute.",
@@ -21386,6 +21481,40 @@ var dist_index_esm_allOf = [
 										}
 									}
 								}
+							},
+							text: {
+								type: "array",
+								description: "A list of Markdown text blobs, like output data from the template.",
+								items: {
+									type: "object",
+									required: [
+									],
+									properties: {
+										title: {
+											type: "string",
+											description: "A user friendly display name for the text.",
+											examples: [
+												"Output Content"
+											],
+											minLength: 1
+										},
+										icon: {
+											type: "string",
+											description: "A key representing a visual icon to be displayed in the UI.",
+											examples: [
+												"dashboard"
+											],
+											minLength: 1
+										},
+										content: {
+											type: "string",
+											description: "The text blob to display in the UI, rendered as Markdown.",
+											examples: [
+												"**hey** _I'm_ Markdown"
+											]
+										}
+									}
+								}
 							}
 						},
 						additionalProperties: {
@@ -21455,7 +21584,10 @@ const validateTechDocs = async (data, filePath) => {
   }
   const techDocsAnnotation =
     data.metadata.annotations['backstage.io/techdocs-ref'];
-  if (!techDocsAnnotation.includes('dir')) {
+  if (
+    !techDocsAnnotation.includes('dir') ||
+    techDocsAnnotation.match(/^dir:.$/gm)
+  ) {
     return;
   }
 
@@ -21586,7 +21718,7 @@ const validate = async (
   };
 
   try {
-    const data = js_yaml.loadAll(fileContents);
+    const data = js_yaml.loadAll(fileContents, { schema: js_yaml.CORE_SCHEMA });
     data.forEach(it => {
       modifyPlaceholders(it);
     });
@@ -21625,6 +21757,8 @@ const validate = async (
       console.log('Entity Schema policies validated\n');
       responses.forEach(it => console.log(js_yaml.dump(it)));
     }
+
+    return responses.filter(e => e !== undefined);
   } catch (e) {
     throw new Error(e);
   }
@@ -21640,8 +21774,14 @@ const validateFromFile = async (
     console.log(`Validating Entity Schema policies for file ${filepath}`);
   }
 
-  await validate(fileContents, verbose, customAnnotationSchemaLocation);
+  const entities = await validate(
+    fileContents,
+    verbose,
+    customAnnotationSchemaLocation,
+  );
   await relativeSpaceValidation(fileContents, filepath, verbose);
+
+  return entities;
 };
 
 
@@ -26035,7 +26175,7 @@ const propertyNames_1 = __nccwpck_require__(2554);
 const additionalProperties_1 = __nccwpck_require__(3481);
 const properties_1 = __nccwpck_require__(7666);
 const patternProperties_1 = __nccwpck_require__(5157);
-const not_1 = __nccwpck_require__(2727);
+const not_1 = __nccwpck_require__(8720);
 const anyOf_1 = __nccwpck_require__(8168);
 const oneOf_1 = __nccwpck_require__(6434);
 const allOf_1 = __nccwpck_require__(8406);
@@ -26166,7 +26306,7 @@ exports.default = def;
 
 /***/ }),
 
-/***/ 2727:
+/***/ 8720:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
