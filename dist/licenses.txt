@@ -35,12 +35,6 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-@backstage/catalog-model
-Apache-2.0
-
-@backstage/plugin-scaffolder-common
-Apache-2.0
-
 @roadiehq/roadie-backstage-entity-validator
 Apache-2.0
                                  Apache License
