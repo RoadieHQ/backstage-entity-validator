@@ -670,10 +670,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@roadiehq/roadie-backstage-entity-validator@^2.3.7":
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/@roadiehq/roadie-backstage-entity-validator/-/roadie-backstage-entity-validator-2.4.3.tgz#9e0d40e7e6a25227cfb387e7fc56029c785aa6c2"
-  integrity sha512-KAZ6pyZXT2cpRo4EvE2jGTjYAVqn1nXvsPBeSJGLBEAYNBuAKQAbKeUTg7WZYOtWBPRKhXetILHa1PZg9umMOQ==
+"@roadiehq/roadie-backstage-entity-validator@^2.4.4":
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/@roadiehq/roadie-backstage-entity-validator/-/roadie-backstage-entity-validator-2.4.4.tgz#e03feda4672a0e5242859b7b99615b96d87e32cf"
+  integrity sha512-P9xQkzrc76shcLzHoFMd+5PEkzI8ByHkLUi1Xbeq3TvVya1nJ01T/rDpbd7WBBPmVAiWy65vCMX34PQxK3NoZQ==
   dependencies:
     "@actions/core" "^1.10.0"
     "@backstage/catalog-model" "^1.4.3"

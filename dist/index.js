@@ -14043,7 +14043,7 @@ const relativeSpaceValidation = async (
   verbose,
 ) => {
   try {
-    const data = js_yaml.loadAll(fileContents);
+    const data = js_yaml.loadAll(fileContents, { schema: js_yaml.CORE_SCHEMA });
     if (verbose) {
       console.log('Validating locally dependant catalog contents');
     }
