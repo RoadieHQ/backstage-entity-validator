@@ -12,7 +12,7 @@ metadata:
     backstage.io/techdocs-ref: url:https://github.com/RoadieHQ/sample-service/tree/main
     jira/project-key: TEST
     jira/component: COMP
-    snyk.io/org-name: roadie
+    snyk.io/org-id: a0e0775e-2b17-4e57-8d85-6c8fbe5bc9a0
     backstage.io/view-url: https://github.com/RoadieHQ/sample-service/tree/main
     backstage.io/source-location: url:https://github.com/RoadieHQ/sample-service/tree/main/
     testextraannotation: adfstea
@@ -40,7 +40,7 @@ metadata:
     backstage.io/techdocs-ref: url:https://github.com/RoadieHQ/sample-service/tree/main
     jira/project-key: TEST
     jira/component: COMP
-    snyk.io/org-name: roadie
+    snyk.io/org-id: a0e0775e-2b17-4e57-8d85-6c8fbe5bc9a0
     backstage.io/view-url: https://github.com/RoadieHQ/sample-service/tree/main
     backstage.io/source-location: url:https://github.com/RoadieHQ/sample-service/tree/main/
     testextraannotation: adfstea
