@@ -17,5 +17,5 @@ inputs:
     description: 'Specify the location of the validation schema file'
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
