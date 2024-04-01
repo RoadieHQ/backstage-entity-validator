@@ -28,7 +28,7 @@
     "@backstage/catalog-model": "^1.4.3",
     "@roadiehq/roadie-backstage-entity-validator": "^2.4.4",
     "ajv": "^8.12.0",
-    "ajv-formats": "^2.1.1",
+    "ajv-formats": "^3.0.1",
     "glob": "^10.3.10",
     "js-yaml": "^4.1.0",
     "minimist": "^1.2.8"
