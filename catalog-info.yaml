@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sdfdsf
+  title: sdfdsf
+  description: dfgdgdfg
+  annotations:
+    github.com/project-slug: RoadieHQ/backstage-entity-validator
+    backstage.io/techdocs-ref: dir:. 
+    argocd/app-name: sdfsdfsdf 
+    
+spec:
+  type: service
+  owner: group:roadiehq/marketing
+  lifecycle: production
