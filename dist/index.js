@@ -1834,7 +1834,7 @@ function isLoopbackAddress(host) {
 
 /***/ }),
 
-/***/ 8294:
+/***/ 1250:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -5703,284 +5703,105 @@ var jsYaml = {
 /* harmony default export */ const js_yaml = (jsYaml);
 
 
-// EXTERNAL MODULE: ./node_modules/lodash/lodash.js
-var lodash = __nccwpck_require__(250);
-var lodash_default = /*#__PURE__*/__nccwpck_require__.n(lodash);
 // EXTERNAL MODULE: ./node_modules/ajv/dist/ajv.js
 var dist_ajv = __nccwpck_require__(2426);
 var ajv_default = /*#__PURE__*/__nccwpck_require__.n(dist_ajv);
-;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/index.esm.js
-
-
-
-function isApiEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "API";
-}
-function isComponentEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "COMPONENT";
-}
-function isDomainEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "DOMAIN";
-}
-function isGroupEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "GROUP";
-}
-function isLocationEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "LOCATION";
-}
-function isResourceEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "RESOURCE";
-}
-function isSystemEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "SYSTEM";
-}
-function isUserEntity(entity) {
-  return entity.kind.toLocaleUpperCase("en-US") === "USER";
-}
-
-const DEFAULT_NAMESPACE = "default";
-const ANNOTATION_VIEW_URL = "backstage.io/view-url";
-const ANNOTATION_EDIT_URL = "backstage.io/edit-url";
-const ANNOTATION_KUBERNETES_API_SERVER = "kubernetes.io/api-server";
-const ANNOTATION_KUBERNETES_API_SERVER_CA = "kubernetes.io/api-server-certificate-authority";
-const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
-
-var __defProp$4 = Object.defineProperty;
-var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$4 = (obj, key, value) => {
-  __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/Entity.schema.json.esm.js
+var $schema = "http://json-schema.org/draft-07/schema";
+var $id = "Entity";
+var description = "The parts of the format that's common to all versions/kinds of entity.";
+var examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Component",
+		metadata: {
+			name: "LoremService",
+			description: "Creates Lorems like a pro.",
+			labels: {
+				product_name: "Random value Generator"
+			},
+			annotations: {
+				docs: "https://github.com/..../tree/develop/doc"
+			}
+		},
+		spec: {
+			type: "service",
+			lifecycle: "production",
+			owner: "tools"
+		}
+	}
+];
+var Entity_schema_json_esm_type = "object";
+var required = [
+	"apiVersion",
+	"kind",
+	"metadata"
+];
+var additionalProperties = false;
+var properties = {
+	apiVersion: {
+		type: "string",
+		description: "The version of specification format for this particular entity that this is written against.",
+		minLength: 1,
+		examples: [
+			"backstage.io/v1alpha1",
+			"my-company.net/v1",
+			"1.0"
+		]
+	},
+	kind: {
+		type: "string",
+		description: "The high level entity type being described.",
+		minLength: 1,
+		examples: [
+			"API",
+			"Component",
+			"Domain",
+			"Group",
+			"Location",
+			"Resource",
+			"System",
+			"Template",
+			"User"
+		]
+	},
+	metadata: {
+		$ref: "EntityMeta"
+	},
+	spec: {
+		type: "object",
+		description: "The specification data describing the entity itself."
+	},
+	relations: {
+		type: "array",
+		description: "The relations that this entity has with other entities.",
+		items: {
+			$ref: "common#relation"
+		}
+	},
+	status: {
+		$ref: "common#status"
+	}
 };
-class DefaultNamespaceEntityPolicy {
-  constructor(namespace = DEFAULT_NAMESPACE) {
-    __publicField$4(this, "namespace");
-    this.namespace = namespace;
-  }
-  async enforce(entity) {
-    if (entity.metadata.namespace) {
-      return entity;
-    }
-    return lodash_default().merge({ metadata: { namespace: this.namespace } }, entity);
-  }
-}
-
-function parseRefString(ref) {
-  let colonI = ref.indexOf(":");
-  const slashI = ref.indexOf("/");
-  if (slashI !== -1 && slashI < colonI) {
-    colonI = -1;
-  }
-  const kind = colonI === -1 ? void 0 : ref.slice(0, colonI);
-  const namespace = slashI === -1 ? void 0 : ref.slice(colonI + 1, slashI);
-  const name = ref.slice(Math.max(colonI + 1, slashI + 1));
-  if (kind === "" || namespace === "" || name === "") {
-    throw new TypeError(
-      `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`
-    );
-  }
-  return { kind, namespace, name };
-}
-function getCompoundEntityRef(entity) {
-  return {
-    kind: entity.kind,
-    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-    name: entity.metadata.name
-  };
-}
-function parseEntityRef(ref, context) {
-  var _a, _b, _c, _d;
-  if (!ref) {
-    throw new Error(`Entity reference must not be empty`);
-  }
-  const defaultKind = context == null ? void 0 : context.defaultKind;
-  const defaultNamespace = (context == null ? void 0 : context.defaultNamespace) || DEFAULT_NAMESPACE;
-  let kind;
-  let namespace;
-  let name;
-  if (typeof ref === "string") {
-    const parsed = parseRefString(ref);
-    kind = (_a = parsed.kind) != null ? _a : defaultKind;
-    namespace = (_b = parsed.namespace) != null ? _b : defaultNamespace;
-    name = parsed.name;
-  } else {
-    kind = (_c = ref.kind) != null ? _c : defaultKind;
-    namespace = (_d = ref.namespace) != null ? _d : defaultNamespace;
-    name = ref.name;
-  }
-  if (!kind) {
-    const textual = JSON.stringify(ref);
-    throw new Error(
-      `Entity reference ${textual} had missing or empty kind (e.g. did not start with "component:" or similar)`
-    );
-  } else if (!namespace) {
-    const textual = JSON.stringify(ref);
-    throw new Error(
-      `Entity reference ${textual} had missing or empty namespace`
-    );
-  } else if (!name) {
-    const textual = JSON.stringify(ref);
-    throw new Error(`Entity reference ${textual} had missing or empty name`);
-  }
-  return { kind, namespace, name };
-}
-function stringifyEntityRef(ref) {
-  var _a, _b;
-  let kind;
-  let namespace;
-  let name;
-  if ("metadata" in ref) {
-    kind = ref.kind;
-    namespace = (_a = ref.metadata.namespace) != null ? _a : DEFAULT_NAMESPACE;
-    name = ref.metadata.name;
-  } else {
-    kind = ref.kind;
-    namespace = (_b = ref.namespace) != null ? _b : DEFAULT_NAMESPACE;
-    name = ref.name;
-  }
-  return `${kind.toLocaleLowerCase("en-US")}:${namespace.toLocaleLowerCase(
-    "en-US"
-  )}/${name.toLocaleLowerCase("en-US")}`;
-}
-
-var __defProp$3 = Object.defineProperty;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$3 = (obj, key, value) => {
-  __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
+var entitySchema = {
+	$schema: $schema,
+	$id: $id,
+	description: description,
+	examples: examples,
+	type: Entity_schema_json_esm_type,
+	required: required,
+	additionalProperties: additionalProperties,
+	properties: properties
 };
-class GroupDefaultParentEntityPolicy {
-  constructor(parentEntityRef) {
-    __publicField$3(this, "parentRef");
-    const { kind, namespace, name } = parseEntityRef(parentEntityRef, {
-      defaultKind: "Group",
-      defaultNamespace: DEFAULT_NAMESPACE
-    });
-    if (kind.toLocaleUpperCase("en-US") !== "GROUP") {
-      throw new TypeError("group parent must be a group");
-    }
-    this.parentRef = stringifyEntityRef({
-      kind,
-      namespace,
-      name
-    });
-  }
-  async enforce(entity) {
-    if (entity.kind !== "Group") {
-      return entity;
-    }
-    const group = entity;
-    if (group.spec.parent) {
-      return group;
-    }
-    if (stringifyEntityRef(group) !== this.parentRef) {
-      group.spec.parent = this.parentRef;
-    }
-    return group;
-  }
-}
 
-class CommonValidatorFunctions {
-  /**
-   * Checks that the value is on the form `<suffix>` or `<prefix><separator><suffix>`, and validates
-   * those parts separately.
-   *
-   * @param value - The value to check
-   * @param separator - The separator between parts
-   * @param isValidPrefix - Checks that the part before the separator is valid, if present
-   * @param isValidSuffix - Checks that the part after the separator (or the entire value if there is no separator) is valid
-   */
-  static isValidPrefixAndOrSuffix(value, separator, isValidPrefix, isValidSuffix) {
-    if (typeof value !== "string") {
-      return false;
-    }
-    const parts = value.split(separator);
-    if (parts.length === 1) {
-      return isValidSuffix(parts[0]);
-    } else if (parts.length === 2) {
-      return isValidPrefix(parts[0]) && isValidSuffix(parts[1]);
-    }
-    return false;
-  }
-  /**
-   * Checks that the value can be safely transferred as JSON.
-   *
-   * @param value - The value to check
-   */
-  static isJsonSafe(value) {
-    try {
-      return lodash_default().isEqual(value, JSON.parse(JSON.stringify(value)));
-    } catch {
-      return false;
-    }
-  }
-  /**
-   * Checks that the value is a valid DNS subdomain name.
-   *
-   * @param value - The value to check
-   * @see https://tools.ietf.org/html/rfc1123
-   */
-  static isValidDnsSubdomain(value) {
-    return typeof value === "string" && value.length >= 1 && value.length <= 253 && value.split(".").every(CommonValidatorFunctions.isValidDnsLabel);
-  }
-  /**
-   * Checks that the value is a valid DNS label.
-   *
-   * @param value - The value to check
-   * @see https://tools.ietf.org/html/rfc1123
-   */
-  static isValidDnsLabel(value) {
-    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9]+(?:\-+[a-z0-9]+)*$/.test(value);
-  }
-  /**
-   * Checks that the value is a valid tag.
-   *
-   * @deprecated This will be removed in a future release
-   * @param value - The value to check
-   */
-  static isValidTag(value) {
-    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9+#]+(\-[a-z0-9+#]+)*$/.test(value);
-  }
-  /**
-   * Checks that the value is a valid string URL.
-   *
-   * @param value - The value to check
-   */
-  static isValidUrl(value) {
-    if (typeof value !== "string") {
-      return false;
-    }
-    try {
-      new URL(value);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-  /**
-   * Checks that the value is a non empty string value.
-   *
-   * @deprecated use isNonEmptyString instead
-   * @param value - The value to check
-   */
-  static isValidString(value) {
-    var _a;
-    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
-  }
-  /**
-   * Checks that the value is a string value that's not empty.
-   *
-   * @param value - The value to check
-   */
-  static isNonEmptyString(value) {
-    var _a;
-    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
-  }
-}
 
-var $schema$b = "http://json-schema.org/draft-07/schema";
-var $id$b = "EntityEnvelope";
-var description$b = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
-var examples$a = [
+//# sourceMappingURL=Entity.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/EntityEnvelope.schema.json.esm.js
+var EntityEnvelope_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var EntityEnvelope_schema_json_esm_$id = "EntityEnvelope";
+var EntityEnvelope_schema_json_esm_description = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
+var EntityEnvelope_schema_json_esm_examples = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Component",
@@ -5989,14 +5810,14 @@ var examples$a = [
 		}
 	}
 ];
-var type$3 = "object";
-var required$2 = [
+var EntityEnvelope_schema_json_esm_type = "object";
+var EntityEnvelope_schema_json_esm_required = [
 	"apiVersion",
 	"kind",
 	"metadata"
 ];
-var additionalProperties$2 = true;
-var properties$2 = {
+var EntityEnvelope_schema_json_esm_additionalProperties = true;
+var EntityEnvelope_schema_json_esm_properties = {
 	apiVersion: {
 		type: "string",
 		description: "The version of specification format for this particular entity that this is written against.",
@@ -6052,107 +5873,24 @@ var properties$2 = {
 	}
 };
 var entityEnvelopeSchema = {
-	$schema: $schema$b,
-	$id: $id$b,
-	description: description$b,
-	examples: examples$a,
-	type: type$3,
-	required: required$2,
-	additionalProperties: additionalProperties$2,
-	properties: properties$2
+	$schema: EntityEnvelope_schema_json_esm_$schema,
+	$id: EntityEnvelope_schema_json_esm_$id,
+	description: EntityEnvelope_schema_json_esm_description,
+	examples: EntityEnvelope_schema_json_esm_examples,
+	type: EntityEnvelope_schema_json_esm_type,
+	required: EntityEnvelope_schema_json_esm_required,
+	additionalProperties: EntityEnvelope_schema_json_esm_additionalProperties,
+	properties: EntityEnvelope_schema_json_esm_properties
 };
 
-var $schema$a = "http://json-schema.org/draft-07/schema";
-var $id$a = "Entity";
-var description$a = "The parts of the format that's common to all versions/kinds of entity.";
-var examples$9 = [
-	{
-		apiVersion: "backstage.io/v1alpha1",
-		kind: "Component",
-		metadata: {
-			name: "LoremService",
-			description: "Creates Lorems like a pro.",
-			labels: {
-				product_name: "Random value Generator"
-			},
-			annotations: {
-				docs: "https://github.com/..../tree/develop/doc"
-			}
-		},
-		spec: {
-			type: "service",
-			lifecycle: "production",
-			owner: "tools"
-		}
-	}
-];
-var type$2 = "object";
-var required$1 = [
-	"apiVersion",
-	"kind",
-	"metadata"
-];
-var additionalProperties$1 = false;
-var properties$1 = {
-	apiVersion: {
-		type: "string",
-		description: "The version of specification format for this particular entity that this is written against.",
-		minLength: 1,
-		examples: [
-			"backstage.io/v1alpha1",
-			"my-company.net/v1",
-			"1.0"
-		]
-	},
-	kind: {
-		type: "string",
-		description: "The high level entity type being described.",
-		minLength: 1,
-		examples: [
-			"API",
-			"Component",
-			"Domain",
-			"Group",
-			"Location",
-			"Resource",
-			"System",
-			"Template",
-			"User"
-		]
-	},
-	metadata: {
-		$ref: "EntityMeta"
-	},
-	spec: {
-		type: "object",
-		description: "The specification data describing the entity itself."
-	},
-	relations: {
-		type: "array",
-		description: "The relations that this entity has with other entities.",
-		items: {
-			$ref: "common#relation"
-		}
-	},
-	status: {
-		$ref: "common#status"
-	}
-};
-var entitySchema = {
-	$schema: $schema$a,
-	$id: $id$a,
-	description: description$a,
-	examples: examples$9,
-	type: type$2,
-	required: required$1,
-	additionalProperties: additionalProperties$1,
-	properties: properties$1
-};
 
-var $schema$9 = "http://json-schema.org/draft-07/schema";
-var $id$9 = "EntityMeta";
-var description$9 = "Metadata fields common to all versions/kinds of entity.";
-var examples$8 = [
+//# sourceMappingURL=EntityEnvelope.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/EntityMeta.schema.json.esm.js
+var EntityMeta_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var EntityMeta_schema_json_esm_$id = "EntityMeta";
+var EntityMeta_schema_json_esm_description = "Metadata fields common to all versions/kinds of entity.";
+var EntityMeta_schema_json_esm_examples = [
 	{
 		uid: "e01199ab-08cc-44c2-8e19-5c29ded82521",
 		etag: "lsndfkjsndfkjnsdfkjnsd==",
@@ -6170,12 +5908,12 @@ var examples$8 = [
 		]
 	}
 ];
-var type$1 = "object";
-var required = [
+var EntityMeta_schema_json_esm_type = "object";
+var EntityMeta_schema_json_esm_required = [
 	"name"
 ];
-var additionalProperties = true;
-var properties = {
+var EntityMeta_schema_json_esm_additionalProperties = true;
+var EntityMeta_schema_json_esm_properties = {
 	uid: {
 		type: "string",
 		description: "A globally unique ID for the entity. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, but the server is free to reject requests that do so in such a way that it breaks semantics.",
@@ -6299,20 +6037,24 @@ var properties = {
 	}
 };
 var entityMetaSchema = {
-	$schema: $schema$9,
-	$id: $id$9,
-	description: description$9,
-	examples: examples$8,
-	type: type$1,
-	required: required,
-	additionalProperties: additionalProperties,
-	properties: properties
+	$schema: EntityMeta_schema_json_esm_$schema,
+	$id: EntityMeta_schema_json_esm_$id,
+	description: EntityMeta_schema_json_esm_description,
+	examples: EntityMeta_schema_json_esm_examples,
+	type: EntityMeta_schema_json_esm_type,
+	required: EntityMeta_schema_json_esm_required,
+	additionalProperties: EntityMeta_schema_json_esm_additionalProperties,
+	properties: EntityMeta_schema_json_esm_properties
 };
 
-var $schema$8 = "http://json-schema.org/draft-07/schema";
-var $id$8 = "common";
-var index_esm_type = "object";
-var description$8 = "Common definitions to import from other schemas";
+
+//# sourceMappingURL=EntityMeta.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/shared/common.schema.json.esm.js
+var common_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var common_schema_json_esm_$id = "common";
+var common_schema_json_esm_type = "object";
+var common_schema_json_esm_description = "Common definitions to import from other schemas";
 var definitions = {
 	reference: {
 		$id: "#reference",
@@ -6459,12 +6201,22 @@ var definitions = {
 	}
 };
 var commonSchema = {
-	$schema: $schema$8,
-	$id: $id$8,
-	type: index_esm_type,
-	description: description$8,
+	$schema: common_schema_json_esm_$schema,
+	$id: common_schema_json_esm_$id,
+	type: common_schema_json_esm_type,
+	description: common_schema_json_esm_description,
 	definitions: definitions
 };
+
+
+//# sourceMappingURL=common.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/ajv.esm.js
+
+
+
+
+
 
 const compiledSchemaCache = /* @__PURE__ */ new Map();
 const refDependencyCandidates = [
@@ -6548,18 +6300,11 @@ function* getAllRefs(schema) {
   }
 }
 
-function entityEnvelopeSchemaValidator(schema) {
-  const validate = compileAjvSchema(
-    schema ? schema : entityEnvelopeSchema
-  );
-  return (data) => {
-    const result = validate(data);
-    if (result === true) {
-      return data;
-    }
-    throw throwAjvError(validate.errors);
-  };
-}
+
+//# sourceMappingURL=ajv.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/entityKindSchemaValidator.esm.js
+
 
 function entityKindSchemaValidator(schema) {
   const validate = compileAjvSchema(schema);
@@ -6579,281 +6324,14 @@ function entityKindSchemaValidator(schema) {
   };
 }
 
-function entitySchemaValidator(schema) {
-  const validate = compileAjvSchema(schema ? schema : entitySchema);
-  return (data) => {
-    const result = validate(data);
-    if (result === true) {
-      return data;
-    }
-    throw throwAjvError(validate.errors);
-  };
-}
 
-class KubernetesValidatorFunctions {
-  static isValidApiVersion(value) {
-    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
-      value,
-      "/",
-      CommonValidatorFunctions.isValidDnsSubdomain,
-      (n) => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n)
-    );
-  }
-  static isValidKind(value) {
-    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-zA-Z][a-z0-9A-Z]*$/.test(value);
-  }
-  static isValidObjectName(value) {
-    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(value);
-  }
-  static isValidNamespace(value) {
-    return CommonValidatorFunctions.isValidDnsLabel(value);
-  }
-  static isValidLabelKey(value) {
-    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
-      value,
-      "/",
-      CommonValidatorFunctions.isValidDnsSubdomain,
-      KubernetesValidatorFunctions.isValidObjectName
-    );
-  }
-  static isValidLabelValue(value) {
-    return value === "" || KubernetesValidatorFunctions.isValidObjectName(value);
-  }
-  static isValidAnnotationKey(value) {
-    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
-      value,
-      "/",
-      CommonValidatorFunctions.isValidDnsSubdomain,
-      KubernetesValidatorFunctions.isValidObjectName
-    );
-  }
-  static isValidAnnotationValue(value) {
-    return typeof value === "string";
-  }
-}
+//# sourceMappingURL=entityKindSchemaValidator.esm.js.map
 
-const defaultValidators = {
-  isValidApiVersion: KubernetesValidatorFunctions.isValidApiVersion,
-  isValidKind: KubernetesValidatorFunctions.isValidKind,
-  isValidEntityName: KubernetesValidatorFunctions.isValidObjectName,
-  isValidNamespace: KubernetesValidatorFunctions.isValidNamespace,
-  isValidLabelKey: KubernetesValidatorFunctions.isValidLabelKey,
-  isValidLabelValue: KubernetesValidatorFunctions.isValidLabelValue,
-  isValidAnnotationKey: KubernetesValidatorFunctions.isValidAnnotationKey,
-  isValidAnnotationValue: KubernetesValidatorFunctions.isValidAnnotationValue,
-  isValidTag: (value) => {
-    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9:+#]+(\-[a-z0-9:+#]+)*$/.test(value);
-  }
-};
-function makeValidator(overrides = {}) {
-  return {
-    ...defaultValidators,
-    ...overrides
-  };
-}
-
-var __defProp$2 = Object.defineProperty;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$2 = (obj, key, value) => {
-  __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class FieldFormatEntityPolicy {
-  constructor(validators = makeValidator()) {
-    __publicField$2(this, "validators");
-    this.validators = validators;
-  }
-  async enforce(entity) {
-    var _a, _b, _c, _d, _e, _f, _g;
-    function require2(field, value, validator) {
-      if (value === void 0 || value === null) {
-        throw new Error(`${field} must have a value`);
-      }
-      let isValid;
-      try {
-        isValid = validator(value);
-      } catch (e) {
-        throw new Error(`${field} could not be validated, ${e}`);
-      }
-      if (!isValid) {
-        let expectation;
-        switch (validator.name) {
-          case "isValidLabelValue":
-          case "isValidObjectName":
-            expectation = "a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total";
-            break;
-          case "isValidLabelKey":
-          case "isValidApiVersion":
-          case "isValidAnnotationKey":
-            expectation = "a valid prefix and/or suffix";
-            break;
-          case "isValidNamespace":
-          case "isValidDnsLabel":
-            expectation = "a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total";
-            break;
-          case "isValidTag":
-            expectation = "a string that is sequences of [a-z0-9+#] separated by [-], at most 63 characters in total";
-            break;
-          case "isValidAnnotationValue":
-            expectation = "a string";
-            break;
-          case "isValidKind":
-            expectation = "a string that is a sequence of [a-zA-Z][a-z0-9A-Z], at most 63 characters in total";
-            break;
-          case "isValidUrl":
-            expectation = "a string that is a valid url";
-            break;
-          case "isValidString":
-          case "isNonEmptyString":
-            expectation = "a non empty string";
-            break;
-          default:
-            expectation = void 0;
-            break;
-        }
-        const message = expectation ? ` expected ${expectation} but found "${value}".` : "";
-        throw new Error(
-          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`
-        );
-      }
-    }
-    function optional(field, value, validator) {
-      return value === void 0 || require2(field, value, validator);
-    }
-    require2("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
-    require2("kind", entity.kind, this.validators.isValidKind);
-    require2("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
-    optional(
-      "metadata.namespace",
-      entity.metadata.namespace,
-      this.validators.isValidNamespace
-    );
-    for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
-      require2(`labels.${k}`, k, this.validators.isValidLabelKey);
-      require2(`labels.${k}`, v, this.validators.isValidLabelValue);
-    }
-    for (const [k, v] of Object.entries((_b = entity.metadata.annotations) != null ? _b : [])) {
-      require2(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
-      require2(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
-    }
-    const tags = (_c = entity.metadata.tags) != null ? _c : [];
-    for (let i = 0; i < tags.length; ++i) {
-      require2(`tags.${i}`, tags[i], this.validators.isValidTag);
-    }
-    const links = (_d = entity.metadata.links) != null ? _d : [];
-    for (let i = 0; i < links.length; ++i) {
-      require2(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
-      optional(
-        `links.${i}.title`,
-        (_f = links[i]) == null ? void 0 : _f.title,
-        CommonValidatorFunctions.isNonEmptyString
-      );
-      optional(
-        `links.${i}.icon`,
-        (_g = links[i]) == null ? void 0 : _g.icon,
-        KubernetesValidatorFunctions.isValidObjectName
-      );
-    }
-    return entity;
-  }
-}
-
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => {
-  __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-const defaultKnownFields = ["apiVersion", "kind", "metadata", "spec"];
-class NoForeignRootFieldsEntityPolicy {
-  constructor(knownFields = defaultKnownFields) {
-    __publicField$1(this, "knownFields");
-    this.knownFields = knownFields;
-  }
-  async enforce(entity) {
-    for (const field of Object.keys(entity)) {
-      if (!this.knownFields.includes(field)) {
-        throw new Error(`Unknown field ${field}`);
-      }
-    }
-    return entity;
-  }
-}
-
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class SchemaValidEntityPolicy {
-  constructor() {
-    __publicField(this, "validate");
-  }
-  async enforce(entity) {
-    if (!this.validate) {
-      const ajv = new (ajv_default())({ allowUnionTypes: true });
-      this.validate = ajv.addSchema([commonSchema, entityMetaSchema], void 0, void 0, true).compile(entitySchema);
-    }
-    const result = this.validate(entity);
-    if (result === true) {
-      return entity;
-    }
-    const [error] = this.validate.errors || [];
-    if (!error) {
-      throw new Error(`Malformed envelope, Unknown error`);
-    }
-    throw new Error(
-      `Malformed envelope, ${error.instancePath || "<root>"} ${error.message}`
-    );
-  }
-}
-
-class AllEntityPolicies {
-  constructor(policies) {
-    this.policies = policies;
-  }
-  async enforce(entity) {
-    let result = entity;
-    for (const policy of this.policies) {
-      const output = await policy.enforce(result);
-      if (!output) {
-        throw new Error(
-          `Policy ${policy.constructor.name} did not return a result`
-        );
-      }
-      result = output;
-    }
-    return result;
-  }
-}
-class AnyEntityPolicy {
-  constructor(policies) {
-    this.policies = policies;
-  }
-  async enforce(entity) {
-    for (const policy of this.policies) {
-      const output = await policy.enforce(entity);
-      if (output) {
-        return output;
-      }
-    }
-    throw new Error(`The entity did not match any known policy`);
-  }
-}
-const EntityPolicies = {
-  allOf(policies) {
-    return new AllEntityPolicies(policies);
-  },
-  oneOf(policies) {
-    return new AnyEntityPolicy(policies);
-  }
-};
-
-var $schema$7 = "http://json-schema.org/draft-07/schema";
-var $id$7 = "ApiV1alpha1";
-var description$7 = "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats.";
-var examples$7 = [
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/API.v1alpha1.schema.json.esm.js
+var API_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var API_v1alpha1_schema_json_esm_$id = "ApiV1alpha1";
+var API_v1alpha1_schema_json_esm_description = "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats.";
+var API_v1alpha1_schema_json_esm_examples = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "API",
@@ -6876,7 +6354,7 @@ var examples$7 = [
 		}
 	}
 ];
-var allOf$7 = [
+var allOf = [
 	{
 		$ref: "Entity"
 	},
@@ -6952,13 +6430,25 @@ var allOf$7 = [
 		}
 	}
 ];
-var schema$7 = {
-	$schema: $schema$7,
-	$id: $id$7,
-	description: description$7,
-	examples: examples$7,
-	allOf: allOf$7
+var API_v1alpha1_schema_json_esm_schema = {
+	$schema: API_v1alpha1_schema_json_esm_$schema,
+	$id: API_v1alpha1_schema_json_esm_$id,
+	description: API_v1alpha1_schema_json_esm_description,
+	examples: API_v1alpha1_schema_json_esm_examples,
+	allOf: allOf
 };
+
+
+//# sourceMappingURL=API.v1alpha1.schema.json.esm.js.map
+
+// EXTERNAL MODULE: ./node_modules/lodash/lodash.js
+var lodash = __nccwpck_require__(250);
+var lodash_default = /*#__PURE__*/__nccwpck_require__.n(lodash);
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/util.esm.js
+
+
+
+
 
 function ajvCompiledJsonSchemaValidator(schema) {
   let validator;
@@ -6972,12 +6462,23 @@ function ajvCompiledJsonSchemaValidator(schema) {
   };
 }
 
-const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$7);
 
-var $schema$6 = "http://json-schema.org/draft-07/schema";
-var $id$6 = "ComponentV1alpha1";
-var description$6 = "A Component describes a software component. It is typically intimately linked to the source code that constitutes the component, and should be what a developer may regard a \"unit of software\", usually with a distinct deployable or linkable artifact.";
-var examples$6 = [
+//# sourceMappingURL=util.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/ApiEntityV1alpha1.esm.js
+
+
+
+const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(API_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=ApiEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Component.v1alpha1.schema.json.esm.js
+var Component_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Component_v1alpha1_schema_json_esm_$id = "ComponentV1alpha1";
+var Component_v1alpha1_schema_json_esm_description = "A Component describes a software component. It is typically intimately linked to the source code that constitutes the component, and should be what a developer may regard a \"unit of software\", usually with a distinct deployable or linkable artifact.";
+var Component_v1alpha1_schema_json_esm_examples = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Component",
@@ -6998,7 +6499,7 @@ var examples$6 = [
 		}
 	}
 ];
-var allOf$6 = [
+var Component_v1alpha1_schema_json_esm_allOf = [
 	{
 		$ref: "Entity"
 	},
@@ -7095,87 +6596,31 @@ var allOf$6 = [
 		}
 	}
 ];
-var schema$6 = {
-	$schema: $schema$6,
-	$id: $id$6,
-	description: description$6,
-	examples: examples$6,
-	allOf: allOf$6
+var Component_v1alpha1_schema_json_esm_schema = {
+	$schema: Component_v1alpha1_schema_json_esm_$schema,
+	$id: Component_v1alpha1_schema_json_esm_$id,
+	description: Component_v1alpha1_schema_json_esm_description,
+	examples: Component_v1alpha1_schema_json_esm_examples,
+	allOf: Component_v1alpha1_schema_json_esm_allOf
 };
 
-const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$6);
 
-var $schema$5 = "http://json-schema.org/draft-07/schema";
-var $id$5 = "DomainV1alpha1";
-var description$5 = "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.";
-var examples$5 = [
-	{
-		apiVersion: "backstage.io/v1alpha1",
-		kind: "Domain",
-		metadata: {
-			name: "artists",
-			description: "Everything about artists"
-		},
-		spec: {
-			owner: "artist-relations-team"
-		}
-	}
-];
-var allOf$5 = [
-	{
-		$ref: "Entity"
-	},
-	{
-		type: "object",
-		required: [
-			"spec"
-		],
-		properties: {
-			apiVersion: {
-				"enum": [
-					"backstage.io/v1alpha1",
-					"backstage.io/v1beta1"
-				]
-			},
-			kind: {
-				"enum": [
-					"Domain"
-				]
-			},
-			spec: {
-				type: "object",
-				required: [
-					"owner"
-				],
-				properties: {
-					owner: {
-						type: "string",
-						description: "An entity reference to the owner of the component.",
-						examples: [
-							"artist-relations-team",
-							"user:john.johnson"
-						],
-						minLength: 1
-					}
-				}
-			}
-		}
-	}
-];
-var schema$5 = {
-	$schema: $schema$5,
-	$id: $id$5,
-	description: description$5,
-	examples: examples$5,
-	allOf: allOf$5
-};
+//# sourceMappingURL=Component.v1alpha1.schema.json.esm.js.map
 
-const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$5);
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/ComponentEntityV1alpha1.esm.js
 
-var $schema$4 = "http://json-schema.org/draft-07/schema";
-var $id$4 = "GroupV1alpha1";
-var description$4 = "A group describes an organizational entity, such as for example a team, a business unit, or a loose collection of people in an interest group. Members of these groups are modeled in the catalog as kind User.";
-var examples$4 = [
+
+
+const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Component_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=ComponentEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Group.v1alpha1.schema.json.esm.js
+var Group_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Group_v1alpha1_schema_json_esm_$id = "GroupV1alpha1";
+var Group_v1alpha1_schema_json_esm_description = "A group describes an organizational entity, such as for example a team, a business unit, or a loose collection of people in an interest group. Members of these groups are modeled in the catalog as kind User.";
+var Group_v1alpha1_schema_json_esm_examples = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Group",
@@ -7198,7 +6643,7 @@ var examples$4 = [
 		}
 	}
 ];
-var allOf$4 = [
+var Group_v1alpha1_schema_json_esm_allOf = [
 	{
 		$ref: "Entity"
 	},
@@ -7303,20 +6748,31 @@ var allOf$4 = [
 		}
 	}
 ];
-var schema$4 = {
-	$schema: $schema$4,
-	$id: $id$4,
-	description: description$4,
-	examples: examples$4,
-	allOf: allOf$4
+var Group_v1alpha1_schema_json_esm_schema = {
+	$schema: Group_v1alpha1_schema_json_esm_$schema,
+	$id: Group_v1alpha1_schema_json_esm_$id,
+	description: Group_v1alpha1_schema_json_esm_description,
+	examples: Group_v1alpha1_schema_json_esm_examples,
+	allOf: Group_v1alpha1_schema_json_esm_allOf
 };
 
-const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$4);
 
-var $schema$3 = "http://json-schema.org/draft-07/schema";
-var $id$3 = "LocationV1alpha1";
-var description$3 = "A location is a marker that references other places to look for catalog data.";
-var examples$3 = [
+//# sourceMappingURL=Group.v1alpha1.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/GroupEntityV1alpha1.esm.js
+
+
+
+const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Group_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=GroupEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Location.v1alpha1.schema.json.esm.js
+var Location_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Location_v1alpha1_schema_json_esm_$id = "LocationV1alpha1";
+var Location_v1alpha1_schema_json_esm_description = "A location is a marker that references other places to look for catalog data.";
+var Location_v1alpha1_schema_json_esm_examples = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "Location",
@@ -7332,7 +6788,7 @@ var examples$3 = [
 		}
 	}
 ];
-var allOf$3 = [
+var Location_v1alpha1_schema_json_esm_allOf = [
 	{
 		$ref: "Entity"
 	},
@@ -7403,204 +6859,31 @@ var allOf$3 = [
 		}
 	}
 ];
-var schema$3 = {
-	$schema: $schema$3,
-	$id: $id$3,
-	description: description$3,
-	examples: examples$3,
-	allOf: allOf$3
+var Location_v1alpha1_schema_json_esm_schema = {
+	$schema: Location_v1alpha1_schema_json_esm_$schema,
+	$id: Location_v1alpha1_schema_json_esm_$id,
+	description: Location_v1alpha1_schema_json_esm_description,
+	examples: Location_v1alpha1_schema_json_esm_examples,
+	allOf: Location_v1alpha1_schema_json_esm_allOf
 };
 
-const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$3);
 
-const RELATION_OWNED_BY = "ownedBy";
-const RELATION_OWNER_OF = "ownerOf";
-const RELATION_CONSUMES_API = "consumesApi";
-const RELATION_API_CONSUMED_BY = "apiConsumedBy";
-const RELATION_PROVIDES_API = "providesApi";
-const RELATION_API_PROVIDED_BY = "apiProvidedBy";
-const RELATION_DEPENDS_ON = "dependsOn";
-const RELATION_DEPENDENCY_OF = "dependencyOf";
-const RELATION_PARENT_OF = "parentOf";
-const RELATION_CHILD_OF = "childOf";
-const RELATION_MEMBER_OF = "memberOf";
-const RELATION_HAS_MEMBER = "hasMember";
-const RELATION_PART_OF = "partOf";
-const RELATION_HAS_PART = "hasPart";
+//# sourceMappingURL=Location.v1alpha1.schema.json.esm.js.map
 
-var $schema$2 = "http://json-schema.org/draft-07/schema";
-var $id$2 = "ResourceV1alpha1";
-var description$2 = "A resource describes the infrastructure a system needs to operate, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with components and systems allows to visualize resource footprint, and create tooling around them.";
-var examples$2 = [
-	{
-		apiVersion: "backstage.io/v1alpha1",
-		kind: "Resource",
-		metadata: {
-			name: "artists-db",
-			description: "Stores artist details"
-		},
-		spec: {
-			type: "database",
-			owner: "artist-relations-team",
-			system: "artist-engagement-portal"
-		}
-	}
-];
-var allOf$2 = [
-	{
-		$ref: "Entity"
-	},
-	{
-		type: "object",
-		required: [
-			"spec"
-		],
-		properties: {
-			apiVersion: {
-				"enum": [
-					"backstage.io/v1alpha1",
-					"backstage.io/v1beta1"
-				]
-			},
-			kind: {
-				"enum": [
-					"Resource"
-				]
-			},
-			spec: {
-				type: "object",
-				required: [
-					"type",
-					"owner"
-				],
-				properties: {
-					type: {
-						type: "string",
-						description: "The type of resource.",
-						examples: [
-							"database",
-							"s3-bucket",
-							"cluster"
-						],
-						minLength: 1
-					},
-					owner: {
-						type: "string",
-						description: "An entity reference to the owner of the resource.",
-						examples: [
-							"artist-relations-team",
-							"user:john.johnson"
-						],
-						minLength: 1
-					},
-					dependsOn: {
-						type: "array",
-						description: "An array of references to other entities that the resource depends on to function.",
-						items: {
-							type: "string",
-							minLength: 1
-						}
-					},
-					system: {
-						type: "string",
-						description: "An entity reference to the system that the resource belongs to.",
-						minLength: 1
-					}
-				}
-			}
-		}
-	}
-];
-var schema$2 = {
-	$schema: $schema$2,
-	$id: $id$2,
-	description: description$2,
-	examples: examples$2,
-	allOf: allOf$2
-};
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/LocationEntityV1alpha1.esm.js
 
-const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$2);
 
-var $schema$1 = "http://json-schema.org/draft-07/schema";
-var $id$1 = "SystemV1alpha1";
-var description$1 = "A system is a collection of resources and components. The system may expose or consume one or several APIs. It is viewed as abstraction level that provides potential consumers insights into exposed features without needing a too detailed view into the details of all components. This also gives the owning team the possibility to decide about published artifacts and APIs.";
-var examples$1 = [
-	{
-		apiVersion: "backstage.io/v1alpha1",
-		kind: "System",
-		metadata: {
-			name: "artist-engagement-portal",
-			description: "Handy tools to keep artists in the loop"
-		},
-		spec: {
-			owner: "artist-relations-team",
-			domain: "artists"
-		}
-	}
-];
-var allOf$1 = [
-	{
-		$ref: "Entity"
-	},
-	{
-		type: "object",
-		required: [
-			"spec"
-		],
-		properties: {
-			apiVersion: {
-				"enum": [
-					"backstage.io/v1alpha1",
-					"backstage.io/v1beta1"
-				]
-			},
-			kind: {
-				"enum": [
-					"System"
-				]
-			},
-			spec: {
-				type: "object",
-				required: [
-					"owner"
-				],
-				properties: {
-					owner: {
-						type: "string",
-						description: "An entity reference to the owner of the component.",
-						examples: [
-							"artist-relations-team",
-							"user:john.johnson"
-						],
-						minLength: 1
-					},
-					domain: {
-						type: "string",
-						description: "An entity reference to the domain that the system belongs to.",
-						examples: [
-							"artists"
-						],
-						minLength: 1
-					}
-				}
-			}
-		}
-	}
-];
-var schema$1 = {
-	$schema: $schema$1,
-	$id: $id$1,
-	description: description$1,
-	examples: examples$1,
-	allOf: allOf$1
-};
 
-const systemEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(schema$1);
+const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Location_v1alpha1_schema_json_esm_schema);
 
-var $schema = "http://json-schema.org/draft-07/schema";
-var $id = "UserV1alpha1";
-var description = "A user describes a person, such as an employee, a contractor, or similar. Users belong to Group entities in the catalog. These catalog user entries are connected to the way that authentication within the Backstage ecosystem works. See the auth section of the docs for a discussion of these concepts.";
-var examples = [
+
+//# sourceMappingURL=LocationEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/User.v1alpha1.schema.json.esm.js
+var User_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var User_v1alpha1_schema_json_esm_$id = "UserV1alpha1";
+var User_v1alpha1_schema_json_esm_description = "A user describes a person, such as an employee, a contractor, or similar. Users belong to Group entities in the catalog. These catalog user entries are connected to the way that authentication within the Backstage ecosystem works. See the auth section of the docs for a discussion of these concepts.";
+var User_v1alpha1_schema_json_esm_examples = [
 	{
 		apiVersion: "backstage.io/v1alpha1",
 		kind: "User",
@@ -7620,7 +6903,7 @@ var examples = [
 		}
 	}
 ];
-var allOf = [
+var User_v1alpha1_schema_json_esm_allOf = [
 	{
 		$ref: "Entity"
 	},
@@ -7694,90 +6977,1369 @@ var allOf = [
 		}
 	}
 ];
-var index_esm_schema = {
-	$schema: $schema,
-	$id: $id,
-	description: description,
-	examples: examples,
-	allOf: allOf
+var User_v1alpha1_schema_json_esm_schema = {
+	$schema: User_v1alpha1_schema_json_esm_$schema,
+	$id: User_v1alpha1_schema_json_esm_$id,
+	description: User_v1alpha1_schema_json_esm_description,
+	examples: User_v1alpha1_schema_json_esm_examples,
+	allOf: User_v1alpha1_schema_json_esm_allOf
 };
 
-const userEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(index_esm_schema);
 
-const ANNOTATION_LOCATION = "backstage.io/managed-by-location";
-const ANNOTATION_ORIGIN_LOCATION = "backstage.io/managed-by-origin-location";
-const ANNOTATION_SOURCE_LOCATION = "backstage.io/source-location";
+//# sourceMappingURL=User.v1alpha1.schema.json.esm.js.map
 
-const scriptProtocolPattern = (
-  // eslint-disable-next-line no-control-regex
-  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i
-);
-function parseLocationRef(ref) {
-  if (typeof ref !== "string") {
-    throw new TypeError(
-      `Unable to parse location ref '${ref}', unexpected argument ${typeof ref}`
-    );
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/UserEntityV1alpha1.esm.js
+
+
+
+const userEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(User_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=UserEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/System.v1alpha1.schema.json.esm.js
+var System_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var System_v1alpha1_schema_json_esm_$id = "SystemV1alpha1";
+var System_v1alpha1_schema_json_esm_description = "A system is a collection of resources and components. The system may expose or consume one or several APIs. It is viewed as abstraction level that provides potential consumers insights into exposed features without needing a too detailed view into the details of all components. This also gives the owning team the possibility to decide about published artifacts and APIs.";
+var System_v1alpha1_schema_json_esm_examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "System",
+		metadata: {
+			name: "artist-engagement-portal",
+			description: "Handy tools to keep artists in the loop"
+		},
+		spec: {
+			owner: "artist-relations-team",
+			domain: "artists"
+		}
+	}
+];
+var System_v1alpha1_schema_json_esm_allOf = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"System"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"owner"
+				],
+				properties: {
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the component.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					domain: {
+						type: "string",
+						description: "An entity reference to the domain that the system belongs to.",
+						examples: [
+							"artists"
+						],
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var System_v1alpha1_schema_json_esm_schema = {
+	$schema: System_v1alpha1_schema_json_esm_$schema,
+	$id: System_v1alpha1_schema_json_esm_$id,
+	description: System_v1alpha1_schema_json_esm_description,
+	examples: System_v1alpha1_schema_json_esm_examples,
+	allOf: System_v1alpha1_schema_json_esm_allOf
+};
+
+
+//# sourceMappingURL=System.v1alpha1.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/SystemEntityV1alpha1.esm.js
+
+
+
+const systemEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(System_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=SystemEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Domain.v1alpha1.schema.json.esm.js
+var Domain_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Domain_v1alpha1_schema_json_esm_$id = "DomainV1alpha1";
+var Domain_v1alpha1_schema_json_esm_description = "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.";
+var Domain_v1alpha1_schema_json_esm_examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Domain",
+		metadata: {
+			name: "artists",
+			description: "Everything about artists"
+		},
+		spec: {
+			owner: "artist-relations-team",
+			subdomainOf: "audio"
+		}
+	}
+];
+var Domain_v1alpha1_schema_json_esm_allOf = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Domain"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"owner"
+				],
+				properties: {
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the component.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					subdomainOf: {
+						type: "string",
+						description: "An entity reference to another domain of which the domain is a part.",
+						examples: [
+							"audio"
+						],
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var Domain_v1alpha1_schema_json_esm_schema = {
+	$schema: Domain_v1alpha1_schema_json_esm_$schema,
+	$id: Domain_v1alpha1_schema_json_esm_$id,
+	description: Domain_v1alpha1_schema_json_esm_description,
+	examples: Domain_v1alpha1_schema_json_esm_examples,
+	allOf: Domain_v1alpha1_schema_json_esm_allOf
+};
+
+
+//# sourceMappingURL=Domain.v1alpha1.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/DomainEntityV1alpha1.esm.js
+
+
+
+const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Domain_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=DomainEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Resource.v1alpha1.schema.json.esm.js
+var Resource_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Resource_v1alpha1_schema_json_esm_$id = "ResourceV1alpha1";
+var Resource_v1alpha1_schema_json_esm_description = "A resource describes the infrastructure a system needs to operate, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with components and systems allows to visualize resource footprint, and create tooling around them.";
+var Resource_v1alpha1_schema_json_esm_examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Resource",
+		metadata: {
+			name: "artists-db",
+			description: "Stores artist details"
+		},
+		spec: {
+			type: "database",
+			owner: "artist-relations-team",
+			system: "artist-engagement-portal"
+		}
+	}
+];
+var Resource_v1alpha1_schema_json_esm_allOf = [
+	{
+		$ref: "Entity"
+	},
+	{
+		type: "object",
+		required: [
+			"spec"
+		],
+		properties: {
+			apiVersion: {
+				"enum": [
+					"backstage.io/v1alpha1",
+					"backstage.io/v1beta1"
+				]
+			},
+			kind: {
+				"enum": [
+					"Resource"
+				]
+			},
+			spec: {
+				type: "object",
+				required: [
+					"type",
+					"owner"
+				],
+				properties: {
+					type: {
+						type: "string",
+						description: "The type of resource.",
+						examples: [
+							"database",
+							"s3-bucket",
+							"cluster"
+						],
+						minLength: 1
+					},
+					owner: {
+						type: "string",
+						description: "An entity reference to the owner of the resource.",
+						examples: [
+							"artist-relations-team",
+							"user:john.johnson"
+						],
+						minLength: 1
+					},
+					dependsOn: {
+						type: "array",
+						description: "An array of references to other entities that the resource depends on to function.",
+						items: {
+							type: "string",
+							minLength: 1
+						}
+					},
+					system: {
+						type: "string",
+						description: "An entity reference to the system that the resource belongs to.",
+						minLength: 1
+					}
+				}
+			}
+		}
+	}
+];
+var Resource_v1alpha1_schema_json_esm_schema = {
+	$schema: Resource_v1alpha1_schema_json_esm_$schema,
+	$id: Resource_v1alpha1_schema_json_esm_$id,
+	description: Resource_v1alpha1_schema_json_esm_description,
+	examples: Resource_v1alpha1_schema_json_esm_examples,
+	allOf: Resource_v1alpha1_schema_json_esm_allOf
+};
+
+
+//# sourceMappingURL=Resource.v1alpha1.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/ResourceEntityV1alpha1.esm.js
+
+
+
+const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Resource_v1alpha1_schema_json_esm_schema);
+
+
+//# sourceMappingURL=ResourceEntityV1alpha1.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/EntityPolicies.esm.js
+class AllEntityPolicies {
+  constructor(policies) {
+    this.policies = policies;
   }
-  const splitIndex = ref.indexOf(":");
-  if (splitIndex < 0) {
-    throw new TypeError(
-      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`
-    );
+  async enforce(entity) {
+    let result = entity;
+    for (const policy of this.policies) {
+      const output = await policy.enforce(result);
+      if (!output) {
+        throw new Error(
+          `Policy ${policy.constructor.name} did not return a result`
+        );
+      }
+      result = output;
+    }
+    return result;
   }
-  const type = ref.substring(0, splitIndex).trim();
-  const target = ref.substring(splitIndex + 1).trim();
-  if (!type || !target) {
-    throw new TypeError(
-      `Unable to parse location ref '${ref}', expected '<type>:<target>', e.g. 'url:https://host/path'`
-    );
-  }
-  if (type === "http" || type === "https") {
-    throw new TypeError(
-      `Invalid location ref '${ref}', please prefix it with 'url:', e.g. 'url:${ref}'`
-    );
-  }
-  if (scriptProtocolPattern.test(target)) {
-    throw new TypeError(
-      `Invalid location ref '${ref}', target is a javascript: URL`
-    );
-  }
-  return { type, target };
 }
-function stringifyLocationRef(ref) {
-  const { type, target } = ref;
-  if (!type) {
-    throw new TypeError(`Unable to stringify location ref, empty type`);
-  } else if (!target) {
-    throw new TypeError(`Unable to stringify location ref, empty target`);
+class AnyEntityPolicy {
+  constructor(policies) {
+    this.policies = policies;
   }
-  if (scriptProtocolPattern.test(target)) {
-    throw new TypeError(
-      `Invalid location ref '${type}:${target}', target is a javascript: URL`
+  async enforce(entity) {
+    for (const policy of this.policies) {
+      const output = await policy.enforce(entity);
+      if (output) {
+        return output;
+      }
+    }
+    throw new Error(`The entity did not match any known policy`);
+  }
+}
+const EntityPolicies = {
+  allOf(policies) {
+    return new AllEntityPolicies(policies);
+  },
+  oneOf(policies) {
+    return new AnyEntityPolicy(policies);
+  }
+};
+
+
+//# sourceMappingURL=EntityPolicies.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/constants.esm.js
+const DEFAULT_NAMESPACE = "default";
+const ANNOTATION_VIEW_URL = "backstage.io/view-url";
+const ANNOTATION_EDIT_URL = "backstage.io/edit-url";
+const ANNOTATION_KUBERNETES_API_SERVER = "kubernetes.io/api-server";
+const ANNOTATION_KUBERNETES_API_SERVER_CA = "kubernetes.io/api-server-certificate-authority";
+const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
+
+
+//# sourceMappingURL=constants.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/DefaultNamespaceEntityPolicy.esm.js
+
+
+
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, key + "" , value);
+  return value;
+};
+class DefaultNamespaceEntityPolicy {
+  constructor(namespace = DEFAULT_NAMESPACE) {
+    __publicField(this, "namespace");
+    this.namespace = namespace;
+  }
+  async enforce(entity) {
+    if (entity.metadata.namespace) {
+      return entity;
+    }
+    return lodash_default().merge({ metadata: { namespace: this.namespace } }, entity);
+  }
+}
+
+
+//# sourceMappingURL=DefaultNamespaceEntityPolicy.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/CommonValidatorFunctions.esm.js
+
+
+class CommonValidatorFunctions {
+  /**
+   * Checks that the value is on the form `<suffix>` or `<prefix><separator><suffix>`, and validates
+   * those parts separately.
+   *
+   * @param value - The value to check
+   * @param separator - The separator between parts
+   * @param isValidPrefix - Checks that the part before the separator is valid, if present
+   * @param isValidSuffix - Checks that the part after the separator (or the entire value if there is no separator) is valid
+   */
+  static isValidPrefixAndOrSuffix(value, separator, isValidPrefix, isValidSuffix) {
+    if (typeof value !== "string") {
+      return false;
+    }
+    const parts = value.split(separator);
+    if (parts.length === 1) {
+      return isValidSuffix(parts[0]);
+    } else if (parts.length === 2) {
+      return isValidPrefix(parts[0]) && isValidSuffix(parts[1]);
+    }
+    return false;
+  }
+  /**
+   * Checks that the value can be safely transferred as JSON.
+   *
+   * @param value - The value to check
+   */
+  static isJsonSafe(value) {
+    try {
+      return lodash_default().isEqual(value, JSON.parse(JSON.stringify(value)));
+    } catch {
+      return false;
+    }
+  }
+  /**
+   * Checks that the value is a valid DNS subdomain name.
+   *
+   * @param value - The value to check
+   * @see https://tools.ietf.org/html/rfc1123
+   */
+  static isValidDnsSubdomain(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 253 && value.split(".").every(CommonValidatorFunctions.isValidDnsLabel);
+  }
+  /**
+   * Checks that the value is a valid DNS label.
+   *
+   * @param value - The value to check
+   * @see https://tools.ietf.org/html/rfc1123
+   */
+  static isValidDnsLabel(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9]+(?:\-+[a-z0-9]+)*$/.test(value);
+  }
+  /**
+   * Checks that the value is a valid tag.
+   *
+   * @deprecated This will be removed in a future release
+   * @param value - The value to check
+   */
+  static isValidTag(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9+#]+(\-[a-z0-9+#]+)*$/.test(value);
+  }
+  /**
+   * Checks that the value is a valid string URL.
+   *
+   * @param value - The value to check
+   */
+  static isValidUrl(value) {
+    if (typeof value !== "string") {
+      return false;
+    }
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  /**
+   * Checks that the value is a non empty string value.
+   *
+   * @deprecated use isNonEmptyString instead
+   * @param value - The value to check
+   */
+  static isValidString(value) {
+    var _a;
+    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+  }
+  /**
+   * Checks that the value is a string value that's not empty.
+   *
+   * @param value - The value to check
+   */
+  static isNonEmptyString(value) {
+    var _a;
+    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+  }
+}
+
+
+//# sourceMappingURL=CommonValidatorFunctions.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/KubernetesValidatorFunctions.esm.js
+
+
+class KubernetesValidatorFunctions {
+  static isValidApiVersion(value) {
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      (n) => n.length >= 1 && n.length <= 63 && /^[a-z0-9A-Z]+$/.test(n)
     );
   }
-  return `${type}:${target}`;
+  static isValidKind(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-zA-Z][a-z0-9A-Z]*$/.test(value);
+  }
+  static isValidObjectName(value) {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(value);
+  }
+  static isValidNamespace(value) {
+    return CommonValidatorFunctions.isValidDnsLabel(value);
+  }
+  static isValidLabelKey(value) {
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      KubernetesValidatorFunctions.isValidObjectName
+    );
+  }
+  static isValidLabelValue(value) {
+    return value === "" || KubernetesValidatorFunctions.isValidObjectName(value);
+  }
+  static isValidAnnotationKey(value) {
+    return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
+      value,
+      "/",
+      CommonValidatorFunctions.isValidDnsSubdomain,
+      KubernetesValidatorFunctions.isValidObjectName
+    );
+  }
+  static isValidAnnotationValue(value) {
+    return typeof value === "string";
+  }
 }
-function getEntitySourceLocation(entity) {
-  var _a, _b, _c, _d, _e;
-  const locationRef = (_e = (_b = (_a = entity.metadata) == null ? void 0 : _a.annotations) == null ? void 0 : _b[ANNOTATION_SOURCE_LOCATION]) != null ? _e : (_d = (_c = entity.metadata) == null ? void 0 : _c.annotations) == null ? void 0 : _d[ANNOTATION_LOCATION];
-  if (!locationRef) {
+
+
+//# sourceMappingURL=KubernetesValidatorFunctions.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/makeValidator.esm.js
+
+
+const defaultValidators = {
+  isValidApiVersion: KubernetesValidatorFunctions.isValidApiVersion,
+  isValidKind: KubernetesValidatorFunctions.isValidKind,
+  isValidEntityName: KubernetesValidatorFunctions.isValidObjectName,
+  isValidNamespace: KubernetesValidatorFunctions.isValidNamespace,
+  isValidLabelKey: KubernetesValidatorFunctions.isValidLabelKey,
+  isValidLabelValue: KubernetesValidatorFunctions.isValidLabelValue,
+  isValidAnnotationKey: KubernetesValidatorFunctions.isValidAnnotationKey,
+  isValidAnnotationValue: KubernetesValidatorFunctions.isValidAnnotationValue,
+  isValidTag: (value) => {
+    return typeof value === "string" && value.length >= 1 && value.length <= 63 && /^[a-z0-9:+#]+(\-[a-z0-9:+#]+)*$/.test(value);
+  }
+};
+function makeValidator(overrides = {}) {
+  return {
+    ...defaultValidators,
+    ...overrides
+  };
+}
+
+
+//# sourceMappingURL=makeValidator.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/FieldFormatEntityPolicy.esm.js
+
+
+
+
+
+var FieldFormatEntityPolicy_esm_defProp = Object.defineProperty;
+var FieldFormatEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? FieldFormatEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var FieldFormatEntityPolicy_esm_publicField = (obj, key, value) => {
+  FieldFormatEntityPolicy_esm_defNormalProp(obj, key + "" , value);
+  return value;
+};
+class FieldFormatEntityPolicy {
+  constructor(validators = makeValidator()) {
+    FieldFormatEntityPolicy_esm_publicField(this, "validators");
+    this.validators = validators;
+  }
+  async enforce(entity) {
+    var _a, _b, _c, _d, _e, _f, _g;
+    function require2(field, value, validator) {
+      if (value === void 0 || value === null) {
+        throw new Error(`${field} must have a value`);
+      }
+      let isValid;
+      try {
+        isValid = validator(value);
+      } catch (e) {
+        throw new Error(`${field} could not be validated, ${e}`);
+      }
+      if (!isValid) {
+        let expectation;
+        switch (validator.name) {
+          case "isValidLabelValue":
+          case "isValidObjectName":
+            expectation = "a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total";
+            break;
+          case "isValidLabelKey":
+          case "isValidApiVersion":
+          case "isValidAnnotationKey":
+            expectation = "a valid prefix and/or suffix";
+            break;
+          case "isValidNamespace":
+          case "isValidDnsLabel":
+            expectation = "a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total";
+            break;
+          case "isValidTag":
+            expectation = "a string that is sequences of [a-z0-9+#] separated by [-], at most 63 characters in total";
+            break;
+          case "isValidAnnotationValue":
+            expectation = "a string";
+            break;
+          case "isValidKind":
+            expectation = "a string that is a sequence of [a-zA-Z][a-z0-9A-Z], at most 63 characters in total";
+            break;
+          case "isValidUrl":
+            expectation = "a string that is a valid url";
+            break;
+          case "isValidString":
+          case "isNonEmptyString":
+            expectation = "a non empty string";
+            break;
+          default:
+            expectation = void 0;
+            break;
+        }
+        const message = expectation ? ` expected ${expectation} but found "${value}".` : "";
+        throw new Error(
+          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`
+        );
+      }
+    }
+    function optional(field, value, validator) {
+      return value === void 0 || require2(field, value, validator);
+    }
+    require2("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
+    require2("kind", entity.kind, this.validators.isValidKind);
+    require2("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
+    optional(
+      "metadata.namespace",
+      entity.metadata.namespace,
+      this.validators.isValidNamespace
+    );
+    for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
+      require2(`labels.${k}`, k, this.validators.isValidLabelKey);
+      require2(`labels.${k}`, v, this.validators.isValidLabelValue);
+    }
+    for (const [k, v] of Object.entries((_b = entity.metadata.annotations) != null ? _b : [])) {
+      require2(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
+      require2(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
+    }
+    const tags = (_c = entity.metadata.tags) != null ? _c : [];
+    for (let i = 0; i < tags.length; ++i) {
+      require2(`tags.${i}`, tags[i], this.validators.isValidTag);
+    }
+    const links = (_d = entity.metadata.links) != null ? _d : [];
+    for (let i = 0; i < links.length; ++i) {
+      require2(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
+      optional(
+        `links.${i}.title`,
+        (_f = links[i]) == null ? void 0 : _f.title,
+        CommonValidatorFunctions.isNonEmptyString
+      );
+      optional(
+        `links.${i}.icon`,
+        (_g = links[i]) == null ? void 0 : _g.icon,
+        KubernetesValidatorFunctions.isValidObjectName
+      );
+    }
+    return entity;
+  }
+}
+
+
+//# sourceMappingURL=FieldFormatEntityPolicy.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/NoForeignRootFieldsEntityPolicy.esm.js
+var NoForeignRootFieldsEntityPolicy_esm_defProp = Object.defineProperty;
+var NoForeignRootFieldsEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? NoForeignRootFieldsEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var NoForeignRootFieldsEntityPolicy_esm_publicField = (obj, key, value) => {
+  NoForeignRootFieldsEntityPolicy_esm_defNormalProp(obj, key + "" , value);
+  return value;
+};
+const defaultKnownFields = ["apiVersion", "kind", "metadata", "spec"];
+class NoForeignRootFieldsEntityPolicy {
+  constructor(knownFields = defaultKnownFields) {
+    NoForeignRootFieldsEntityPolicy_esm_publicField(this, "knownFields");
+    this.knownFields = knownFields;
+  }
+  async enforce(entity) {
+    for (const field of Object.keys(entity)) {
+      if (!this.knownFields.includes(field)) {
+        throw new Error(`Unknown field ${field}`);
+      }
+    }
+    return entity;
+  }
+}
+
+
+//# sourceMappingURL=NoForeignRootFieldsEntityPolicy.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/SchemaValidEntityPolicy.esm.js
+
+
+
+
+
+var SchemaValidEntityPolicy_esm_defProp = Object.defineProperty;
+var SchemaValidEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? SchemaValidEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var SchemaValidEntityPolicy_esm_publicField = (obj, key, value) => {
+  SchemaValidEntityPolicy_esm_defNormalProp(obj, key + "" , value);
+  return value;
+};
+class SchemaValidEntityPolicy {
+  constructor() {
+    SchemaValidEntityPolicy_esm_publicField(this, "validate");
+  }
+  async enforce(entity) {
+    if (!this.validate) {
+      const ajv = new (ajv_default())({ allowUnionTypes: true });
+      this.validate = ajv.addSchema([commonSchema, entityMetaSchema], void 0, void 0, true).compile(entitySchema);
+    }
+    const result = this.validate(entity);
+    if (result === true) {
+      return entity;
+    }
+    const [error] = this.validate.errors || [];
+    if (!error) {
+      throw new Error(`Malformed envelope, Unknown error`);
+    }
     throw new Error(
-      `Entity '${stringifyEntityRef(entity)}' is missing location`
+      `Malformed envelope, ${error.instancePath || "<root>"} ${error.message}`
     );
   }
-  return parseLocationRef(locationRef);
 }
 
 
-//# sourceMappingURL=index.esm.js.map
+//# sourceMappingURL=SchemaValidEntityPolicy.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/dist/index.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/Entity.schema.json.esm.js
+var Entity_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Entity_schema_json_esm_$id = "Entity";
+var Entity_schema_json_esm_description = "The parts of the format that's common to all versions/kinds of entity.";
+var Entity_schema_json_esm_examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Component",
+		metadata: {
+			name: "LoremService",
+			description: "Creates Lorems like a pro.",
+			labels: {
+				product_name: "Random value Generator"
+			},
+			annotations: {
+				docs: "https://github.com/..../tree/develop/doc"
+			}
+		},
+		spec: {
+			type: "service",
+			lifecycle: "production",
+			owner: "tools"
+		}
+	}
+];
+var schema_Entity_schema_json_esm_type = "object";
+var Entity_schema_json_esm_required = [
+	"apiVersion",
+	"kind",
+	"metadata"
+];
+var Entity_schema_json_esm_additionalProperties = false;
+var Entity_schema_json_esm_properties = {
+	apiVersion: {
+		type: "string",
+		description: "The version of specification format for this particular entity that this is written against.",
+		minLength: 1,
+		examples: [
+			"backstage.io/v1alpha1",
+			"my-company.net/v1",
+			"1.0"
+		]
+	},
+	kind: {
+		type: "string",
+		description: "The high level entity type being described.",
+		minLength: 1,
+		examples: [
+			"API",
+			"Component",
+			"Domain",
+			"Group",
+			"Location",
+			"Resource",
+			"System",
+			"Template",
+			"User"
+		]
+	},
+	metadata: {
+		$ref: "EntityMeta"
+	},
+	spec: {
+		type: "object",
+		description: "The specification data describing the entity itself."
+	},
+	relations: {
+		type: "array",
+		description: "The relations that this entity has with other entities.",
+		items: {
+			$ref: "common#relation"
+		}
+	},
+	status: {
+		$ref: "common#status"
+	}
+};
+var Entity_schema_json_esm_entitySchema = {
+	$schema: Entity_schema_json_esm_$schema,
+	$id: Entity_schema_json_esm_$id,
+	description: Entity_schema_json_esm_description,
+	examples: Entity_schema_json_esm_examples,
+	type: schema_Entity_schema_json_esm_type,
+	required: Entity_schema_json_esm_required,
+	additionalProperties: Entity_schema_json_esm_additionalProperties,
+	properties: Entity_schema_json_esm_properties
+};
 
 
-var index_esm_$schema = "http://json-schema.org/draft-07/schema";
-var index_esm_$id = "TemplateV1beta3";
-var index_esm_description = "A Template describes a scaffolding task for use with the Scaffolder. It describes the required parameters as well as a series of steps that will be taken to execute the scaffolding task.";
-var index_esm_examples = [
+//# sourceMappingURL=Entity.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/EntityEnvelope.schema.json.esm.js
+var schema_EntityEnvelope_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var schema_EntityEnvelope_schema_json_esm_$id = "EntityEnvelope";
+var schema_EntityEnvelope_schema_json_esm_description = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
+var schema_EntityEnvelope_schema_json_esm_examples = [
+	{
+		apiVersion: "backstage.io/v1alpha1",
+		kind: "Component",
+		metadata: {
+			name: "LoremService"
+		}
+	}
+];
+var schema_EntityEnvelope_schema_json_esm_type = "object";
+var schema_EntityEnvelope_schema_json_esm_required = [
+	"apiVersion",
+	"kind",
+	"metadata"
+];
+var schema_EntityEnvelope_schema_json_esm_additionalProperties = true;
+var schema_EntityEnvelope_schema_json_esm_properties = {
+	apiVersion: {
+		type: "string",
+		description: "The version of specification format for this particular entity that this is written against.",
+		minLength: 1,
+		examples: [
+			"backstage.io/v1alpha1",
+			"my-company.net/v1",
+			"1.0"
+		]
+	},
+	kind: {
+		type: "string",
+		description: "The high level entity type being described.",
+		minLength: 1,
+		examples: [
+			"API",
+			"Component",
+			"Domain",
+			"Group",
+			"Location",
+			"Resource",
+			"System",
+			"Template",
+			"User"
+		]
+	},
+	metadata: {
+		type: "object",
+		required: [
+			"name"
+		],
+		additionalProperties: true,
+		properties: {
+			name: {
+				type: "string",
+				description: "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
+				examples: [
+					"metadata-proxy"
+				],
+				minLength: 1
+			},
+			namespace: {
+				type: "string",
+				description: "The namespace that the entity belongs to.",
+				"default": "default",
+				examples: [
+					"default",
+					"admin"
+				],
+				minLength: 1
+			}
+		}
+	}
+};
+var EntityEnvelope_schema_json_esm_entityEnvelopeSchema = {
+	$schema: schema_EntityEnvelope_schema_json_esm_$schema,
+	$id: schema_EntityEnvelope_schema_json_esm_$id,
+	description: schema_EntityEnvelope_schema_json_esm_description,
+	examples: schema_EntityEnvelope_schema_json_esm_examples,
+	type: schema_EntityEnvelope_schema_json_esm_type,
+	required: schema_EntityEnvelope_schema_json_esm_required,
+	additionalProperties: schema_EntityEnvelope_schema_json_esm_additionalProperties,
+	properties: schema_EntityEnvelope_schema_json_esm_properties
+};
+
+
+//# sourceMappingURL=EntityEnvelope.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/EntityMeta.schema.json.esm.js
+var schema_EntityMeta_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var schema_EntityMeta_schema_json_esm_$id = "EntityMeta";
+var schema_EntityMeta_schema_json_esm_description = "Metadata fields common to all versions/kinds of entity.";
+var schema_EntityMeta_schema_json_esm_examples = [
+	{
+		uid: "e01199ab-08cc-44c2-8e19-5c29ded82521",
+		etag: "lsndfkjsndfkjnsdfkjnsd==",
+		name: "my-component-yay",
+		namespace: "the-namespace",
+		labels: {
+			"backstage.io/custom": "ValueStuff"
+		},
+		annotations: {
+			"example.com/bindings": "are-secret"
+		},
+		tags: [
+			"java",
+			"data"
+		]
+	}
+];
+var schema_EntityMeta_schema_json_esm_type = "object";
+var schema_EntityMeta_schema_json_esm_required = [
+	"name"
+];
+var schema_EntityMeta_schema_json_esm_additionalProperties = true;
+var schema_EntityMeta_schema_json_esm_properties = {
+	uid: {
+		type: "string",
+		description: "A globally unique ID for the entity. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, but the server is free to reject requests that do so in such a way that it breaks semantics.",
+		examples: [
+			"e01199ab-08cc-44c2-8e19-5c29ded82521"
+		],
+		minLength: 1
+	},
+	etag: {
+		type: "string",
+		description: "An opaque string that changes for each update operation to any part of the entity, including metadata. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, and the server will then reject the operation if it does not match the current stored value.",
+		examples: [
+			"lsndfkjsndfkjnsdfkjnsd=="
+		],
+		minLength: 1
+	},
+	name: {
+		type: "string",
+		description: "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
+		examples: [
+			"metadata-proxy"
+		],
+		minLength: 1
+	},
+	namespace: {
+		type: "string",
+		description: "The namespace that the entity belongs to.",
+		"default": "default",
+		examples: [
+			"default",
+			"admin"
+		],
+		minLength: 1
+	},
+	title: {
+		type: "string",
+		description: "A display name of the entity, to be presented in user interfaces instead of the name property, when available.",
+		examples: [
+			"React SSR Template"
+		],
+		minLength: 1
+	},
+	description: {
+		type: "string",
+		description: "A short (typically relatively few words, on one line) description of the entity."
+	},
+	labels: {
+		type: "object",
+		description: "Key/value pairs of identifying information attached to the entity.",
+		additionalProperties: true,
+		patternProperties: {
+			"^.+$": {
+				type: "string"
+			}
+		}
+	},
+	annotations: {
+		type: "object",
+		description: "Key/value pairs of non-identifying auxiliary information attached to the entity.",
+		additionalProperties: true,
+		patternProperties: {
+			"^.+$": {
+				type: "string"
+			}
+		}
+	},
+	tags: {
+		type: "array",
+		description: "A list of single-valued strings, to for example classify catalog entities in various ways.",
+		items: {
+			type: "string",
+			minLength: 1
+		}
+	},
+	links: {
+		type: "array",
+		description: "A list of external hyperlinks related to the entity. Links can provide additional contextual information that may be located outside of Backstage itself. For example, an admin dashboard or external CMS page.",
+		items: {
+			type: "object",
+			required: [
+				"url"
+			],
+			properties: {
+				url: {
+					type: "string",
+					description: "A url in a standard uri format.",
+					examples: [
+						"https://admin.example-org.com"
+					],
+					minLength: 1
+				},
+				title: {
+					type: "string",
+					description: "A user friendly display name for the link.",
+					examples: [
+						"Admin Dashboard"
+					],
+					minLength: 1
+				},
+				icon: {
+					type: "string",
+					description: "A key representing a visual icon to be displayed in the UI.",
+					examples: [
+						"dashboard"
+					],
+					minLength: 1
+				},
+				type: {
+					type: "string",
+					description: "An optional value to categorize links into specific groups.",
+					examples: [
+						"runbook",
+						"documentation",
+						"logs",
+						"dashboard"
+					],
+					minLength: 1
+				}
+			}
+		}
+	}
+};
+var EntityMeta_schema_json_esm_entityMetaSchema = {
+	$schema: schema_EntityMeta_schema_json_esm_$schema,
+	$id: schema_EntityMeta_schema_json_esm_$id,
+	description: schema_EntityMeta_schema_json_esm_description,
+	examples: schema_EntityMeta_schema_json_esm_examples,
+	type: schema_EntityMeta_schema_json_esm_type,
+	required: schema_EntityMeta_schema_json_esm_required,
+	additionalProperties: schema_EntityMeta_schema_json_esm_additionalProperties,
+	properties: schema_EntityMeta_schema_json_esm_properties
+};
+
+
+//# sourceMappingURL=EntityMeta.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/shared/common.schema.json.esm.js
+var shared_common_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var shared_common_schema_json_esm_$id = "common";
+var shared_common_schema_json_esm_type = "object";
+var shared_common_schema_json_esm_description = "Common definitions to import from other schemas";
+var common_schema_json_esm_definitions = {
+	reference: {
+		$id: "#reference",
+		type: "object",
+		description: "A reference by name to another entity.",
+		required: [
+			"kind",
+			"namespace",
+			"name"
+		],
+		additionalProperties: false,
+		properties: {
+			kind: {
+				type: "string",
+				description: "The kind field of the entity.",
+				minLength: 1
+			},
+			namespace: {
+				type: "string",
+				description: "The metadata.namespace field of the entity.",
+				minLength: 1
+			},
+			name: {
+				type: "string",
+				description: "The metadata.name field of the entity.",
+				minLength: 1
+			}
+		}
+	},
+	relation: {
+		$id: "#relation",
+		type: "object",
+		description: "A directed relation from one entity to another.",
+		required: [
+			"type",
+			"targetRef"
+		],
+		additionalProperties: false,
+		properties: {
+			type: {
+				type: "string",
+				minLength: 1,
+				pattern: "^\\w+$",
+				description: "The type of relation."
+			},
+			target: {
+				$ref: "#reference",
+				deprecated: true
+			},
+			targetRef: {
+				type: "string",
+				minLength: 1,
+				description: "The entity ref of the target of this relation."
+			}
+		}
+	},
+	status: {
+		$id: "#status",
+		type: "object",
+		description: "The current status of the entity, as claimed by various sources.",
+		required: [
+		],
+		additionalProperties: true,
+		properties: {
+			items: {
+				type: "array",
+				items: {
+					$ref: "#statusItem"
+				}
+			}
+		}
+	},
+	statusItem: {
+		$id: "#statusItem",
+		type: "object",
+		description: "A specific status item on a well known format.",
+		required: [
+			"type",
+			"level",
+			"message"
+		],
+		additionalProperties: true,
+		properties: {
+			type: {
+				type: "string",
+				minLength: 1
+			},
+			level: {
+				$ref: "#statusLevel",
+				description: "The status level / severity of the status item."
+			},
+			message: {
+				type: "string",
+				description: "A brief message describing the status, intended for human consumption."
+			},
+			error: {
+				$ref: "#error",
+				description: "An optional serialized error object related to the status."
+			}
+		}
+	},
+	statusLevel: {
+		$id: "#statusLevel",
+		type: "string",
+		description: "A status level / severity.",
+		"enum": [
+			"info",
+			"warning",
+			"error"
+		]
+	},
+	error: {
+		$id: "#error",
+		type: "object",
+		description: "A serialized error object.",
+		required: [
+			"name",
+			"message"
+		],
+		additionalProperties: true,
+		properties: {
+			name: {
+				type: "string",
+				examples: [
+					"Error",
+					"InputError"
+				],
+				description: "The type name of the error",
+				minLength: 1
+			},
+			message: {
+				type: "string",
+				description: "The message of the error"
+			},
+			code: {
+				type: "string",
+				description: "An error code associated with the error"
+			},
+			stack: {
+				type: "string",
+				description: "An error stack trace"
+			}
+		}
+	}
+};
+var common_schema_json_esm_commonSchema = {
+	$schema: shared_common_schema_json_esm_$schema,
+	$id: shared_common_schema_json_esm_$id,
+	type: shared_common_schema_json_esm_type,
+	description: shared_common_schema_json_esm_description,
+	definitions: common_schema_json_esm_definitions
+};
+
+
+//# sourceMappingURL=common.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/validation/ajv.esm.js
+
+
+
+
+
+
+const ajv_esm_compiledSchemaCache = /* @__PURE__ */ new Map();
+const ajv_esm_refDependencyCandidates = [
+  EntityEnvelope_schema_json_esm_entityEnvelopeSchema,
+  Entity_schema_json_esm_entitySchema,
+  EntityMeta_schema_json_esm_entityMetaSchema,
+  common_schema_json_esm_commonSchema
+];
+function ajv_esm_throwAjvError(errors) {
+  if (!(errors == null ? void 0 : errors.length)) {
+    throw new TypeError("Unknown error");
+  }
+  const error = errors[0];
+  throw new TypeError(
+    `${error.instancePath || "<root>"} ${error.message}${error.params ? ` - ${Object.entries(error.params).map(([key, val]) => `${key}: ${val}`).join(", ")}` : ""}`
+  );
+}
+function ajv_esm_compileAjvSchema(schema, options = {}) {
+  var _a;
+  const disableCache = (_a = options == null ? void 0 : options.disableCache) != null ? _a : false;
+  const cacheKey = disableCache ? "" : JSON.stringify(schema);
+  if (!disableCache) {
+    const cached = ajv_esm_compiledSchemaCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+  }
+  const extraSchemas = ajv_esm_getExtraSchemas(schema);
+  const ajv = new (ajv_default())({
+    allowUnionTypes: true,
+    allErrors: true,
+    validateSchema: true
+  });
+  if (extraSchemas.length) {
+    ajv.addSchema(extraSchemas, void 0, void 0, true);
+  }
+  const compiled = ajv.compile(schema);
+  if (!disableCache) {
+    ajv_esm_compiledSchemaCache.set(cacheKey, compiled);
+  }
+  return compiled;
+}
+function ajv_esm_getExtraSchemas(schema) {
+  if (typeof schema !== "object") {
+    return [];
+  }
+  const seen = /* @__PURE__ */ new Set();
+  if (schema.$id) {
+    seen.add(schema.$id);
+  }
+  const selected = new Array();
+  const todo = [schema];
+  while (todo.length) {
+    const current = todo.pop();
+    for (const ref of ajv_esm_getAllRefs(current)) {
+      if (!seen.has(ref)) {
+        seen.add(ref);
+        const match = ajv_esm_refDependencyCandidates.find((c) => c.$id === ref);
+        if (match) {
+          selected.push(match);
+          todo.push(match);
+        }
+      }
+    }
+  }
+  return selected;
+}
+function* ajv_esm_getAllRefs(schema) {
+  const todo = [schema];
+  while (todo.length) {
+    const current = todo.pop();
+    if (typeof current === "object" && current) {
+      for (const [key, value] of Object.entries(current)) {
+        if (key === "$ref" && typeof value === "string") {
+          yield value.split("#")[0];
+        } else {
+          todo.push(value);
+        }
+      }
+    }
+  }
+}
+
+
+//# sourceMappingURL=ajv.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/validation/entityKindSchemaValidator.esm.js
+
+
+function entityKindSchemaValidator_esm_entityKindSchemaValidator(schema) {
+  const validate = ajv_esm_compileAjvSchema(schema);
+  return (data) => {
+    var _a;
+    const result = validate(data);
+    if (result === true) {
+      return data;
+    }
+    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter(
+      (e) => ["/kind", "/apiVersion"].includes(e.instancePath)
+    );
+    if ((softCandidates == null ? void 0 : softCandidates.length) && softCandidates.every((e) => e.keyword === "enum")) {
+      return false;
+    }
+    throw ajv_esm_throwAjvError(validate.errors);
+  };
+}
+
+
+//# sourceMappingURL=entityKindSchemaValidator.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/dist/Template.v1beta3.schema.json.esm.js
+var Template_v1beta3_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
+var Template_v1beta3_schema_json_esm_$id = "TemplateV1beta3";
+var Template_v1beta3_schema_json_esm_description = "A Template describes a scaffolding task for use with the Scaffolder. It describes the required parameters as well as a series of steps that will be taken to execute the scaffolding task.";
+var Template_v1beta3_schema_json_esm_examples = [
 	{
 		apiVersion: "scaffolder.backstage.io/v1beta3",
 		kind: "Template",
@@ -7854,7 +8416,7 @@ var index_esm_examples = [
 		}
 	}
 ];
-var index_esm_allOf = [
+var Template_v1beta3_schema_json_esm_allOf = [
 	{
 		$ref: "Entity"
 	},
@@ -7942,19 +8504,35 @@ var index_esm_allOf = [
 					},
 					presentation: {
 						type: "object",
-						description: "A way to redefine the labels for actionable buttons.",
+						description: "A way to redefine the presentation of the scaffolder.",
 						properties: {
-							backButtonText: {
+							buttonLabels: {
+								type: "object",
+								description: "A way to redefine the labels for actionable buttons.",
+								properties: {
+									backButtonText: {
+										type: "string",
+										description: "A button which return the user to one step back."
+									},
+									createButtonText: {
+										type: "string",
+										description: "A button which start the execution of the template."
+									},
+									reviewButtonText: {
+										type: "string",
+										description: "A button which open the review step to verify the input prior to start the execution."
+									}
+								}
+							}
+						}
+					},
+					EXPERIMENTAL_recovery: {
+						type: "object",
+						description: "A task recovery section.",
+						properties: {
+							EXPERIMENTAL_strategy: {
 								type: "string",
-								description: "A button which return the user to one step back."
-							},
-							createButtonText: {
-								type: "string",
-								description: "A button which start the execution of the template."
-							},
-							reviewButtonText: {
-								type: "string",
-								description: "A button which open the review step to verify the input prior to start the execution."
+								description: "Recovery strategy for your task (none or startOver). By default none"
 							}
 						}
 					},
@@ -8097,15 +8675,22 @@ var index_esm_allOf = [
 		}
 	}
 ];
-var dist_index_esm_schema = {
-	$schema: index_esm_$schema,
-	$id: index_esm_$id,
-	description: index_esm_description,
-	examples: index_esm_examples,
-	allOf: index_esm_allOf
+var Template_v1beta3_schema_json_esm_schema = {
+	$schema: Template_v1beta3_schema_json_esm_$schema,
+	$id: Template_v1beta3_schema_json_esm_$id,
+	description: Template_v1beta3_schema_json_esm_description,
+	examples: Template_v1beta3_schema_json_esm_examples,
+	allOf: Template_v1beta3_schema_json_esm_allOf
 };
 
-const validator = entityKindSchemaValidator(dist_index_esm_schema);
+
+//# sourceMappingURL=Template.v1beta3.schema.json.esm.js.map
+
+;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/dist/TemplateEntityV1beta3.esm.js
+
+
+
+const validator = entityKindSchemaValidator_esm_entityKindSchemaValidator(Template_v1beta3_schema_json_esm_schema);
 const templateEntityV1beta3Validator = {
   // TODO(freben): Emulate the old KindValidator until we fix that type
   async check(data) {
@@ -8115,10 +8700,14 @@ const templateEntityV1beta3Validator = {
 const isTemplateEntityV1beta3 = (entity) => entity.apiVersion === "scaffolder.backstage.io/v1beta3" && entity.kind === "Template";
 
 
-//# sourceMappingURL=index.esm.js.map
+//# sourceMappingURL=TemplateEntityV1beta3.esm.js.map
 
 ;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/annotations.schema.json
 const annotations_schema_namespaceObject = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema","$id":"Entity metadata annotations","description":"Individual annotation format validations","type":"object","required":["metadata"],"additionalProperties":true,"properties":{"metadata":{"type":"object","properties":{"annotations":{"type":"object","description":"Key/value pairs of non-identifying auxiliary information attached to the entity.","additionalProperties":false,"patternProperties":{"^.+$":{"type":"string"}},"allOf":[{"properties":{"backstage.io/managed-by-location":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/managed-by-origin-location":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/techdocs-ref":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/source-location":{"type":"string","pattern":"((url|gitlab|github|azure/api):.*|(dir):.*/)$"}}},{"properties":{"backstage.io/view-url":{"type":"string","format":"uri"}}},{"properties":{"backstage.io/edit-url":{"type":"string","format":"uri"}}},{"properties":{"graph.microsoft.com/group-id":{"type":"string","format":"uuid"}}},{"properties":{"graph.microsoft.com/user-id":{"type":"string","format":"uuid"}}},{"properties":{"datadog/dashboard-url":{"type":"string","format":"uri"}}},{"properties":{"backstage.io/ldap-uuid":{"type":"string","format":"uuid"}}},{"properties":{"backstage.io/ldap-dn":{"type":"string"}}},{"properties":{"backstage.io/ldap-rdn":{"type":"string"}}},{"properties":{"jenkins.io/github-folder":{"type":"string"}}},{"properties":{"github.com/project-slug":{"type":"string"}}},{"properties":{"github.com/team-slug":{"type":"string"}}},{"properties":{"github.com/user-login":{"type":"string"}}},{"properties":{"rollbar.com/project-slug":{"type":"string"}}},{"properties":{"circleci.com/project-slug":{"type":"string"}}},{"properties":{"sonarqube.org/project-key":{"type":"string"}}},{"properties":{"backstage.io/code-coverage":{"type":"string"}}},{"properties":{"github.com/project-slug":{"type":"string"}}},{"properties":{"sentry.io/project-slug":{"type":"string"}}},{"properties":{"aws.com/lambda-function-name":{"type":"string"}}},{"properties":{"aws.com/lambda-region":{"type":"string"}}},{"properties":{"jira/project-key":{"type":"string"}}},{"properties":{"snyk.io/org-name":{"type":"string"}}},{"properties":{"graph.microsoft.com/tenant-id":{"type":"string"}}}]}}}}}');
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/repository.schema.json
+const repository_schema_namespaceObject = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema","$id":"RepositoryEntityV1","description":"A repository represents an SCM repository and its related entities.","examples":[{"apiVersion":"roadie.io/v1","kind":"Repository","metadata":{"name":"authx","description":"An authentication library for verifying the identity of a caller","scmOwner":"RoadieHQ","defaultBranch":"main","visibility":"private","language":"TypeScript","securityAndAnalysis":{"secretScanning":"disabled","secretScanningPushProtection":"disabled","secretScanningValidityChecks":"disabled","dependabotSecurityUpdates":"enabled"},"lastPush":"2024-01-04","createdAt":"2022-01-21","potentialOwners":["user:default/punkle","user:default/sblausten"],"isFork":"false","commits":{"lastWeek":0,"lastMonth":12,"lastThreeMonths":12,"lastSixMonths":14,"lastYear":23}},"spec":{"owner":"user:default/punkle","hasPart":["component:default/authx"]}}],"allOf":[{"$ref":"Entity"},{"type":"object","required":["spec"],"properties":{"apiVersion":{"enum":["roadie.io/v1"]},"kind":{"enum":["Repository"]},"spec":{"type":"object","required":[],"properties":{"owner":{"type":"string","description":"An entity reference to the owner of the repository.","examples":["artist-relations-team","user:john.johnson"],"minLength":1},"hasPart":{"type":"array","description":"An array of references to other entities that the repository houses.","items":{"type":"string","minLength":1}},"system":{"type":"string","description":"An entity reference to the system that the repository belongs to.","minLength":1}}}}}]}');
+;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/product.schema.json
+const product_schema_namespaceObject = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema","$id":"ProductEntityV1","description":"Represents a product and its related entities.","examples":[{"apiVersion":"roadie.io/v1","kind":"Product","metadata":{"name":"Roadie","description":"A developer portal"},"spec":{"type":"internal","owner":"group:default/dev-ex","hasPart":["component:default/authx"],"consumesApi":["api:default/backstage-catalog"]}}],"allOf":[{"$ref":"Entity"},{"type":"object","required":["spec"],"properties":{"apiVersion":{"enum":["roadie.io/v1","backstage.io/v1alpha1"]},"kind":{"enum":["Product"]},"spec":{"type":"object","required":[],"properties":{"type":{"type":"string","description":"The type of product category","examples":["internal"],"minLength":1},"owner":{"type":"string","description":"An entity reference to the owner of the entity.","examples":["artist-relations-team","user:john.johnson"],"minLength":1},"system":{"type":"string","description":"An entity reference to the system that the product belongs to.","minLength":1},"domain":{"type":"string","description":"An entity reference to the domain that the product belongs to.","minLength":1},"hasPart":{"type":"array","description":"An array of references to other entities that are part of this product.","items":{"type":"string","minLength":1}},"partOf":{"type":"array","description":"An array of references to other entities.","items":{"type":"string","minLength":1}},"childOf":{"type":"array","description":"An array of references to other entities.","items":{"type":"string","minLength":1}},"parentOf":{"type":"array","description":"An array of references to other entities.","items":{"type":"string","minLength":1}},"dependencyOf":{"type":"array","description":"An array of references to other entities.","items":{"type":"string","minLength":1}},"dependsOn":{"type":"array","description":"An array of references to other entities.","items":{"type":"string","minLength":1}},"consumesApi":{"type":"array","description":"An array of references to api entities that are used by this product.","items":{"type":"string","minLength":1}}}}}}]}');
 // EXTERNAL MODULE: ./node_modules/ajv-formats/dist/index.js
 var dist = __nccwpck_require__(567);
 var dist_default = /*#__PURE__*/__nccwpck_require__.n(dist);
@@ -8205,8 +8794,18 @@ const relativeSpaceValidation = async (
 
 
 
+
+
 const ajv = new (ajv_default())({ verbose: true });
 dist_default()(ajv);
+
+function validator_ajvCompiledJsonSchemaValidator(schema) {
+  return {
+    async check(data) {
+      return entityKindSchemaValidator(schema)(data) === data;
+    },
+  };
+}
 
 const VALIDATORS = {
   api: apiEntityV1alpha1Validator,
@@ -8218,6 +8817,8 @@ const VALIDATORS = {
   system: systemEntityV1alpha1Validator,
   domain: domainEntityV1alpha1Validator,
   resource: resourceEntityV1alpha1Validator,
+  repository: validator_ajvCompiledJsonSchemaValidator(repository_schema_namespaceObject),
+  product: validator_ajvCompiledJsonSchemaValidator(product_schema_namespaceObject),
 };
 
 function modifyPlaceholders(obj) {
@@ -66282,7 +66883,7 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 const glob = __nccwpck_require__(8211);
-const { validateFromFile } = __nccwpck_require__(8294);
+const { validateFromFile } = __nccwpck_require__(1250);
 
 const usage = `
 Usage: validate-entity [OPTION] [FILE]
