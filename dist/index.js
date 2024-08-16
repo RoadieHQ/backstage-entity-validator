@@ -57249,14 +57249,6 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 3292:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
-
-/***/ }),
-
 /***/ 3685:
 /***/ ((module) => {
 
@@ -57297,11 +57289,51 @@ module.exports = require("node:events");
 
 /***/ }),
 
+/***/ 7561:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:fs");
+
+/***/ }),
+
+/***/ 3977:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:fs/promises");
+
+/***/ }),
+
+/***/ 9411:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:path");
+
+/***/ }),
+
 /***/ 4492:
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("node:stream");
+
+/***/ }),
+
+/***/ 6915:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:string_decoder");
+
+/***/ }),
+
+/***/ 1041:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:url");
 
 /***/ }),
 
@@ -59043,17 +59075,17 @@ module.exports = parseParams
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Glob = void 0;
-const minimatch_1 = __nccwpck_require__(266);
-const path_scurry_1 = __nccwpck_require__(9569);
-const url_1 = __nccwpck_require__(7310);
+const minimatch_1 = __nccwpck_require__(658);
+const node_url_1 = __nccwpck_require__(1041);
+const path_scurry_1 = __nccwpck_require__(1081);
 const pattern_js_1 = __nccwpck_require__(6866);
 const walker_js_1 = __nccwpck_require__(153);
 // if no process global, just call it linux.
 // so we default to case-sensitive, / separators
-const defaultPlatform = typeof process === 'object' &&
+const defaultPlatform = (typeof process === 'object' &&
     process &&
-    typeof process.platform === 'string'
-    ? process.platform
+    typeof process.platform === 'string') ?
+    process.platform
     : 'linux';
 /**
  * An object that can perform glob pattern traversals.
@@ -59083,6 +59115,7 @@ class Glob {
     signal;
     windowsPathsNoEscape;
     withFileTypes;
+    includeChildMatches;
     /**
      * The options provided to the constructor.
      */
@@ -59119,7 +59152,7 @@ class Glob {
             this.cwd = '';
         }
         else if (opts.cwd instanceof URL || opts.cwd.startsWith('file://')) {
-            opts.cwd = (0, url_1.fileURLToPath)(opts.cwd);
+            opts.cwd = (0, node_url_1.fileURLToPath)(opts.cwd);
         }
         this.cwd = opts.cwd || '';
         this.root = opts.root;
@@ -59128,6 +59161,7 @@ class Glob {
         this.noext = !!opts.noext;
         this.realpath = !!opts.realpath;
         this.absolute = opts.absolute;
+        this.includeChildMatches = opts.includeChildMatches !== false;
         this.noglobstar = !!opts.noglobstar;
         this.matchBase = !!opts.matchBase;
         this.maxDepth =
@@ -59142,7 +59176,8 @@ class Glob {
         }
         this.windowsPathsNoEscape =
             !!opts.windowsPathsNoEscape ||
-                opts.allowWindowsEscape === false;
+                opts.allowWindowsEscape ===
+                    false;
         if (this.windowsPathsNoEscape) {
             pattern = pattern.map(p => p.replace(/\\/g, '/'));
         }
@@ -59163,12 +59198,9 @@ class Glob {
             }
         }
         else {
-            const Scurry = opts.platform === 'win32'
-                ? path_scurry_1.PathScurryWin32
-                : opts.platform === 'darwin'
-                    ? path_scurry_1.PathScurryDarwin
-                    : opts.platform
-                        ? path_scurry_1.PathScurryPosix
+            const Scurry = opts.platform === 'win32' ? path_scurry_1.PathScurryWin32
+                : opts.platform === 'darwin' ? path_scurry_1.PathScurryDarwin
+                    : opts.platform ? path_scurry_1.PathScurryPosix
                         : path_scurry_1.PathScurry;
             this.scurry = new Scurry(this.cwd, {
                 nocase: opts.nocase,
@@ -59220,11 +59252,12 @@ class Glob {
         return [
             ...(await new walker_js_1.GlobWalker(this.patterns, this.scurry.cwd, {
                 ...this.opts,
-                maxDepth: this.maxDepth !== Infinity
-                    ? this.maxDepth + this.scurry.cwd.depth()
+                maxDepth: this.maxDepth !== Infinity ?
+                    this.maxDepth + this.scurry.cwd.depth()
                     : Infinity,
                 platform: this.platform,
                 nocase: this.nocase,
+                includeChildMatches: this.includeChildMatches,
             }).walk()),
         ];
     }
@@ -59232,32 +59265,35 @@ class Glob {
         return [
             ...new walker_js_1.GlobWalker(this.patterns, this.scurry.cwd, {
                 ...this.opts,
-                maxDepth: this.maxDepth !== Infinity
-                    ? this.maxDepth + this.scurry.cwd.depth()
+                maxDepth: this.maxDepth !== Infinity ?
+                    this.maxDepth + this.scurry.cwd.depth()
                     : Infinity,
                 platform: this.platform,
                 nocase: this.nocase,
+                includeChildMatches: this.includeChildMatches,
             }).walkSync(),
         ];
     }
     stream() {
         return new walker_js_1.GlobStream(this.patterns, this.scurry.cwd, {
             ...this.opts,
-            maxDepth: this.maxDepth !== Infinity
-                ? this.maxDepth + this.scurry.cwd.depth()
+            maxDepth: this.maxDepth !== Infinity ?
+                this.maxDepth + this.scurry.cwd.depth()
                 : Infinity,
             platform: this.platform,
             nocase: this.nocase,
+            includeChildMatches: this.includeChildMatches,
         }).stream();
     }
     streamSync() {
         return new walker_js_1.GlobStream(this.patterns, this.scurry.cwd, {
             ...this.opts,
-            maxDepth: this.maxDepth !== Infinity
-                ? this.maxDepth + this.scurry.cwd.depth()
+            maxDepth: this.maxDepth !== Infinity ?
+                this.maxDepth + this.scurry.cwd.depth()
                 : Infinity,
             platform: this.platform,
             nocase: this.nocase,
+            includeChildMatches: this.includeChildMatches,
         }).streamSync();
     }
     /**
@@ -59293,7 +59329,7 @@ exports.Glob = Glob;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.hasMagic = void 0;
-const minimatch_1 = __nccwpck_require__(266);
+const minimatch_1 = __nccwpck_require__(658);
 /**
  * Return true if the patterns provided contain any magic glob characters,
  * given the options provided.
@@ -59331,12 +59367,12 @@ exports.hasMagic = hasMagic;
 // Ignores are always parsed in dot:true mode
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Ignore = void 0;
-const minimatch_1 = __nccwpck_require__(266);
+const minimatch_1 = __nccwpck_require__(658);
 const pattern_js_1 = __nccwpck_require__(6866);
-const defaultPlatform = typeof process === 'object' &&
+const defaultPlatform = (typeof process === 'object' &&
     process &&
-    typeof process.platform === 'string'
-    ? process.platform
+    typeof process.platform === 'string') ?
+    process.platform
     : 'linux';
 /**
  * Class used to process ignored patterns
@@ -59346,12 +59382,15 @@ class Ignore {
     relativeChildren;
     absolute;
     absoluteChildren;
+    platform;
+    mmopts;
     constructor(ignored, { nobrace, nocase, noext, noglobstar, platform = defaultPlatform, }) {
         this.relative = [];
         this.absolute = [];
         this.relativeChildren = [];
         this.absoluteChildren = [];
-        const mmopts = {
+        this.platform = platform;
+        this.mmopts = {
             dot: true,
             nobrace,
             nocase,
@@ -59362,6 +59401,10 @@ class Ignore {
             nocomment: true,
             nonegate: true,
         };
+        for (const ign of ignored)
+            this.add(ign);
+    }
+    add(ign) {
         // this is a little weird, but it gives us a clean set of optimized
         // minimatch matchers, without getting tripped up if one of them
         // ends in /** inside a brace section, and it's only inefficient at
@@ -59374,30 +59417,34 @@ class Ignore {
         // for absolute-ness.
         // Yet another way, Minimatch could take an array of glob strings, and
         // a cwd option, and do the right thing.
-        for (const ign of ignored) {
-            const mm = new minimatch_1.Minimatch(ign, mmopts);
-            for (let i = 0; i < mm.set.length; i++) {
-                const parsed = mm.set[i];
-                const globParts = mm.globParts[i];
-                /* c8 ignore start */
-                if (!parsed || !globParts) {
-                    throw new Error('invalid pattern object');
-                }
-                /* c8 ignore stop */
-                const p = new pattern_js_1.Pattern(parsed, globParts, 0, platform);
-                const m = new minimatch_1.Minimatch(p.globString(), mmopts);
-                const children = globParts[globParts.length - 1] === '**';
-                const absolute = p.isAbsolute();
+        const mm = new minimatch_1.Minimatch(ign, this.mmopts);
+        for (let i = 0; i < mm.set.length; i++) {
+            const parsed = mm.set[i];
+            const globParts = mm.globParts[i];
+            /* c8 ignore start */
+            if (!parsed || !globParts) {
+                throw new Error('invalid pattern object');
+            }
+            // strip off leading ./ portions
+            // https://github.com/isaacs/node-glob/issues/570
+            while (parsed[0] === '.' && globParts[0] === '.') {
+                parsed.shift();
+                globParts.shift();
+            }
+            /* c8 ignore stop */
+            const p = new pattern_js_1.Pattern(parsed, globParts, 0, this.platform);
+            const m = new minimatch_1.Minimatch(p.globString(), this.mmopts);
+            const children = globParts[globParts.length - 1] === '**';
+            const absolute = p.isAbsolute();
+            if (absolute)
+                this.absolute.push(m);
+            else
+                this.relative.push(m);
+            if (children) {
                 if (absolute)
-                    this.absolute.push(m);
+                    this.absoluteChildren.push(m);
                 else
-                    this.relative.push(m);
-                if (children) {
-                    if (absolute)
-                        this.absoluteChildren.push(m);
-                    else
-                        this.relativeChildren.push(m);
-                }
+                    this.relativeChildren.push(m);
             }
         }
     }
@@ -59441,33 +59488,42 @@ exports.Ignore = Ignore;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.glob = exports.hasMagic = exports.Glob = exports.unescape = exports.escape = exports.sync = exports.iterate = exports.iterateSync = exports.stream = exports.streamSync = exports.globIterate = exports.globIterateSync = exports.globSync = exports.globStream = exports.globStreamSync = void 0;
-const minimatch_1 = __nccwpck_require__(266);
+exports.glob = exports.sync = exports.iterate = exports.iterateSync = exports.stream = exports.streamSync = exports.Ignore = exports.hasMagic = exports.Glob = exports.unescape = exports.escape = void 0;
+exports.globStreamSync = globStreamSync;
+exports.globStream = globStream;
+exports.globSync = globSync;
+exports.globIterateSync = globIterateSync;
+exports.globIterate = globIterate;
+const minimatch_1 = __nccwpck_require__(658);
 const glob_js_1 = __nccwpck_require__(2487);
 const has_magic_js_1 = __nccwpck_require__(3133);
+var minimatch_2 = __nccwpck_require__(658);
+Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return minimatch_2.escape; } }));
+Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return minimatch_2.unescape; } }));
+var glob_js_2 = __nccwpck_require__(2487);
+Object.defineProperty(exports, "Glob", ({ enumerable: true, get: function () { return glob_js_2.Glob; } }));
+var has_magic_js_2 = __nccwpck_require__(3133);
+Object.defineProperty(exports, "hasMagic", ({ enumerable: true, get: function () { return has_magic_js_2.hasMagic; } }));
+var ignore_js_1 = __nccwpck_require__(9703);
+Object.defineProperty(exports, "Ignore", ({ enumerable: true, get: function () { return ignore_js_1.Ignore; } }));
 function globStreamSync(pattern, options = {}) {
     return new glob_js_1.Glob(pattern, options).streamSync();
 }
-exports.globStreamSync = globStreamSync;
 function globStream(pattern, options = {}) {
     return new glob_js_1.Glob(pattern, options).stream();
 }
-exports.globStream = globStream;
 function globSync(pattern, options = {}) {
     return new glob_js_1.Glob(pattern, options).walkSync();
 }
-exports.globSync = globSync;
 async function glob_(pattern, options = {}) {
     return new glob_js_1.Glob(pattern, options).walk();
 }
 function globIterateSync(pattern, options = {}) {
     return new glob_js_1.Glob(pattern, options).iterateSync();
 }
-exports.globIterateSync = globIterateSync;
 function globIterate(pattern, options = {}) {
     return new glob_js_1.Glob(pattern, options).iterate();
 }
-exports.globIterate = globIterate;
 // aliases: glob.sync.stream() glob.stream.sync() glob.sync() etc
 exports.streamSync = globStreamSync;
 exports.stream = Object.assign(globStream, { sync: globStreamSync });
@@ -59479,15 +59535,6 @@ exports.sync = Object.assign(globSync, {
     stream: globStreamSync,
     iterate: globIterateSync,
 });
-/* c8 ignore start */
-var minimatch_2 = __nccwpck_require__(266);
-Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return minimatch_2.escape; } }));
-Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return minimatch_2.unescape; } }));
-var glob_js_2 = __nccwpck_require__(2487);
-Object.defineProperty(exports, "Glob", ({ enumerable: true, get: function () { return glob_js_2.Glob; } }));
-var has_magic_js_2 = __nccwpck_require__(3133);
-Object.defineProperty(exports, "hasMagic", ({ enumerable: true, get: function () { return has_magic_js_2.hasMagic; } }));
-/* c8 ignore stop */
 exports.glob = Object.assign(glob_, {
     glob: glob_,
     globSync,
@@ -59518,7 +59565,7 @@ exports.glob.glob = exports.glob;
 // this is just a very light wrapper around 2 arrays with an offset index
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Pattern = void 0;
-const minimatch_1 = __nccwpck_require__(266);
+const minimatch_1 = __nccwpck_require__(658);
 const isPatternList = (pl) => pl.length >= 1;
 const isGlobList = (gl) => gl.length >= 1;
 /**
@@ -59626,9 +59673,9 @@ class Pattern {
     globString() {
         return (this.#globString =
             this.#globString ||
-                (this.#index === 0
-                    ? this.isAbsolute()
-                        ? this.#globList[0] + this.#globList.slice(1).join('/')
+                (this.#index === 0 ?
+                    this.isAbsolute() ?
+                        this.#globList[0] + this.#globList.slice(1).join('/')
                         : this.#globList.join('/')
                     : this.#globList.slice(this.#index).join('/')));
     }
@@ -59657,8 +59704,8 @@ class Pattern {
      */
     isUNC() {
         const pl = this.#patternList;
-        return this.#isUNC !== undefined
-            ? this.#isUNC
+        return this.#isUNC !== undefined ?
+            this.#isUNC
             : (this.#isUNC =
                 this.#platform === 'win32' &&
                     this.#index === 0 &&
@@ -59679,8 +59726,8 @@ class Pattern {
      */
     isDrive() {
         const pl = this.#patternList;
-        return this.#isDrive !== undefined
-            ? this.#isDrive
+        return this.#isDrive !== undefined ?
+            this.#isDrive
             : (this.#isDrive =
                 this.#platform === 'win32' &&
                     this.#index === 0 &&
@@ -59696,8 +59743,8 @@ class Pattern {
      */
     isAbsolute() {
         const pl = this.#patternList;
-        return this.#isAbsolute !== undefined
-            ? this.#isAbsolute
+        return this.#isAbsolute !== undefined ?
+            this.#isAbsolute
             : (this.#isAbsolute =
                 (pl[0] === '' && pl.length > 1) ||
                     this.isDrive() ||
@@ -59708,8 +59755,8 @@ class Pattern {
      */
     root() {
         const p = this.#patternList[0];
-        return typeof p === 'string' && this.isAbsolute() && this.#index === 0
-            ? p
+        return (typeof p === 'string' && this.isAbsolute() && this.#index === 0) ?
+            p
             : '';
     }
     /**
@@ -59744,7 +59791,7 @@ exports.Pattern = Pattern;
 // synchronous utility for filtering entries and calculating subwalks
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Processor = exports.SubWalks = exports.MatchRecord = exports.HasWalkedCache = void 0;
-const minimatch_1 = __nccwpck_require__(266);
+const minimatch_1 = __nccwpck_require__(658);
 /**
  * A cache of which patterns have been processed for a given Path
  */
@@ -59845,9 +59892,8 @@ class Processor {
         this.opts = opts;
         this.follow = !!opts.follow;
         this.dot = !!opts.dot;
-        this.hasWalkedCache = hasWalkedCache
-            ? hasWalkedCache.copy()
-            : new HasWalkedCache();
+        this.hasWalkedCache =
+            hasWalkedCache ? hasWalkedCache.copy() : new HasWalkedCache();
     }
     processPatterns(target, patterns) {
         this.patterns = patterns;
@@ -59860,8 +59906,8 @@ class Processor {
             const absolute = pattern.isAbsolute() && this.opts.absolute !== false;
             // start absolute patterns at root
             if (root) {
-                t = t.resolve(root === '/' && this.opts.root !== undefined
-                    ? this.opts.root
+                t = t.resolve(root === '/' && this.opts.root !== undefined ?
+                    this.opts.root
                     : root);
                 const rest = pattern.rest();
                 if (!rest) {
@@ -60061,10 +60107,8 @@ exports.GlobStream = exports.GlobWalker = exports.GlobUtil = void 0;
 const minipass_1 = __nccwpck_require__(4968);
 const ignore_js_1 = __nccwpck_require__(9703);
 const processor_js_1 = __nccwpck_require__(4628);
-const makeIgnore = (ignore, opts) => typeof ignore === 'string'
-    ? new ignore_js_1.Ignore([ignore], opts)
-    : Array.isArray(ignore)
-        ? new ignore_js_1.Ignore(ignore, opts)
+const makeIgnore = (ignore, opts) => typeof ignore === 'string' ? new ignore_js_1.Ignore([ignore], opts)
+    : Array.isArray(ignore) ? new ignore_js_1.Ignore(ignore, opts)
         : ignore;
 /**
  * basic walking utilities that all the glob walker types use
@@ -60081,13 +60125,20 @@ class GlobUtil {
     #sep;
     signal;
     maxDepth;
+    includeChildMatches;
     constructor(patterns, path, opts) {
         this.patterns = patterns;
         this.path = path;
         this.opts = opts;
         this.#sep = !opts.posix && opts.platform === 'win32' ? '\\' : '/';
-        if (opts.ignore) {
-            this.#ignore = makeIgnore(opts.ignore, opts);
+        this.includeChildMatches = opts.includeChildMatches !== false;
+        if (opts.ignore || !this.includeChildMatches) {
+            this.#ignore = makeIgnore(opts.ignore ?? [], opts);
+            if (!this.includeChildMatches &&
+                typeof this.#ignore.add !== 'function') {
+                const m = 'cannot ignore child matches, ignore lacks add() method.';
+                throw new Error(m);
+            }
         }
         // ignore, always set with maxDepth, but it's optional on the
         // GlobOptions type
@@ -60147,15 +60198,28 @@ class GlobUtil {
             e = rpc;
         }
         const needStat = e.isUnknown() || this.opts.stat;
-        return this.matchCheckTest(needStat ? await e.lstat() : e, ifDir);
+        const s = needStat ? await e.lstat() : e;
+        if (this.opts.follow && this.opts.nodir && s?.isSymbolicLink()) {
+            const target = await s.realpath();
+            /* c8 ignore start */
+            if (target && (target.isUnknown() || this.opts.stat)) {
+                await target.lstat();
+            }
+            /* c8 ignore stop */
+        }
+        return this.matchCheckTest(s, ifDir);
     }
     matchCheckTest(e, ifDir) {
-        return e &&
+        return (e &&
             (this.maxDepth === Infinity || e.depth() <= this.maxDepth) &&
             (!ifDir || e.canReaddir()) &&
             (!this.opts.nodir || !e.isDirectory()) &&
-            !this.#ignored(e)
-            ? e
+            (!this.opts.nodir ||
+                !this.opts.follow ||
+                !e.isSymbolicLink() ||
+                !e.realpathCached()?.isDirectory()) &&
+            !this.#ignored(e)) ?
+            e
             : undefined;
     }
     matchCheckSync(e, ifDir) {
@@ -60169,11 +60233,23 @@ class GlobUtil {
             e = rpc;
         }
         const needStat = e.isUnknown() || this.opts.stat;
-        return this.matchCheckTest(needStat ? e.lstatSync() : e, ifDir);
+        const s = needStat ? e.lstatSync() : e;
+        if (this.opts.follow && this.opts.nodir && s?.isSymbolicLink()) {
+            const target = s.realpathSync();
+            if (target && (target?.isUnknown() || this.opts.stat)) {
+                target.lstatSync();
+            }
+        }
+        return this.matchCheckTest(s, ifDir);
     }
     matchFinish(e, absolute) {
         if (this.#ignored(e))
             return;
+        // we know we have an ignore if this is false, but TS doesn't
+        if (!this.includeChildMatches && this.#ignore?.add) {
+            const ign = `${e.relativePosix()}/**`;
+            this.#ignore.add(ign);
+        }
         const abs = this.opts.absolute === undefined ? absolute : this.opts.absolute;
         this.seen.add(e);
         const mark = this.opts.mark && e.isDirectory() ? this.#sep : '';
@@ -60187,8 +60263,8 @@ class GlobUtil {
         }
         else {
             const rel = this.opts.posix ? e.relativePosix() : e.relative();
-            const pre = this.opts.dotRelative && !rel.startsWith('..' + this.#sep)
-                ? '.' + this.#sep
+            const pre = this.opts.dotRelative && !rel.startsWith('..' + this.#sep) ?
+                '.' + this.#sep
                 : '';
             this.matchEmit(!rel ? '.' + mark : pre + rel + mark);
         }
@@ -60328,10 +60404,9 @@ class GlobUtil {
 }
 exports.GlobUtil = GlobUtil;
 class GlobWalker extends GlobUtil {
-    matches;
+    matches = new Set();
     constructor(patterns, path, opts) {
         super(patterns, path, opts);
-        this.matches = new Set();
     }
     matchEmit(e) {
         this.matches.add(e);
@@ -60410,7 +60485,7 @@ exports.GlobStream = GlobStream;
 
 /***/ }),
 
-/***/ 5934:
+/***/ 2401:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -60431,7 +60506,7 @@ exports.assertValidPattern = assertValidPattern;
 
 /***/ }),
 
-/***/ 7642:
+/***/ 6034:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -60439,8 +60514,8 @@ exports.assertValidPattern = assertValidPattern;
 // parse a single path portion
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AST = void 0;
-const brace_expressions_js_1 = __nccwpck_require__(314);
-const unescape_js_1 = __nccwpck_require__(9820);
+const brace_expressions_js_1 = __nccwpck_require__(3096);
+const unescape_js_1 = __nccwpck_require__(7226);
 const types = new Set(['!', '?', '+', '*', '@']);
 const isExtglobType = (c) => types.has(c);
 // Patterns that get prepended to bind to the start of either the
@@ -60775,6 +60850,9 @@ class AST {
             _glob: glob,
         });
     }
+    get options() {
+        return this.#options;
+    }
     // returns the string match, the regexp source, whether there's magic
     // in the regexp (so a regular expression is required) and whether or
     // not the uflag is needed for the regular expression (for posix classes)
@@ -61027,7 +61105,7 @@ exports.AST = AST;
 
 /***/ }),
 
-/***/ 314:
+/***/ 3096:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -61186,7 +61264,7 @@ exports.parseClass = parseClass;
 
 /***/ }),
 
-/***/ 1477:
+/***/ 1496:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -61215,7 +61293,7 @@ exports.escape = escape;
 
 /***/ }),
 
-/***/ 266:
+/***/ 658:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -61226,10 +61304,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.unescape = exports.escape = exports.AST = exports.Minimatch = exports.match = exports.makeRe = exports.braceExpand = exports.defaults = exports.filter = exports.GLOBSTAR = exports.sep = exports.minimatch = void 0;
 const brace_expansion_1 = __importDefault(__nccwpck_require__(1046));
-const assert_valid_pattern_js_1 = __nccwpck_require__(5934);
-const ast_js_1 = __nccwpck_require__(7642);
-const escape_js_1 = __nccwpck_require__(1477);
-const unescape_js_1 = __nccwpck_require__(9820);
+const assert_valid_pattern_js_1 = __nccwpck_require__(2401);
+const ast_js_1 = __nccwpck_require__(6034);
+const escape_js_1 = __nccwpck_require__(1496);
+const unescape_js_1 = __nccwpck_require__(7226);
 const minimatch = (p, pattern, options = {}) => {
     (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
     // shortcut: comments match nothing.
@@ -61565,6 +61643,7 @@ class Minimatch {
             globParts = this.levelOneOptimize(globParts);
         }
         else {
+            // just collapse multiple ** portions into one
             globParts = this.adjascentGlobstarOptimize(globParts);
         }
         return globParts;
@@ -61751,10 +61830,11 @@ class Minimatch {
         for (let i = 0; i < globParts.length - 1; i++) {
             for (let j = i + 1; j < globParts.length; j++) {
                 const matched = this.partsMatch(globParts[i], globParts[j], !this.preserveMultipleSlashes);
-                if (!matched)
-                    continue;
-                globParts[i] = matched;
-                globParts[j] = [];
+                if (matched) {
+                    globParts[i] = [];
+                    globParts[j] = matched;
+                    break;
+                }
             }
         }
         return globParts.filter(gs => gs.length);
@@ -62054,7 +62134,11 @@ class Minimatch {
             fastTest = dotStarTest;
         }
         const re = ast_js_1.AST.fromGlob(pattern, this.options).toMMPattern();
-        return fastTest ? Object.assign(re, { test: fastTest }) : re;
+        if (fastTest && typeof re === 'object') {
+            // Avoids overriding in frozen environments
+            Reflect.defineProperty(re, 'test', { value: fastTest });
+        }
+        return re;
     }
     makeRe() {
         if (this.regexp || this.regexp === false)
@@ -62218,11 +62302,11 @@ class Minimatch {
 }
 exports.Minimatch = Minimatch;
 /* c8 ignore start */
-var ast_js_2 = __nccwpck_require__(7642);
+var ast_js_2 = __nccwpck_require__(6034);
 Object.defineProperty(exports, "AST", ({ enumerable: true, get: function () { return ast_js_2.AST; } }));
-var escape_js_2 = __nccwpck_require__(1477);
+var escape_js_2 = __nccwpck_require__(1496);
 Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return escape_js_2.escape; } }));
-var unescape_js_2 = __nccwpck_require__(9820);
+var unescape_js_2 = __nccwpck_require__(7226);
 Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return unescape_js_2.unescape; } }));
 /* c8 ignore stop */
 exports.minimatch.AST = ast_js_1.AST;
@@ -62233,7 +62317,7 @@ exports.minimatch.unescape = unescape_js_1.unescape;
 
 /***/ }),
 
-/***/ 9820:
+/***/ 7226:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -62400,21 +62484,26 @@ class Stack {
 /**
  * Default export, the thing you're using this module to get.
  *
- * All properties from the options object (with the exception of
- * {@link OptionsBase.max} and {@link OptionsBase.maxSize}) are added as
- * normal public members. (`max` and `maxBase` are read-only getters.)
- * Changing any of these will alter the defaults for subsequent method calls,
- * but is otherwise safe.
+ * The `K` and `V` types define the key and value types, respectively. The
+ * optional `FC` type defines the type of the `context` object passed to
+ * `cache.fetch()` and `cache.memo()`.
+ *
+ * Keys and values **must not** be `null` or `undefined`.
+ *
+ * All properties from the options object (with the exception of `max`,
+ * `maxSize`, `fetchMethod`, `memoMethod`, `dispose` and `disposeAfter`) are
+ * added as normal public members. (The listed options are read-only getters.)
+ *
+ * Changing any of these will alter the defaults for subsequent method calls.
  */
 class LRUCache {
-    // properties coming in from the options of these, only max and maxSize
-    // really *need* to be protected. The rest can be modified, as they just
-    // set defaults for various methods.
+    // options that cannot be changed without disaster
     #max;
     #maxSize;
     #dispose;
     #disposeAfter;
     #fetchMethod;
+    #memoMethod;
     /**
      * {@link LRUCache.OptionsBase.ttl}
      */
@@ -62560,6 +62649,9 @@ class LRUCache {
     get fetchMethod() {
         return this.#fetchMethod;
     }
+    get memoMethod() {
+        return this.#memoMethod;
+    }
     /**
      * {@link LRUCache.OptionsBase.dispose} (read-only)
      */
@@ -62573,7 +62665,7 @@ class LRUCache {
         return this.#disposeAfter;
     }
     constructor(options) {
-        const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, } = options;
+        const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, } = options;
         if (max !== 0 && !isPosInt(max)) {
             throw new TypeError('max option must be a nonnegative integer');
         }
@@ -62593,6 +62685,11 @@ class LRUCache {
                 throw new TypeError('sizeCalculation set to non-function');
             }
         }
+        if (memoMethod !== undefined &&
+            typeof memoMethod !== 'function') {
+            throw new TypeError('memoMethod must be a function if defined');
+        }
+        this.#memoMethod = memoMethod;
         if (fetchMethod !== undefined &&
             typeof fetchMethod !== 'function') {
             throw new TypeError('fetchMethod must be a function if specified');
@@ -62671,7 +62768,8 @@ class LRUCache {
         }
     }
     /**
-     * Return the remaining TTL time for a given entry key
+     * Return the number of ms left in the item's TTL. If item is not in cache,
+     * returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
      */
     getRemainingTTL(key) {
         return this.#keyMap.has(key) ? Infinity : 0;
@@ -62687,7 +62785,7 @@ class LRUCache {
             if (ttl !== 0 && this.ttlAutopurge) {
                 const t = setTimeout(() => {
                     if (this.#isStale(index)) {
-                        this.delete(this.#keyList[index]);
+                        this.#delete(this.#keyList[index], 'expire');
                     }
                 }, ttl + 1);
                 // unref() not supported on all platforms
@@ -62944,8 +63042,14 @@ class LRUCache {
         return this.entries();
     }
     /**
+     * A String value that is used in the creation of the default string
+     * description of an object. Called by the built-in method
+     * `Object.prototype.toString`.
+     */
+    [Symbol.toStringTag] = 'LRUCache';
+    /**
      * Find a value for which the supplied fn method returns a truthy value,
-     * similar to Array.find().  fn is called as fn(value, key, cache).
+     * similar to `Array.find()`. fn is called as `fn(value, key, cache)`.
      */
     find(fn, getOptions = {}) {
         for (const i of this.#indexes()) {
@@ -62961,10 +63065,15 @@ class LRUCache {
         }
     }
     /**
-     * Call the supplied function on each item in the cache, in order from
-     * most recently used to least recently used.  fn is called as
-     * fn(value, key, cache).  Does not update age or recenty of use.
-     * Does not iterate over stale values.
+     * Call the supplied function on each item in the cache, in order from most
+     * recently used to least recently used.
+     *
+     * `fn` is called as `fn(value, key, cache)`.
+     *
+     * If `thisp` is provided, function will be called in the `this`-context of
+     * the provided object, or the cache if no `thisp` object is provided.
+     *
+     * Does not update age or recenty of use, or iterate over stale values.
      */
     forEach(fn, thisp = this) {
         for (const i of this.#indexes()) {
@@ -63000,7 +63109,7 @@ class LRUCache {
         let deleted = false;
         for (const i of this.#rindexes({ allowStale: true })) {
             if (this.#isStale(i)) {
-                this.delete(this.#keyList[i]);
+                this.#delete(this.#keyList[i], 'expire');
                 deleted = true;
             }
         }
@@ -63008,9 +63117,15 @@ class LRUCache {
     }
     /**
      * Get the extended info about a given entry, to get its value, size, and
-     * TTL info simultaneously. Like {@link LRUCache#dump}, but just for a
-     * single key. Always returns stale values, if their info is found in the
-     * cache, so be sure to check for expired TTLs if relevant.
+     * TTL info simultaneously. Returns `undefined` if the key is not present.
+     *
+     * Unlike {@link LRUCache#dump}, which is designed to be portable and survive
+     * serialization, the `start` value is always the current timestamp, and the
+     * `ttl` is a calculated remaining time to live (negative if expired).
+     *
+     * Always returns stale values, if their info is found in the cache, so be
+     * sure to check for expirations (ie, a negative {@link LRUCache.Entry#ttl})
+     * if relevant.
      */
     info(key) {
         const i = this.#keyMap.get(key);
@@ -63039,7 +63154,16 @@ class LRUCache {
     }
     /**
      * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
-     * passed to cache.load()
+     * passed to {@link LRLUCache#load}.
+     *
+     * The `start` fields are calculated relative to a portable `Date.now()`
+     * timestamp, even if `performance.now()` is available.
+     *
+     * Stale entries are always included in the `dump`, even if
+     * {@link LRUCache.OptionsBase.allowStale} is false.
+     *
+     * Note: this returns an actual array, not a generator, so it can be more
+     * easily passed around.
      */
     dump() {
         const arr = [];
@@ -63068,8 +63192,12 @@ class LRUCache {
     }
     /**
      * Reset the cache and load in the items in entries in the order listed.
-     * Note that the shape of the resulting cache may be different if the
-     * same options are not used in both caches.
+     *
+     * The shape of the resulting cache may be different if the same options are
+     * not used in both caches.
+     *
+     * The `start` fields are assumed to be calculated relative to a portable
+     * `Date.now()` timestamp, even if `performance.now()` is available.
      */
     load(arr) {
         this.clear();
@@ -63092,6 +63220,30 @@ class LRUCache {
      *
      * Note: if `undefined` is specified as a value, this is an alias for
      * {@link LRUCache#delete}
+     *
+     * Fields on the {@link LRUCache.SetOptions} options param will override
+     * their corresponding values in the constructor options for the scope
+     * of this single `set()` operation.
+     *
+     * If `start` is provided, then that will set the effective start
+     * time for the TTL calculation. Note that this must be a previous
+     * value of `performance.now()` if supported, or a previous value of
+     * `Date.now()` if not.
+     *
+     * Options object may also include `size`, which will prevent
+     * calling the `sizeCalculation` function and just use the specified
+     * number if it is a positive integer, and `noDisposeOnSet` which
+     * will prevent calling a `dispose` function in the case of
+     * overwrites.
+     *
+     * If the `size` (or return value of `sizeCalculation`) for a given
+     * entry is greater than `maxEntrySize`, then the item will not be
+     * added to the cache.
+     *
+     * Will update the recency of the entry.
+     *
+     * If the value is `undefined`, then this is an alias for
+     * `cache.delete(key)`. `undefined` is never stored in the cache.
      */
     set(k, v, setOptions = {}) {
         if (v === undefined) {
@@ -63109,7 +63261,7 @@ class LRUCache {
                 status.maxEntrySizeExceeded = true;
             }
             // have to delete, in case something is there already.
-            this.delete(k);
+            this.#delete(k, 'set');
             return this;
         }
         let index = this.#size === 0 ? undefined : this.#keyMap.get(k);
@@ -63261,6 +63413,14 @@ class LRUCache {
      * Will return false if the item is stale, even though it is technically
      * in the cache.
      *
+     * Check if a key is in the cache, without updating the recency of
+     * use. Age is updated if {@link LRUCache.OptionsBase.updateAgeOnHas} is set
+     * to `true` in either the options or the constructor.
+     *
+     * Will return `false` if the item is stale, even though it is technically in
+     * the cache. The difference can be determined (if it matters) by using a
+     * `status` argument, and inspecting the `has` field.
+     *
      * Will not update item age unless
      * {@link LRUCache.OptionsBase.updateAgeOnHas} is set.
      */
@@ -63352,7 +63512,7 @@ class LRUCache {
                         this.#valList[index] = bf.__staleWhileFetching;
                     }
                     else {
-                        this.delete(k);
+                        this.#delete(k, 'fetch');
                     }
                 }
                 else {
@@ -63381,7 +63541,7 @@ class LRUCache {
                 // the stale value is not removed from the cache when the fetch fails.
                 const del = !noDelete || bf.__staleWhileFetching === undefined;
                 if (del) {
-                    this.delete(k);
+                    this.#delete(k, 'fetch');
                 }
                 else if (!allowStaleAborted) {
                     // still replace the *promise* with the stale value,
@@ -63527,6 +63687,28 @@ class LRUCache {
             return staleVal ? p.__staleWhileFetching : (p.__returned = p);
         }
     }
+    async forceFetch(k, fetchOptions = {}) {
+        const v = await this.fetch(k, fetchOptions);
+        if (v === undefined)
+            throw new Error('fetch() returned undefined');
+        return v;
+    }
+    memo(k, memoOptions = {}) {
+        const memoMethod = this.#memoMethod;
+        if (!memoMethod) {
+            throw new Error('no memoMethod provided to constructor');
+        }
+        const { context, forceRefresh, ...options } = memoOptions;
+        const v = this.get(k, options);
+        if (!forceRefresh && v !== undefined)
+            return v;
+        const vv = memoMethod(k, v, {
+            options,
+            context,
+        });
+        this.set(k, vv, options);
+        return vv;
+    }
     /**
      * Return a value from the cache. Will update the recency of the cache
      * entry found.
@@ -63547,7 +63729,7 @@ class LRUCache {
                 // delete only if not an in-flight background fetch
                 if (!fetching) {
                     if (!noDeleteOnStaleGet) {
-                        this.delete(k);
+                        this.#delete(k, 'expire');
                     }
                     if (status && allowStale)
                         status.returnedStale = true;
@@ -63610,16 +63792,20 @@ class LRUCache {
     }
     /**
      * Deletes a key out of the cache.
+     *
      * Returns true if the key was deleted, false otherwise.
      */
     delete(k) {
+        return this.#delete(k, 'delete');
+    }
+    #delete(k, reason) {
         let deleted = false;
         if (this.#size !== 0) {
             const index = this.#keyMap.get(k);
             if (index !== undefined) {
                 deleted = true;
                 if (this.#size === 1) {
-                    this.clear();
+                    this.#clear(reason);
                 }
                 else {
                     this.#removeItemSize(index);
@@ -63629,10 +63815,10 @@ class LRUCache {
                     }
                     else if (this.#hasDispose || this.#hasDisposeAfter) {
                         if (this.#hasDispose) {
-                            this.#dispose?.(v, k, 'delete');
+                            this.#dispose?.(v, k, reason);
                         }
                         if (this.#hasDisposeAfter) {
-                            this.#disposed?.push([v, k, 'delete']);
+                            this.#disposed?.push([v, k, reason]);
                         }
                     }
                     this.#keyMap.delete(k);
@@ -63668,6 +63854,9 @@ class LRUCache {
      * Clear the cache entirely, throwing away all values.
      */
     clear() {
+        return this.#clear('delete');
+    }
+    #clear(reason) {
         for (const index of this.#rindexes({ allowStale: true })) {
             const v = this.#valList[index];
             if (this.#isBackgroundFetch(v)) {
@@ -63676,10 +63865,10 @@ class LRUCache {
             else {
                 const k = this.#keyList[index];
                 if (this.#hasDispose) {
-                    this.#dispose?.(v, k, 'delete');
+                    this.#dispose?.(v, k, reason);
                 }
                 if (this.#hasDisposeAfter) {
-                    this.#disposed?.push([v, k, 'delete']);
+                    this.#disposed?.push([v, k, reason]);
                 }
             }
         }
@@ -63713,6 +63902,3062 @@ exports.LRUCache = LRUCache;
 /***/ }),
 
 /***/ 4968:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Minipass = exports.isWritable = exports.isReadable = exports.isStream = void 0;
+const proc = typeof process === 'object' && process
+    ? process
+    : {
+        stdout: null,
+        stderr: null,
+    };
+const node_events_1 = __nccwpck_require__(5673);
+const node_stream_1 = __importDefault(__nccwpck_require__(4492));
+const node_string_decoder_1 = __nccwpck_require__(6915);
+/**
+ * Return true if the argument is a Minipass stream, Node stream, or something
+ * else that Minipass can interact with.
+ */
+const isStream = (s) => !!s &&
+    typeof s === 'object' &&
+    (s instanceof Minipass ||
+        s instanceof node_stream_1.default ||
+        (0, exports.isReadable)(s) ||
+        (0, exports.isWritable)(s));
+exports.isStream = isStream;
+/**
+ * Return true if the argument is a valid {@link Minipass.Readable}
+ */
+const isReadable = (s) => !!s &&
+    typeof s === 'object' &&
+    s instanceof node_events_1.EventEmitter &&
+    typeof s.pipe === 'function' &&
+    // node core Writable streams have a pipe() method, but it throws
+    s.pipe !== node_stream_1.default.Writable.prototype.pipe;
+exports.isReadable = isReadable;
+/**
+ * Return true if the argument is a valid {@link Minipass.Writable}
+ */
+const isWritable = (s) => !!s &&
+    typeof s === 'object' &&
+    s instanceof node_events_1.EventEmitter &&
+    typeof s.write === 'function' &&
+    typeof s.end === 'function';
+exports.isWritable = isWritable;
+const EOF = Symbol('EOF');
+const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
+const EMITTED_END = Symbol('emittedEnd');
+const EMITTING_END = Symbol('emittingEnd');
+const EMITTED_ERROR = Symbol('emittedError');
+const CLOSED = Symbol('closed');
+const READ = Symbol('read');
+const FLUSH = Symbol('flush');
+const FLUSHCHUNK = Symbol('flushChunk');
+const ENCODING = Symbol('encoding');
+const DECODER = Symbol('decoder');
+const FLOWING = Symbol('flowing');
+const PAUSED = Symbol('paused');
+const RESUME = Symbol('resume');
+const BUFFER = Symbol('buffer');
+const PIPES = Symbol('pipes');
+const BUFFERLENGTH = Symbol('bufferLength');
+const BUFFERPUSH = Symbol('bufferPush');
+const BUFFERSHIFT = Symbol('bufferShift');
+const OBJECTMODE = Symbol('objectMode');
+// internal event when stream is destroyed
+const DESTROYED = Symbol('destroyed');
+// internal event when stream has an error
+const ERROR = Symbol('error');
+const EMITDATA = Symbol('emitData');
+const EMITEND = Symbol('emitEnd');
+const EMITEND2 = Symbol('emitEnd2');
+const ASYNC = Symbol('async');
+const ABORT = Symbol('abort');
+const ABORTED = Symbol('aborted');
+const SIGNAL = Symbol('signal');
+const DATALISTENERS = Symbol('dataListeners');
+const DISCARDED = Symbol('discarded');
+const defer = (fn) => Promise.resolve().then(fn);
+const nodefer = (fn) => fn();
+const isEndish = (ev) => ev === 'end' || ev === 'finish' || ev === 'prefinish';
+const isArrayBufferLike = (b) => b instanceof ArrayBuffer ||
+    (!!b &&
+        typeof b === 'object' &&
+        b.constructor &&
+        b.constructor.name === 'ArrayBuffer' &&
+        b.byteLength >= 0);
+const isArrayBufferView = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
+/**
+ * Internal class representing a pipe to a destination stream.
+ *
+ * @internal
+ */
+class Pipe {
+    src;
+    dest;
+    opts;
+    ondrain;
+    constructor(src, dest, opts) {
+        this.src = src;
+        this.dest = dest;
+        this.opts = opts;
+        this.ondrain = () => src[RESUME]();
+        this.dest.on('drain', this.ondrain);
+    }
+    unpipe() {
+        this.dest.removeListener('drain', this.ondrain);
+    }
+    // only here for the prototype
+    /* c8 ignore start */
+    proxyErrors(_er) { }
+    /* c8 ignore stop */
+    end() {
+        this.unpipe();
+        if (this.opts.end)
+            this.dest.end();
+    }
+}
+/**
+ * Internal class representing a pipe to a destination stream where
+ * errors are proxied.
+ *
+ * @internal
+ */
+class PipeProxyErrors extends Pipe {
+    unpipe() {
+        this.src.removeListener('error', this.proxyErrors);
+        super.unpipe();
+    }
+    constructor(src, dest, opts) {
+        super(src, dest, opts);
+        this.proxyErrors = er => dest.emit('error', er);
+        src.on('error', this.proxyErrors);
+    }
+}
+const isObjectModeOptions = (o) => !!o.objectMode;
+const isEncodingOptions = (o) => !o.objectMode && !!o.encoding && o.encoding !== 'buffer';
+/**
+ * Main export, the Minipass class
+ *
+ * `RType` is the type of data emitted, defaults to Buffer
+ *
+ * `WType` is the type of data to be written, if RType is buffer or string,
+ * then any {@link Minipass.ContiguousData} is allowed.
+ *
+ * `Events` is the set of event handler signatures that this object
+ * will emit, see {@link Minipass.Events}
+ */
+class Minipass extends node_events_1.EventEmitter {
+    [FLOWING] = false;
+    [PAUSED] = false;
+    [PIPES] = [];
+    [BUFFER] = [];
+    [OBJECTMODE];
+    [ENCODING];
+    [ASYNC];
+    [DECODER];
+    [EOF] = false;
+    [EMITTED_END] = false;
+    [EMITTING_END] = false;
+    [CLOSED] = false;
+    [EMITTED_ERROR] = null;
+    [BUFFERLENGTH] = 0;
+    [DESTROYED] = false;
+    [SIGNAL];
+    [ABORTED] = false;
+    [DATALISTENERS] = 0;
+    [DISCARDED] = false;
+    /**
+     * true if the stream can be written
+     */
+    writable = true;
+    /**
+     * true if the stream can be read
+     */
+    readable = true;
+    /**
+     * If `RType` is Buffer, then options do not need to be provided.
+     * Otherwise, an options object must be provided to specify either
+     * {@link Minipass.SharedOptions.objectMode} or
+     * {@link Minipass.SharedOptions.encoding}, as appropriate.
+     */
+    constructor(...args) {
+        const options = (args[0] ||
+            {});
+        super();
+        if (options.objectMode && typeof options.encoding === 'string') {
+            throw new TypeError('Encoding and objectMode may not be used together');
+        }
+        if (isObjectModeOptions(options)) {
+            this[OBJECTMODE] = true;
+            this[ENCODING] = null;
+        }
+        else if (isEncodingOptions(options)) {
+            this[ENCODING] = options.encoding;
+            this[OBJECTMODE] = false;
+        }
+        else {
+            this[OBJECTMODE] = false;
+            this[ENCODING] = null;
+        }
+        this[ASYNC] = !!options.async;
+        this[DECODER] = this[ENCODING]
+            ? new node_string_decoder_1.StringDecoder(this[ENCODING])
+            : null;
+        //@ts-ignore - private option for debugging and testing
+        if (options && options.debugExposeBuffer === true) {
+            Object.defineProperty(this, 'buffer', { get: () => this[BUFFER] });
+        }
+        //@ts-ignore - private option for debugging and testing
+        if (options && options.debugExposePipes === true) {
+            Object.defineProperty(this, 'pipes', { get: () => this[PIPES] });
+        }
+        const { signal } = options;
+        if (signal) {
+            this[SIGNAL] = signal;
+            if (signal.aborted) {
+                this[ABORT]();
+            }
+            else {
+                signal.addEventListener('abort', () => this[ABORT]());
+            }
+        }
+    }
+    /**
+     * The amount of data stored in the buffer waiting to be read.
+     *
+     * For Buffer strings, this will be the total byte length.
+     * For string encoding streams, this will be the string character length,
+     * according to JavaScript's `string.length` logic.
+     * For objectMode streams, this is a count of the items waiting to be
+     * emitted.
+     */
+    get bufferLength() {
+        return this[BUFFERLENGTH];
+    }
+    /**
+     * The `BufferEncoding` currently in use, or `null`
+     */
+    get encoding() {
+        return this[ENCODING];
+    }
+    /**
+     * @deprecated - This is a read only property
+     */
+    set encoding(_enc) {
+        throw new Error('Encoding must be set at instantiation time');
+    }
+    /**
+     * @deprecated - Encoding may only be set at instantiation time
+     */
+    setEncoding(_enc) {
+        throw new Error('Encoding must be set at instantiation time');
+    }
+    /**
+     * True if this is an objectMode stream
+     */
+    get objectMode() {
+        return this[OBJECTMODE];
+    }
+    /**
+     * @deprecated - This is a read-only property
+     */
+    set objectMode(_om) {
+        throw new Error('objectMode must be set at instantiation time');
+    }
+    /**
+     * true if this is an async stream
+     */
+    get ['async']() {
+        return this[ASYNC];
+    }
+    /**
+     * Set to true to make this stream async.
+     *
+     * Once set, it cannot be unset, as this would potentially cause incorrect
+     * behavior.  Ie, a sync stream can be made async, but an async stream
+     * cannot be safely made sync.
+     */
+    set ['async'](a) {
+        this[ASYNC] = this[ASYNC] || !!a;
+    }
+    // drop everything and get out of the flow completely
+    [ABORT]() {
+        this[ABORTED] = true;
+        this.emit('abort', this[SIGNAL]?.reason);
+        this.destroy(this[SIGNAL]?.reason);
+    }
+    /**
+     * True if the stream has been aborted.
+     */
+    get aborted() {
+        return this[ABORTED];
+    }
+    /**
+     * No-op setter. Stream aborted status is set via the AbortSignal provided
+     * in the constructor options.
+     */
+    set aborted(_) { }
+    write(chunk, encoding, cb) {
+        if (this[ABORTED])
+            return false;
+        if (this[EOF])
+            throw new Error('write after end');
+        if (this[DESTROYED]) {
+            this.emit('error', Object.assign(new Error('Cannot call write after a stream was destroyed'), { code: 'ERR_STREAM_DESTROYED' }));
+            return true;
+        }
+        if (typeof encoding === 'function') {
+            cb = encoding;
+            encoding = 'utf8';
+        }
+        if (!encoding)
+            encoding = 'utf8';
+        const fn = this[ASYNC] ? defer : nodefer;
+        // convert array buffers and typed array views into buffers
+        // at some point in the future, we may want to do the opposite!
+        // leave strings and buffers as-is
+        // anything is only allowed if in object mode, so throw
+        if (!this[OBJECTMODE] && !Buffer.isBuffer(chunk)) {
+            if (isArrayBufferView(chunk)) {
+                //@ts-ignore - sinful unsafe type changing
+                chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
+            }
+            else if (isArrayBufferLike(chunk)) {
+                //@ts-ignore - sinful unsafe type changing
+                chunk = Buffer.from(chunk);
+            }
+            else if (typeof chunk !== 'string') {
+                throw new Error('Non-contiguous data written to non-objectMode stream');
+            }
+        }
+        // handle object mode up front, since it's simpler
+        // this yields better performance, fewer checks later.
+        if (this[OBJECTMODE]) {
+            // maybe impossible?
+            /* c8 ignore start */
+            if (this[FLOWING] && this[BUFFERLENGTH] !== 0)
+                this[FLUSH](true);
+            /* c8 ignore stop */
+            if (this[FLOWING])
+                this.emit('data', chunk);
+            else
+                this[BUFFERPUSH](chunk);
+            if (this[BUFFERLENGTH] !== 0)
+                this.emit('readable');
+            if (cb)
+                fn(cb);
+            return this[FLOWING];
+        }
+        // at this point the chunk is a buffer or string
+        // don't buffer it up or send it to the decoder
+        if (!chunk.length) {
+            if (this[BUFFERLENGTH] !== 0)
+                this.emit('readable');
+            if (cb)
+                fn(cb);
+            return this[FLOWING];
+        }
+        // fast-path writing strings of same encoding to a stream with
+        // an empty buffer, skipping the buffer/decoder dance
+        if (typeof chunk === 'string' &&
+            // unless it is a string already ready for us to use
+            !(encoding === this[ENCODING] && !this[DECODER]?.lastNeed)) {
+            //@ts-ignore - sinful unsafe type change
+            chunk = Buffer.from(chunk, encoding);
+        }
+        if (Buffer.isBuffer(chunk) && this[ENCODING]) {
+            //@ts-ignore - sinful unsafe type change
+            chunk = this[DECODER].write(chunk);
+        }
+        // Note: flushing CAN potentially switch us into not-flowing mode
+        if (this[FLOWING] && this[BUFFERLENGTH] !== 0)
+            this[FLUSH](true);
+        if (this[FLOWING])
+            this.emit('data', chunk);
+        else
+            this[BUFFERPUSH](chunk);
+        if (this[BUFFERLENGTH] !== 0)
+            this.emit('readable');
+        if (cb)
+            fn(cb);
+        return this[FLOWING];
+    }
+    /**
+     * Low-level explicit read method.
+     *
+     * In objectMode, the argument is ignored, and one item is returned if
+     * available.
+     *
+     * `n` is the number of bytes (or in the case of encoding streams,
+     * characters) to consume. If `n` is not provided, then the entire buffer
+     * is returned, or `null` is returned if no data is available.
+     *
+     * If `n` is greater that the amount of data in the internal buffer,
+     * then `null` is returned.
+     */
+    read(n) {
+        if (this[DESTROYED])
+            return null;
+        this[DISCARDED] = false;
+        if (this[BUFFERLENGTH] === 0 ||
+            n === 0 ||
+            (n && n > this[BUFFERLENGTH])) {
+            this[MAYBE_EMIT_END]();
+            return null;
+        }
+        if (this[OBJECTMODE])
+            n = null;
+        if (this[BUFFER].length > 1 && !this[OBJECTMODE]) {
+            // not object mode, so if we have an encoding, then RType is string
+            // otherwise, must be Buffer
+            this[BUFFER] = [
+                (this[ENCODING]
+                    ? this[BUFFER].join('')
+                    : Buffer.concat(this[BUFFER], this[BUFFERLENGTH])),
+            ];
+        }
+        const ret = this[READ](n || null, this[BUFFER][0]);
+        this[MAYBE_EMIT_END]();
+        return ret;
+    }
+    [READ](n, chunk) {
+        if (this[OBJECTMODE])
+            this[BUFFERSHIFT]();
+        else {
+            const c = chunk;
+            if (n === c.length || n === null)
+                this[BUFFERSHIFT]();
+            else if (typeof c === 'string') {
+                this[BUFFER][0] = c.slice(n);
+                chunk = c.slice(0, n);
+                this[BUFFERLENGTH] -= n;
+            }
+            else {
+                this[BUFFER][0] = c.subarray(n);
+                chunk = c.subarray(0, n);
+                this[BUFFERLENGTH] -= n;
+            }
+        }
+        this.emit('data', chunk);
+        if (!this[BUFFER].length && !this[EOF])
+            this.emit('drain');
+        return chunk;
+    }
+    end(chunk, encoding, cb) {
+        if (typeof chunk === 'function') {
+            cb = chunk;
+            chunk = undefined;
+        }
+        if (typeof encoding === 'function') {
+            cb = encoding;
+            encoding = 'utf8';
+        }
+        if (chunk !== undefined)
+            this.write(chunk, encoding);
+        if (cb)
+            this.once('end', cb);
+        this[EOF] = true;
+        this.writable = false;
+        // if we haven't written anything, then go ahead and emit,
+        // even if we're not reading.
+        // we'll re-emit if a new 'end' listener is added anyway.
+        // This makes MP more suitable to write-only use cases.
+        if (this[FLOWING] || !this[PAUSED])
+            this[MAYBE_EMIT_END]();
+        return this;
+    }
+    // don't let the internal resume be overwritten
+    [RESUME]() {
+        if (this[DESTROYED])
+            return;
+        if (!this[DATALISTENERS] && !this[PIPES].length) {
+            this[DISCARDED] = true;
+        }
+        this[PAUSED] = false;
+        this[FLOWING] = true;
+        this.emit('resume');
+        if (this[BUFFER].length)
+            this[FLUSH]();
+        else if (this[EOF])
+            this[MAYBE_EMIT_END]();
+        else
+            this.emit('drain');
+    }
+    /**
+     * Resume the stream if it is currently in a paused state
+     *
+     * If called when there are no pipe destinations or `data` event listeners,
+     * this will place the stream in a "discarded" state, where all data will
+     * be thrown away. The discarded state is removed if a pipe destination or
+     * data handler is added, if pause() is called, or if any synchronous or
+     * asynchronous iteration is started.
+     */
+    resume() {
+        return this[RESUME]();
+    }
+    /**
+     * Pause the stream
+     */
+    pause() {
+        this[FLOWING] = false;
+        this[PAUSED] = true;
+        this[DISCARDED] = false;
+    }
+    /**
+     * true if the stream has been forcibly destroyed
+     */
+    get destroyed() {
+        return this[DESTROYED];
+    }
+    /**
+     * true if the stream is currently in a flowing state, meaning that
+     * any writes will be immediately emitted.
+     */
+    get flowing() {
+        return this[FLOWING];
+    }
+    /**
+     * true if the stream is currently in a paused state
+     */
+    get paused() {
+        return this[PAUSED];
+    }
+    [BUFFERPUSH](chunk) {
+        if (this[OBJECTMODE])
+            this[BUFFERLENGTH] += 1;
+        else
+            this[BUFFERLENGTH] += chunk.length;
+        this[BUFFER].push(chunk);
+    }
+    [BUFFERSHIFT]() {
+        if (this[OBJECTMODE])
+            this[BUFFERLENGTH] -= 1;
+        else
+            this[BUFFERLENGTH] -= this[BUFFER][0].length;
+        return this[BUFFER].shift();
+    }
+    [FLUSH](noDrain = false) {
+        do { } while (this[FLUSHCHUNK](this[BUFFERSHIFT]()) &&
+            this[BUFFER].length);
+        if (!noDrain && !this[BUFFER].length && !this[EOF])
+            this.emit('drain');
+    }
+    [FLUSHCHUNK](chunk) {
+        this.emit('data', chunk);
+        return this[FLOWING];
+    }
+    /**
+     * Pipe all data emitted by this stream into the destination provided.
+     *
+     * Triggers the flow of data.
+     */
+    pipe(dest, opts) {
+        if (this[DESTROYED])
+            return dest;
+        this[DISCARDED] = false;
+        const ended = this[EMITTED_END];
+        opts = opts || {};
+        if (dest === proc.stdout || dest === proc.stderr)
+            opts.end = false;
+        else
+            opts.end = opts.end !== false;
+        opts.proxyErrors = !!opts.proxyErrors;
+        // piping an ended stream ends immediately
+        if (ended) {
+            if (opts.end)
+                dest.end();
+        }
+        else {
+            // "as" here just ignores the WType, which pipes don't care about,
+            // since they're only consuming from us, and writing to the dest
+            this[PIPES].push(!opts.proxyErrors
+                ? new Pipe(this, dest, opts)
+                : new PipeProxyErrors(this, dest, opts));
+            if (this[ASYNC])
+                defer(() => this[RESUME]());
+            else
+                this[RESUME]();
+        }
+        return dest;
+    }
+    /**
+     * Fully unhook a piped destination stream.
+     *
+     * If the destination stream was the only consumer of this stream (ie,
+     * there are no other piped destinations or `'data'` event listeners)
+     * then the flow of data will stop until there is another consumer or
+     * {@link Minipass#resume} is explicitly called.
+     */
+    unpipe(dest) {
+        const p = this[PIPES].find(p => p.dest === dest);
+        if (p) {
+            if (this[PIPES].length === 1) {
+                if (this[FLOWING] && this[DATALISTENERS] === 0) {
+                    this[FLOWING] = false;
+                }
+                this[PIPES] = [];
+            }
+            else
+                this[PIPES].splice(this[PIPES].indexOf(p), 1);
+            p.unpipe();
+        }
+    }
+    /**
+     * Alias for {@link Minipass#on}
+     */
+    addListener(ev, handler) {
+        return this.on(ev, handler);
+    }
+    /**
+     * Mostly identical to `EventEmitter.on`, with the following
+     * behavior differences to prevent data loss and unnecessary hangs:
+     *
+     * - Adding a 'data' event handler will trigger the flow of data
+     *
+     * - Adding a 'readable' event handler when there is data waiting to be read
+     *   will cause 'readable' to be emitted immediately.
+     *
+     * - Adding an 'endish' event handler ('end', 'finish', etc.) which has
+     *   already passed will cause the event to be emitted immediately and all
+     *   handlers removed.
+     *
+     * - Adding an 'error' event handler after an error has been emitted will
+     *   cause the event to be re-emitted immediately with the error previously
+     *   raised.
+     */
+    on(ev, handler) {
+        const ret = super.on(ev, handler);
+        if (ev === 'data') {
+            this[DISCARDED] = false;
+            this[DATALISTENERS]++;
+            if (!this[PIPES].length && !this[FLOWING]) {
+                this[RESUME]();
+            }
+        }
+        else if (ev === 'readable' && this[BUFFERLENGTH] !== 0) {
+            super.emit('readable');
+        }
+        else if (isEndish(ev) && this[EMITTED_END]) {
+            super.emit(ev);
+            this.removeAllListeners(ev);
+        }
+        else if (ev === 'error' && this[EMITTED_ERROR]) {
+            const h = handler;
+            if (this[ASYNC])
+                defer(() => h.call(this, this[EMITTED_ERROR]));
+            else
+                h.call(this, this[EMITTED_ERROR]);
+        }
+        return ret;
+    }
+    /**
+     * Alias for {@link Minipass#off}
+     */
+    removeListener(ev, handler) {
+        return this.off(ev, handler);
+    }
+    /**
+     * Mostly identical to `EventEmitter.off`
+     *
+     * If a 'data' event handler is removed, and it was the last consumer
+     * (ie, there are no pipe destinations or other 'data' event listeners),
+     * then the flow of data will stop until there is another consumer or
+     * {@link Minipass#resume} is explicitly called.
+     */
+    off(ev, handler) {
+        const ret = super.off(ev, handler);
+        // if we previously had listeners, and now we don't, and we don't
+        // have any pipes, then stop the flow, unless it's been explicitly
+        // put in a discarded flowing state via stream.resume().
+        if (ev === 'data') {
+            this[DATALISTENERS] = this.listeners('data').length;
+            if (this[DATALISTENERS] === 0 &&
+                !this[DISCARDED] &&
+                !this[PIPES].length) {
+                this[FLOWING] = false;
+            }
+        }
+        return ret;
+    }
+    /**
+     * Mostly identical to `EventEmitter.removeAllListeners`
+     *
+     * If all 'data' event handlers are removed, and they were the last consumer
+     * (ie, there are no pipe destinations), then the flow of data will stop
+     * until there is another consumer or {@link Minipass#resume} is explicitly
+     * called.
+     */
+    removeAllListeners(ev) {
+        const ret = super.removeAllListeners(ev);
+        if (ev === 'data' || ev === undefined) {
+            this[DATALISTENERS] = 0;
+            if (!this[DISCARDED] && !this[PIPES].length) {
+                this[FLOWING] = false;
+            }
+        }
+        return ret;
+    }
+    /**
+     * true if the 'end' event has been emitted
+     */
+    get emittedEnd() {
+        return this[EMITTED_END];
+    }
+    [MAYBE_EMIT_END]() {
+        if (!this[EMITTING_END] &&
+            !this[EMITTED_END] &&
+            !this[DESTROYED] &&
+            this[BUFFER].length === 0 &&
+            this[EOF]) {
+            this[EMITTING_END] = true;
+            this.emit('end');
+            this.emit('prefinish');
+            this.emit('finish');
+            if (this[CLOSED])
+                this.emit('close');
+            this[EMITTING_END] = false;
+        }
+    }
+    /**
+     * Mostly identical to `EventEmitter.emit`, with the following
+     * behavior differences to prevent data loss and unnecessary hangs:
+     *
+     * If the stream has been destroyed, and the event is something other
+     * than 'close' or 'error', then `false` is returned and no handlers
+     * are called.
+     *
+     * If the event is 'end', and has already been emitted, then the event
+     * is ignored. If the stream is in a paused or non-flowing state, then
+     * the event will be deferred until data flow resumes. If the stream is
+     * async, then handlers will be called on the next tick rather than
+     * immediately.
+     *
+     * If the event is 'close', and 'end' has not yet been emitted, then
+     * the event will be deferred until after 'end' is emitted.
+     *
+     * If the event is 'error', and an AbortSignal was provided for the stream,
+     * and there are no listeners, then the event is ignored, matching the
+     * behavior of node core streams in the presense of an AbortSignal.
+     *
+     * If the event is 'finish' or 'prefinish', then all listeners will be
+     * removed after emitting the event, to prevent double-firing.
+     */
+    emit(ev, ...args) {
+        const data = args[0];
+        // error and close are only events allowed after calling destroy()
+        if (ev !== 'error' &&
+            ev !== 'close' &&
+            ev !== DESTROYED &&
+            this[DESTROYED]) {
+            return false;
+        }
+        else if (ev === 'data') {
+            return !this[OBJECTMODE] && !data
+                ? false
+                : this[ASYNC]
+                    ? (defer(() => this[EMITDATA](data)), true)
+                    : this[EMITDATA](data);
+        }
+        else if (ev === 'end') {
+            return this[EMITEND]();
+        }
+        else if (ev === 'close') {
+            this[CLOSED] = true;
+            // don't emit close before 'end' and 'finish'
+            if (!this[EMITTED_END] && !this[DESTROYED])
+                return false;
+            const ret = super.emit('close');
+            this.removeAllListeners('close');
+            return ret;
+        }
+        else if (ev === 'error') {
+            this[EMITTED_ERROR] = data;
+            super.emit(ERROR, data);
+            const ret = !this[SIGNAL] || this.listeners('error').length
+                ? super.emit('error', data)
+                : false;
+            this[MAYBE_EMIT_END]();
+            return ret;
+        }
+        else if (ev === 'resume') {
+            const ret = super.emit('resume');
+            this[MAYBE_EMIT_END]();
+            return ret;
+        }
+        else if (ev === 'finish' || ev === 'prefinish') {
+            const ret = super.emit(ev);
+            this.removeAllListeners(ev);
+            return ret;
+        }
+        // Some other unknown event
+        const ret = super.emit(ev, ...args);
+        this[MAYBE_EMIT_END]();
+        return ret;
+    }
+    [EMITDATA](data) {
+        for (const p of this[PIPES]) {
+            if (p.dest.write(data) === false)
+                this.pause();
+        }
+        const ret = this[DISCARDED] ? false : super.emit('data', data);
+        this[MAYBE_EMIT_END]();
+        return ret;
+    }
+    [EMITEND]() {
+        if (this[EMITTED_END])
+            return false;
+        this[EMITTED_END] = true;
+        this.readable = false;
+        return this[ASYNC]
+            ? (defer(() => this[EMITEND2]()), true)
+            : this[EMITEND2]();
+    }
+    [EMITEND2]() {
+        if (this[DECODER]) {
+            const data = this[DECODER].end();
+            if (data) {
+                for (const p of this[PIPES]) {
+                    p.dest.write(data);
+                }
+                if (!this[DISCARDED])
+                    super.emit('data', data);
+            }
+        }
+        for (const p of this[PIPES]) {
+            p.end();
+        }
+        const ret = super.emit('end');
+        this.removeAllListeners('end');
+        return ret;
+    }
+    /**
+     * Return a Promise that resolves to an array of all emitted data once
+     * the stream ends.
+     */
+    async collect() {
+        const buf = Object.assign([], {
+            dataLength: 0,
+        });
+        if (!this[OBJECTMODE])
+            buf.dataLength = 0;
+        // set the promise first, in case an error is raised
+        // by triggering the flow here.
+        const p = this.promise();
+        this.on('data', c => {
+            buf.push(c);
+            if (!this[OBJECTMODE])
+                buf.dataLength += c.length;
+        });
+        await p;
+        return buf;
+    }
+    /**
+     * Return a Promise that resolves to the concatenation of all emitted data
+     * once the stream ends.
+     *
+     * Not allowed on objectMode streams.
+     */
+    async concat() {
+        if (this[OBJECTMODE]) {
+            throw new Error('cannot concat in objectMode');
+        }
+        const buf = await this.collect();
+        return (this[ENCODING]
+            ? buf.join('')
+            : Buffer.concat(buf, buf.dataLength));
+    }
+    /**
+     * Return a void Promise that resolves once the stream ends.
+     */
+    async promise() {
+        return new Promise((resolve, reject) => {
+            this.on(DESTROYED, () => reject(new Error('stream destroyed')));
+            this.on('error', er => reject(er));
+            this.on('end', () => resolve());
+        });
+    }
+    /**
+     * Asynchronous `for await of` iteration.
+     *
+     * This will continue emitting all chunks until the stream terminates.
+     */
+    [Symbol.asyncIterator]() {
+        // set this up front, in case the consumer doesn't call next()
+        // right away.
+        this[DISCARDED] = false;
+        let stopped = false;
+        const stop = async () => {
+            this.pause();
+            stopped = true;
+            return { value: undefined, done: true };
+        };
+        const next = () => {
+            if (stopped)
+                return stop();
+            const res = this.read();
+            if (res !== null)
+                return Promise.resolve({ done: false, value: res });
+            if (this[EOF])
+                return stop();
+            let resolve;
+            let reject;
+            const onerr = (er) => {
+                this.off('data', ondata);
+                this.off('end', onend);
+                this.off(DESTROYED, ondestroy);
+                stop();
+                reject(er);
+            };
+            const ondata = (value) => {
+                this.off('error', onerr);
+                this.off('end', onend);
+                this.off(DESTROYED, ondestroy);
+                this.pause();
+                resolve({ value, done: !!this[EOF] });
+            };
+            const onend = () => {
+                this.off('error', onerr);
+                this.off('data', ondata);
+                this.off(DESTROYED, ondestroy);
+                stop();
+                resolve({ done: true, value: undefined });
+            };
+            const ondestroy = () => onerr(new Error('stream destroyed'));
+            return new Promise((res, rej) => {
+                reject = rej;
+                resolve = res;
+                this.once(DESTROYED, ondestroy);
+                this.once('error', onerr);
+                this.once('end', onend);
+                this.once('data', ondata);
+            });
+        };
+        return {
+            next,
+            throw: stop,
+            return: stop,
+            [Symbol.asyncIterator]() {
+                return this;
+            },
+        };
+    }
+    /**
+     * Synchronous `for of` iteration.
+     *
+     * The iteration will terminate when the internal buffer runs out, even
+     * if the stream has not yet terminated.
+     */
+    [Symbol.iterator]() {
+        // set this up front, in case the consumer doesn't call next()
+        // right away.
+        this[DISCARDED] = false;
+        let stopped = false;
+        const stop = () => {
+            this.pause();
+            this.off(ERROR, stop);
+            this.off(DESTROYED, stop);
+            this.off('end', stop);
+            stopped = true;
+            return { done: true, value: undefined };
+        };
+        const next = () => {
+            if (stopped)
+                return stop();
+            const value = this.read();
+            return value === null ? stop() : { done: false, value };
+        };
+        this.once('end', stop);
+        this.once(ERROR, stop);
+        this.once(DESTROYED, stop);
+        return {
+            next,
+            throw: stop,
+            return: stop,
+            [Symbol.iterator]() {
+                return this;
+            },
+        };
+    }
+    /**
+     * Destroy a stream, preventing it from being used for any further purpose.
+     *
+     * If the stream has a `close()` method, then it will be called on
+     * destruction.
+     *
+     * After destruction, any attempt to write data, read data, or emit most
+     * events will be ignored.
+     *
+     * If an error argument is provided, then it will be emitted in an
+     * 'error' event.
+     */
+    destroy(er) {
+        if (this[DESTROYED]) {
+            if (er)
+                this.emit('error', er);
+            else
+                this.emit(DESTROYED);
+            return this;
+        }
+        this[DESTROYED] = true;
+        this[DISCARDED] = true;
+        // throw away all buffered data, it's never coming out
+        this[BUFFER].length = 0;
+        this[BUFFERLENGTH] = 0;
+        const wc = this;
+        if (typeof wc.close === 'function' && !this[CLOSED])
+            wc.close();
+        if (er)
+            this.emit('error', er);
+        // if no error to emit, still reject pending promises
+        else
+            this.emit(DESTROYED);
+        return this;
+    }
+    /**
+     * Alias for {@link isStream}
+     *
+     * Former export location, maintained for backwards compatibility.
+     *
+     * @deprecated
+     */
+    static get isStream() {
+        return exports.isStream;
+    }
+}
+exports.Minipass = Minipass;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 1081:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PathScurry = exports.Path = exports.PathScurryDarwin = exports.PathScurryPosix = exports.PathScurryWin32 = exports.PathScurryBase = exports.PathPosix = exports.PathWin32 = exports.PathBase = exports.ChildrenCache = exports.ResolveCache = void 0;
+const lru_cache_1 = __nccwpck_require__(3866);
+const node_path_1 = __nccwpck_require__(9411);
+const node_url_1 = __nccwpck_require__(1041);
+const fs_1 = __nccwpck_require__(7147);
+const actualFS = __importStar(__nccwpck_require__(7561));
+const realpathSync = fs_1.realpathSync.native;
+// TODO: test perf of fs/promises realpath vs realpathCB,
+// since the promises one uses realpath.native
+const promises_1 = __nccwpck_require__(3977);
+const minipass_1 = __nccwpck_require__(3852);
+const defaultFS = {
+    lstatSync: fs_1.lstatSync,
+    readdir: fs_1.readdir,
+    readdirSync: fs_1.readdirSync,
+    readlinkSync: fs_1.readlinkSync,
+    realpathSync,
+    promises: {
+        lstat: promises_1.lstat,
+        readdir: promises_1.readdir,
+        readlink: promises_1.readlink,
+        realpath: promises_1.realpath,
+    },
+};
+// if they just gave us require('fs') then use our default
+const fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === actualFS ?
+    defaultFS
+    : {
+        ...defaultFS,
+        ...fsOption,
+        promises: {
+            ...defaultFS.promises,
+            ...(fsOption.promises || {}),
+        },
+    };
+// turn something like //?/c:/ into c:\
+const uncDriveRegexp = /^\\\\\?\\([a-z]:)\\?$/i;
+const uncToDrive = (rootPath) => rootPath.replace(/\//g, '\\').replace(uncDriveRegexp, '$1\\');
+// windows paths are separated by either / or \
+const eitherSep = /[\\\/]/;
+const UNKNOWN = 0; // may not even exist, for all we know
+const IFIFO = 0b0001;
+const IFCHR = 0b0010;
+const IFDIR = 0b0100;
+const IFBLK = 0b0110;
+const IFREG = 0b1000;
+const IFLNK = 0b1010;
+const IFSOCK = 0b1100;
+const IFMT = 0b1111;
+// mask to unset low 4 bits
+const IFMT_UNKNOWN = ~IFMT;
+// set after successfully calling readdir() and getting entries.
+const READDIR_CALLED = 0b0000_0001_0000;
+// set after a successful lstat()
+const LSTAT_CALLED = 0b0000_0010_0000;
+// set if an entry (or one of its parents) is definitely not a dir
+const ENOTDIR = 0b0000_0100_0000;
+// set if an entry (or one of its parents) does not exist
+// (can also be set on lstat errors like EACCES or ENAMETOOLONG)
+const ENOENT = 0b0000_1000_0000;
+// cannot have child entries -- also verify &IFMT is either IFDIR or IFLNK
+// set if we fail to readlink
+const ENOREADLINK = 0b0001_0000_0000;
+// set if we know realpath() will fail
+const ENOREALPATH = 0b0010_0000_0000;
+const ENOCHILD = ENOTDIR | ENOENT | ENOREALPATH;
+const TYPEMASK = 0b0011_1111_1111;
+const entToType = (s) => s.isFile() ? IFREG
+    : s.isDirectory() ? IFDIR
+        : s.isSymbolicLink() ? IFLNK
+            : s.isCharacterDevice() ? IFCHR
+                : s.isBlockDevice() ? IFBLK
+                    : s.isSocket() ? IFSOCK
+                        : s.isFIFO() ? IFIFO
+                            : UNKNOWN;
+// normalize unicode path names
+const normalizeCache = new Map();
+const normalize = (s) => {
+    const c = normalizeCache.get(s);
+    if (c)
+        return c;
+    const n = s.normalize('NFKD');
+    normalizeCache.set(s, n);
+    return n;
+};
+const normalizeNocaseCache = new Map();
+const normalizeNocase = (s) => {
+    const c = normalizeNocaseCache.get(s);
+    if (c)
+        return c;
+    const n = normalize(s.toLowerCase());
+    normalizeNocaseCache.set(s, n);
+    return n;
+};
+/**
+ * An LRUCache for storing resolved path strings or Path objects.
+ * @internal
+ */
+class ResolveCache extends lru_cache_1.LRUCache {
+    constructor() {
+        super({ max: 256 });
+    }
+}
+exports.ResolveCache = ResolveCache;
+// In order to prevent blowing out the js heap by allocating hundreds of
+// thousands of Path entries when walking extremely large trees, the "children"
+// in this tree are represented by storing an array of Path entries in an
+// LRUCache, indexed by the parent.  At any time, Path.children() may return an
+// empty array, indicating that it doesn't know about any of its children, and
+// thus has to rebuild that cache.  This is fine, it just means that we don't
+// benefit as much from having the cached entries, but huge directory walks
+// don't blow out the stack, and smaller ones are still as fast as possible.
+//
+//It does impose some complexity when building up the readdir data, because we
+//need to pass a reference to the children array that we started with.
+/**
+ * an LRUCache for storing child entries.
+ * @internal
+ */
+class ChildrenCache extends lru_cache_1.LRUCache {
+    constructor(maxSize = 16 * 1024) {
+        super({
+            maxSize,
+            // parent + children
+            sizeCalculation: a => a.length + 1,
+        });
+    }
+}
+exports.ChildrenCache = ChildrenCache;
+const setAsCwd = Symbol('PathScurry setAsCwd');
+/**
+ * Path objects are sort of like a super-powered
+ * {@link https://nodejs.org/docs/latest/api/fs.html#class-fsdirent fs.Dirent}
+ *
+ * Each one represents a single filesystem entry on disk, which may or may not
+ * exist. It includes methods for reading various types of information via
+ * lstat, readlink, and readdir, and caches all information to the greatest
+ * degree possible.
+ *
+ * Note that fs operations that would normally throw will instead return an
+ * "empty" value. This is in order to prevent excessive overhead from error
+ * stack traces.
+ */
+class PathBase {
+    /**
+     * the basename of this path
+     *
+     * **Important**: *always* test the path name against any test string
+     * usingthe {@link isNamed} method, and not by directly comparing this
+     * string. Otherwise, unicode path strings that the system sees as identical
+     * will not be properly treated as the same path, leading to incorrect
+     * behavior and possible security issues.
+     */
+    name;
+    /**
+     * the Path entry corresponding to the path root.
+     *
+     * @internal
+     */
+    root;
+    /**
+     * All roots found within the current PathScurry family
+     *
+     * @internal
+     */
+    roots;
+    /**
+     * a reference to the parent path, or undefined in the case of root entries
+     *
+     * @internal
+     */
+    parent;
+    /**
+     * boolean indicating whether paths are compared case-insensitively
+     * @internal
+     */
+    nocase;
+    /**
+     * boolean indicating that this path is the current working directory
+     * of the PathScurry collection that contains it.
+     */
+    isCWD = false;
+    // potential default fs override
+    #fs;
+    // Stats fields
+    #dev;
+    get dev() {
+        return this.#dev;
+    }
+    #mode;
+    get mode() {
+        return this.#mode;
+    }
+    #nlink;
+    get nlink() {
+        return this.#nlink;
+    }
+    #uid;
+    get uid() {
+        return this.#uid;
+    }
+    #gid;
+    get gid() {
+        return this.#gid;
+    }
+    #rdev;
+    get rdev() {
+        return this.#rdev;
+    }
+    #blksize;
+    get blksize() {
+        return this.#blksize;
+    }
+    #ino;
+    get ino() {
+        return this.#ino;
+    }
+    #size;
+    get size() {
+        return this.#size;
+    }
+    #blocks;
+    get blocks() {
+        return this.#blocks;
+    }
+    #atimeMs;
+    get atimeMs() {
+        return this.#atimeMs;
+    }
+    #mtimeMs;
+    get mtimeMs() {
+        return this.#mtimeMs;
+    }
+    #ctimeMs;
+    get ctimeMs() {
+        return this.#ctimeMs;
+    }
+    #birthtimeMs;
+    get birthtimeMs() {
+        return this.#birthtimeMs;
+    }
+    #atime;
+    get atime() {
+        return this.#atime;
+    }
+    #mtime;
+    get mtime() {
+        return this.#mtime;
+    }
+    #ctime;
+    get ctime() {
+        return this.#ctime;
+    }
+    #birthtime;
+    get birthtime() {
+        return this.#birthtime;
+    }
+    #matchName;
+    #depth;
+    #fullpath;
+    #fullpathPosix;
+    #relative;
+    #relativePosix;
+    #type;
+    #children;
+    #linkTarget;
+    #realpath;
+    /**
+     * This property is for compatibility with the Dirent class as of
+     * Node v20, where Dirent['parentPath'] refers to the path of the
+     * directory that was passed to readdir. For root entries, it's the path
+     * to the entry itself.
+     */
+    get parentPath() {
+        return (this.parent || this).fullpath();
+    }
+    /**
+     * Deprecated alias for Dirent['parentPath'] Somewhat counterintuitively,
+     * this property refers to the *parent* path, not the path object itself.
+     */
+    get path() {
+        return this.parentPath;
+    }
+    /**
+     * Do not create new Path objects directly.  They should always be accessed
+     * via the PathScurry class or other methods on the Path class.
+     *
+     * @internal
+     */
+    constructor(name, type = UNKNOWN, root, roots, nocase, children, opts) {
+        this.name = name;
+        this.#matchName = nocase ? normalizeNocase(name) : normalize(name);
+        this.#type = type & TYPEMASK;
+        this.nocase = nocase;
+        this.roots = roots;
+        this.root = root || this;
+        this.#children = children;
+        this.#fullpath = opts.fullpath;
+        this.#relative = opts.relative;
+        this.#relativePosix = opts.relativePosix;
+        this.parent = opts.parent;
+        if (this.parent) {
+            this.#fs = this.parent.#fs;
+        }
+        else {
+            this.#fs = fsFromOption(opts.fs);
+        }
+    }
+    /**
+     * Returns the depth of the Path object from its root.
+     *
+     * For example, a path at `/foo/bar` would have a depth of 2.
+     */
+    depth() {
+        if (this.#depth !== undefined)
+            return this.#depth;
+        if (!this.parent)
+            return (this.#depth = 0);
+        return (this.#depth = this.parent.depth() + 1);
+    }
+    /**
+     * @internal
+     */
+    childrenCache() {
+        return this.#children;
+    }
+    /**
+     * Get the Path object referenced by the string path, resolved from this Path
+     */
+    resolve(path) {
+        if (!path) {
+            return this;
+        }
+        const rootPath = this.getRootString(path);
+        const dir = path.substring(rootPath.length);
+        const dirParts = dir.split(this.splitSep);
+        const result = rootPath ?
+            this.getRoot(rootPath).#resolveParts(dirParts)
+            : this.#resolveParts(dirParts);
+        return result;
+    }
+    #resolveParts(dirParts) {
+        let p = this;
+        for (const part of dirParts) {
+            p = p.child(part);
+        }
+        return p;
+    }
+    /**
+     * Returns the cached children Path objects, if still available.  If they
+     * have fallen out of the cache, then returns an empty array, and resets the
+     * READDIR_CALLED bit, so that future calls to readdir() will require an fs
+     * lookup.
+     *
+     * @internal
+     */
+    children() {
+        const cached = this.#children.get(this);
+        if (cached) {
+            return cached;
+        }
+        const children = Object.assign([], { provisional: 0 });
+        this.#children.set(this, children);
+        this.#type &= ~READDIR_CALLED;
+        return children;
+    }
+    /**
+     * Resolves a path portion and returns or creates the child Path.
+     *
+     * Returns `this` if pathPart is `''` or `'.'`, or `parent` if pathPart is
+     * `'..'`.
+     *
+     * This should not be called directly.  If `pathPart` contains any path
+     * separators, it will lead to unsafe undefined behavior.
+     *
+     * Use `Path.resolve()` instead.
+     *
+     * @internal
+     */
+    child(pathPart, opts) {
+        if (pathPart === '' || pathPart === '.') {
+            return this;
+        }
+        if (pathPart === '..') {
+            return this.parent || this;
+        }
+        // find the child
+        const children = this.children();
+        const name = this.nocase ? normalizeNocase(pathPart) : normalize(pathPart);
+        for (const p of children) {
+            if (p.#matchName === name) {
+                return p;
+            }
+        }
+        // didn't find it, create provisional child, since it might not
+        // actually exist.  If we know the parent isn't a dir, then
+        // in fact it CAN'T exist.
+        const s = this.parent ? this.sep : '';
+        const fullpath = this.#fullpath ? this.#fullpath + s + pathPart : undefined;
+        const pchild = this.newChild(pathPart, UNKNOWN, {
+            ...opts,
+            parent: this,
+            fullpath,
+        });
+        if (!this.canReaddir()) {
+            pchild.#type |= ENOENT;
+        }
+        // don't have to update provisional, because if we have real children,
+        // then provisional is set to children.length, otherwise a lower number
+        children.push(pchild);
+        return pchild;
+    }
+    /**
+     * The relative path from the cwd. If it does not share an ancestor with
+     * the cwd, then this ends up being equivalent to the fullpath()
+     */
+    relative() {
+        if (this.isCWD)
+            return '';
+        if (this.#relative !== undefined) {
+            return this.#relative;
+        }
+        const name = this.name;
+        const p = this.parent;
+        if (!p) {
+            return (this.#relative = this.name);
+        }
+        const pv = p.relative();
+        return pv + (!pv || !p.parent ? '' : this.sep) + name;
+    }
+    /**
+     * The relative path from the cwd, using / as the path separator.
+     * If it does not share an ancestor with
+     * the cwd, then this ends up being equivalent to the fullpathPosix()
+     * On posix systems, this is identical to relative().
+     */
+    relativePosix() {
+        if (this.sep === '/')
+            return this.relative();
+        if (this.isCWD)
+            return '';
+        if (this.#relativePosix !== undefined)
+            return this.#relativePosix;
+        const name = this.name;
+        const p = this.parent;
+        if (!p) {
+            return (this.#relativePosix = this.fullpathPosix());
+        }
+        const pv = p.relativePosix();
+        return pv + (!pv || !p.parent ? '' : '/') + name;
+    }
+    /**
+     * The fully resolved path string for this Path entry
+     */
+    fullpath() {
+        if (this.#fullpath !== undefined) {
+            return this.#fullpath;
+        }
+        const name = this.name;
+        const p = this.parent;
+        if (!p) {
+            return (this.#fullpath = this.name);
+        }
+        const pv = p.fullpath();
+        const fp = pv + (!p.parent ? '' : this.sep) + name;
+        return (this.#fullpath = fp);
+    }
+    /**
+     * On platforms other than windows, this is identical to fullpath.
+     *
+     * On windows, this is overridden to return the forward-slash form of the
+     * full UNC path.
+     */
+    fullpathPosix() {
+        if (this.#fullpathPosix !== undefined)
+            return this.#fullpathPosix;
+        if (this.sep === '/')
+            return (this.#fullpathPosix = this.fullpath());
+        if (!this.parent) {
+            const p = this.fullpath().replace(/\\/g, '/');
+            if (/^[a-z]:\//i.test(p)) {
+                return (this.#fullpathPosix = `//?/${p}`);
+            }
+            else {
+                return (this.#fullpathPosix = p);
+            }
+        }
+        const p = this.parent;
+        const pfpp = p.fullpathPosix();
+        const fpp = pfpp + (!pfpp || !p.parent ? '' : '/') + this.name;
+        return (this.#fullpathPosix = fpp);
+    }
+    /**
+     * Is the Path of an unknown type?
+     *
+     * Note that we might know *something* about it if there has been a previous
+     * filesystem operation, for example that it does not exist, or is not a
+     * link, or whether it has child entries.
+     */
+    isUnknown() {
+        return (this.#type & IFMT) === UNKNOWN;
+    }
+    isType(type) {
+        return this[`is${type}`]();
+    }
+    getType() {
+        return (this.isUnknown() ? 'Unknown'
+            : this.isDirectory() ? 'Directory'
+                : this.isFile() ? 'File'
+                    : this.isSymbolicLink() ? 'SymbolicLink'
+                        : this.isFIFO() ? 'FIFO'
+                            : this.isCharacterDevice() ? 'CharacterDevice'
+                                : this.isBlockDevice() ? 'BlockDevice'
+                                    : /* c8 ignore start */ this.isSocket() ? 'Socket'
+                                        : 'Unknown');
+        /* c8 ignore stop */
+    }
+    /**
+     * Is the Path a regular file?
+     */
+    isFile() {
+        return (this.#type & IFMT) === IFREG;
+    }
+    /**
+     * Is the Path a directory?
+     */
+    isDirectory() {
+        return (this.#type & IFMT) === IFDIR;
+    }
+    /**
+     * Is the path a character device?
+     */
+    isCharacterDevice() {
+        return (this.#type & IFMT) === IFCHR;
+    }
+    /**
+     * Is the path a block device?
+     */
+    isBlockDevice() {
+        return (this.#type & IFMT) === IFBLK;
+    }
+    /**
+     * Is the path a FIFO pipe?
+     */
+    isFIFO() {
+        return (this.#type & IFMT) === IFIFO;
+    }
+    /**
+     * Is the path a socket?
+     */
+    isSocket() {
+        return (this.#type & IFMT) === IFSOCK;
+    }
+    /**
+     * Is the path a symbolic link?
+     */
+    isSymbolicLink() {
+        return (this.#type & IFLNK) === IFLNK;
+    }
+    /**
+     * Return the entry if it has been subject of a successful lstat, or
+     * undefined otherwise.
+     *
+     * Does not read the filesystem, so an undefined result *could* simply
+     * mean that we haven't called lstat on it.
+     */
+    lstatCached() {
+        return this.#type & LSTAT_CALLED ? this : undefined;
+    }
+    /**
+     * Return the cached link target if the entry has been the subject of a
+     * successful readlink, or undefined otherwise.
+     *
+     * Does not read the filesystem, so an undefined result *could* just mean we
+     * don't have any cached data. Only use it if you are very sure that a
+     * readlink() has been called at some point.
+     */
+    readlinkCached() {
+        return this.#linkTarget;
+    }
+    /**
+     * Returns the cached realpath target if the entry has been the subject
+     * of a successful realpath, or undefined otherwise.
+     *
+     * Does not read the filesystem, so an undefined result *could* just mean we
+     * don't have any cached data. Only use it if you are very sure that a
+     * realpath() has been called at some point.
+     */
+    realpathCached() {
+        return this.#realpath;
+    }
+    /**
+     * Returns the cached child Path entries array if the entry has been the
+     * subject of a successful readdir(), or [] otherwise.
+     *
+     * Does not read the filesystem, so an empty array *could* just mean we
+     * don't have any cached data. Only use it if you are very sure that a
+     * readdir() has been called recently enough to still be valid.
+     */
+    readdirCached() {
+        const children = this.children();
+        return children.slice(0, children.provisional);
+    }
+    /**
+     * Return true if it's worth trying to readlink.  Ie, we don't (yet) have
+     * any indication that readlink will definitely fail.
+     *
+     * Returns false if the path is known to not be a symlink, if a previous
+     * readlink failed, or if the entry does not exist.
+     */
+    canReadlink() {
+        if (this.#linkTarget)
+            return true;
+        if (!this.parent)
+            return false;
+        // cases where it cannot possibly succeed
+        const ifmt = this.#type & IFMT;
+        return !((ifmt !== UNKNOWN && ifmt !== IFLNK) ||
+            this.#type & ENOREADLINK ||
+            this.#type & ENOENT);
+    }
+    /**
+     * Return true if readdir has previously been successfully called on this
+     * path, indicating that cachedReaddir() is likely valid.
+     */
+    calledReaddir() {
+        return !!(this.#type & READDIR_CALLED);
+    }
+    /**
+     * Returns true if the path is known to not exist. That is, a previous lstat
+     * or readdir failed to verify its existence when that would have been
+     * expected, or a parent entry was marked either enoent or enotdir.
+     */
+    isENOENT() {
+        return !!(this.#type & ENOENT);
+    }
+    /**
+     * Return true if the path is a match for the given path name.  This handles
+     * case sensitivity and unicode normalization.
+     *
+     * Note: even on case-sensitive systems, it is **not** safe to test the
+     * equality of the `.name` property to determine whether a given pathname
+     * matches, due to unicode normalization mismatches.
+     *
+     * Always use this method instead of testing the `path.name` property
+     * directly.
+     */
+    isNamed(n) {
+        return !this.nocase ?
+            this.#matchName === normalize(n)
+            : this.#matchName === normalizeNocase(n);
+    }
+    /**
+     * Return the Path object corresponding to the target of a symbolic link.
+     *
+     * If the Path is not a symbolic link, or if the readlink call fails for any
+     * reason, `undefined` is returned.
+     *
+     * Result is cached, and thus may be outdated if the filesystem is mutated.
+     */
+    async readlink() {
+        const target = this.#linkTarget;
+        if (target) {
+            return target;
+        }
+        if (!this.canReadlink()) {
+            return undefined;
+        }
+        /* c8 ignore start */
+        // already covered by the canReadlink test, here for ts grumples
+        if (!this.parent) {
+            return undefined;
+        }
+        /* c8 ignore stop */
+        try {
+            const read = await this.#fs.promises.readlink(this.fullpath());
+            const linkTarget = (await this.parent.realpath())?.resolve(read);
+            if (linkTarget) {
+                return (this.#linkTarget = linkTarget);
+            }
+        }
+        catch (er) {
+            this.#readlinkFail(er.code);
+            return undefined;
+        }
+    }
+    /**
+     * Synchronous {@link PathBase.readlink}
+     */
+    readlinkSync() {
+        const target = this.#linkTarget;
+        if (target) {
+            return target;
+        }
+        if (!this.canReadlink()) {
+            return undefined;
+        }
+        /* c8 ignore start */
+        // already covered by the canReadlink test, here for ts grumples
+        if (!this.parent) {
+            return undefined;
+        }
+        /* c8 ignore stop */
+        try {
+            const read = this.#fs.readlinkSync(this.fullpath());
+            const linkTarget = this.parent.realpathSync()?.resolve(read);
+            if (linkTarget) {
+                return (this.#linkTarget = linkTarget);
+            }
+        }
+        catch (er) {
+            this.#readlinkFail(er.code);
+            return undefined;
+        }
+    }
+    #readdirSuccess(children) {
+        // succeeded, mark readdir called bit
+        this.#type |= READDIR_CALLED;
+        // mark all remaining provisional children as ENOENT
+        for (let p = children.provisional; p < children.length; p++) {
+            const c = children[p];
+            if (c)
+                c.#markENOENT();
+        }
+    }
+    #markENOENT() {
+        // mark as UNKNOWN and ENOENT
+        if (this.#type & ENOENT)
+            return;
+        this.#type = (this.#type | ENOENT) & IFMT_UNKNOWN;
+        this.#markChildrenENOENT();
+    }
+    #markChildrenENOENT() {
+        // all children are provisional and do not exist
+        const children = this.children();
+        children.provisional = 0;
+        for (const p of children) {
+            p.#markENOENT();
+        }
+    }
+    #markENOREALPATH() {
+        this.#type |= ENOREALPATH;
+        this.#markENOTDIR();
+    }
+    // save the information when we know the entry is not a dir
+    #markENOTDIR() {
+        // entry is not a directory, so any children can't exist.
+        // this *should* be impossible, since any children created
+        // after it's been marked ENOTDIR should be marked ENOENT,
+        // so it won't even get to this point.
+        /* c8 ignore start */
+        if (this.#type & ENOTDIR)
+            return;
+        /* c8 ignore stop */
+        let t = this.#type;
+        // this could happen if we stat a dir, then delete it,
+        // then try to read it or one of its children.
+        if ((t & IFMT) === IFDIR)
+            t &= IFMT_UNKNOWN;
+        this.#type = t | ENOTDIR;
+        this.#markChildrenENOENT();
+    }
+    #readdirFail(code = '') {
+        // markENOTDIR and markENOENT also set provisional=0
+        if (code === 'ENOTDIR' || code === 'EPERM') {
+            this.#markENOTDIR();
+        }
+        else if (code === 'ENOENT') {
+            this.#markENOENT();
+        }
+        else {
+            this.children().provisional = 0;
+        }
+    }
+    #lstatFail(code = '') {
+        // Windows just raises ENOENT in this case, disable for win CI
+        /* c8 ignore start */
+        if (code === 'ENOTDIR') {
+            // already know it has a parent by this point
+            const p = this.parent;
+            p.#markENOTDIR();
+        }
+        else if (code === 'ENOENT') {
+            /* c8 ignore stop */
+            this.#markENOENT();
+        }
+    }
+    #readlinkFail(code = '') {
+        let ter = this.#type;
+        ter |= ENOREADLINK;
+        if (code === 'ENOENT')
+            ter |= ENOENT;
+        // windows gets a weird error when you try to readlink a file
+        if (code === 'EINVAL' || code === 'UNKNOWN') {
+            // exists, but not a symlink, we don't know WHAT it is, so remove
+            // all IFMT bits.
+            ter &= IFMT_UNKNOWN;
+        }
+        this.#type = ter;
+        // windows just gets ENOENT in this case.  We do cover the case,
+        // just disabled because it's impossible on Windows CI
+        /* c8 ignore start */
+        if (code === 'ENOTDIR' && this.parent) {
+            this.parent.#markENOTDIR();
+        }
+        /* c8 ignore stop */
+    }
+    #readdirAddChild(e, c) {
+        return (this.#readdirMaybePromoteChild(e, c) ||
+            this.#readdirAddNewChild(e, c));
+    }
+    #readdirAddNewChild(e, c) {
+        // alloc new entry at head, so it's never provisional
+        const type = entToType(e);
+        const child = this.newChild(e.name, type, { parent: this });
+        const ifmt = child.#type & IFMT;
+        if (ifmt !== IFDIR && ifmt !== IFLNK && ifmt !== UNKNOWN) {
+            child.#type |= ENOTDIR;
+        }
+        c.unshift(child);
+        c.provisional++;
+        return child;
+    }
+    #readdirMaybePromoteChild(e, c) {
+        for (let p = c.provisional; p < c.length; p++) {
+            const pchild = c[p];
+            const name = this.nocase ? normalizeNocase(e.name) : normalize(e.name);
+            if (name !== pchild.#matchName) {
+                continue;
+            }
+            return this.#readdirPromoteChild(e, pchild, p, c);
+        }
+    }
+    #readdirPromoteChild(e, p, index, c) {
+        const v = p.name;
+        // retain any other flags, but set ifmt from dirent
+        p.#type = (p.#type & IFMT_UNKNOWN) | entToType(e);
+        // case sensitivity fixing when we learn the true name.
+        if (v !== e.name)
+            p.name = e.name;
+        // just advance provisional index (potentially off the list),
+        // otherwise we have to splice/pop it out and re-insert at head
+        if (index !== c.provisional) {
+            if (index === c.length - 1)
+                c.pop();
+            else
+                c.splice(index, 1);
+            c.unshift(p);
+        }
+        c.provisional++;
+        return p;
+    }
+    /**
+     * Call lstat() on this Path, and update all known information that can be
+     * determined.
+     *
+     * Note that unlike `fs.lstat()`, the returned value does not contain some
+     * information, such as `mode`, `dev`, `nlink`, and `ino`.  If that
+     * information is required, you will need to call `fs.lstat` yourself.
+     *
+     * If the Path refers to a nonexistent file, or if the lstat call fails for
+     * any reason, `undefined` is returned.  Otherwise the updated Path object is
+     * returned.
+     *
+     * Results are cached, and thus may be out of date if the filesystem is
+     * mutated.
+     */
+    async lstat() {
+        if ((this.#type & ENOENT) === 0) {
+            try {
+                this.#applyStat(await this.#fs.promises.lstat(this.fullpath()));
+                return this;
+            }
+            catch (er) {
+                this.#lstatFail(er.code);
+            }
+        }
+    }
+    /**
+     * synchronous {@link PathBase.lstat}
+     */
+    lstatSync() {
+        if ((this.#type & ENOENT) === 0) {
+            try {
+                this.#applyStat(this.#fs.lstatSync(this.fullpath()));
+                return this;
+            }
+            catch (er) {
+                this.#lstatFail(er.code);
+            }
+        }
+    }
+    #applyStat(st) {
+        const { atime, atimeMs, birthtime, birthtimeMs, blksize, blocks, ctime, ctimeMs, dev, gid, ino, mode, mtime, mtimeMs, nlink, rdev, size, uid, } = st;
+        this.#atime = atime;
+        this.#atimeMs = atimeMs;
+        this.#birthtime = birthtime;
+        this.#birthtimeMs = birthtimeMs;
+        this.#blksize = blksize;
+        this.#blocks = blocks;
+        this.#ctime = ctime;
+        this.#ctimeMs = ctimeMs;
+        this.#dev = dev;
+        this.#gid = gid;
+        this.#ino = ino;
+        this.#mode = mode;
+        this.#mtime = mtime;
+        this.#mtimeMs = mtimeMs;
+        this.#nlink = nlink;
+        this.#rdev = rdev;
+        this.#size = size;
+        this.#uid = uid;
+        const ifmt = entToType(st);
+        // retain any other flags, but set the ifmt
+        this.#type = (this.#type & IFMT_UNKNOWN) | ifmt | LSTAT_CALLED;
+        if (ifmt !== UNKNOWN && ifmt !== IFDIR && ifmt !== IFLNK) {
+            this.#type |= ENOTDIR;
+        }
+    }
+    #onReaddirCB = [];
+    #readdirCBInFlight = false;
+    #callOnReaddirCB(children) {
+        this.#readdirCBInFlight = false;
+        const cbs = this.#onReaddirCB.slice();
+        this.#onReaddirCB.length = 0;
+        cbs.forEach(cb => cb(null, children));
+    }
+    /**
+     * Standard node-style callback interface to get list of directory entries.
+     *
+     * If the Path cannot or does not contain any children, then an empty array
+     * is returned.
+     *
+     * Results are cached, and thus may be out of date if the filesystem is
+     * mutated.
+     *
+     * @param cb The callback called with (er, entries).  Note that the `er`
+     * param is somewhat extraneous, as all readdir() errors are handled and
+     * simply result in an empty set of entries being returned.
+     * @param allowZalgo Boolean indicating that immediately known results should
+     * *not* be deferred with `queueMicrotask`. Defaults to `false`. Release
+     * zalgo at your peril, the dark pony lord is devious and unforgiving.
+     */
+    readdirCB(cb, allowZalgo = false) {
+        if (!this.canReaddir()) {
+            if (allowZalgo)
+                cb(null, []);
+            else
+                queueMicrotask(() => cb(null, []));
+            return;
+        }
+        const children = this.children();
+        if (this.calledReaddir()) {
+            const c = children.slice(0, children.provisional);
+            if (allowZalgo)
+                cb(null, c);
+            else
+                queueMicrotask(() => cb(null, c));
+            return;
+        }
+        // don't have to worry about zalgo at this point.
+        this.#onReaddirCB.push(cb);
+        if (this.#readdirCBInFlight) {
+            return;
+        }
+        this.#readdirCBInFlight = true;
+        // else read the directory, fill up children
+        // de-provisionalize any provisional children.
+        const fullpath = this.fullpath();
+        this.#fs.readdir(fullpath, { withFileTypes: true }, (er, entries) => {
+            if (er) {
+                this.#readdirFail(er.code);
+                children.provisional = 0;
+            }
+            else {
+                // if we didn't get an error, we always get entries.
+                //@ts-ignore
+                for (const e of entries) {
+                    this.#readdirAddChild(e, children);
+                }
+                this.#readdirSuccess(children);
+            }
+            this.#callOnReaddirCB(children.slice(0, children.provisional));
+            return;
+        });
+    }
+    #asyncReaddirInFlight;
+    /**
+     * Return an array of known child entries.
+     *
+     * If the Path cannot or does not contain any children, then an empty array
+     * is returned.
+     *
+     * Results are cached, and thus may be out of date if the filesystem is
+     * mutated.
+     */
+    async readdir() {
+        if (!this.canReaddir()) {
+            return [];
+        }
+        const children = this.children();
+        if (this.calledReaddir()) {
+            return children.slice(0, children.provisional);
+        }
+        // else read the directory, fill up children
+        // de-provisionalize any provisional children.
+        const fullpath = this.fullpath();
+        if (this.#asyncReaddirInFlight) {
+            await this.#asyncReaddirInFlight;
+        }
+        else {
+            /* c8 ignore start */
+            let resolve = () => { };
+            /* c8 ignore stop */
+            this.#asyncReaddirInFlight = new Promise(res => (resolve = res));
+            try {
+                for (const e of await this.#fs.promises.readdir(fullpath, {
+                    withFileTypes: true,
+                })) {
+                    this.#readdirAddChild(e, children);
+                }
+                this.#readdirSuccess(children);
+            }
+            catch (er) {
+                this.#readdirFail(er.code);
+                children.provisional = 0;
+            }
+            this.#asyncReaddirInFlight = undefined;
+            resolve();
+        }
+        return children.slice(0, children.provisional);
+    }
+    /**
+     * synchronous {@link PathBase.readdir}
+     */
+    readdirSync() {
+        if (!this.canReaddir()) {
+            return [];
+        }
+        const children = this.children();
+        if (this.calledReaddir()) {
+            return children.slice(0, children.provisional);
+        }
+        // else read the directory, fill up children
+        // de-provisionalize any provisional children.
+        const fullpath = this.fullpath();
+        try {
+            for (const e of this.#fs.readdirSync(fullpath, {
+                withFileTypes: true,
+            })) {
+                this.#readdirAddChild(e, children);
+            }
+            this.#readdirSuccess(children);
+        }
+        catch (er) {
+            this.#readdirFail(er.code);
+            children.provisional = 0;
+        }
+        return children.slice(0, children.provisional);
+    }
+    canReaddir() {
+        if (this.#type & ENOCHILD)
+            return false;
+        const ifmt = IFMT & this.#type;
+        // we always set ENOTDIR when setting IFMT, so should be impossible
+        /* c8 ignore start */
+        if (!(ifmt === UNKNOWN || ifmt === IFDIR || ifmt === IFLNK)) {
+            return false;
+        }
+        /* c8 ignore stop */
+        return true;
+    }
+    shouldWalk(dirs, walkFilter) {
+        return ((this.#type & IFDIR) === IFDIR &&
+            !(this.#type & ENOCHILD) &&
+            !dirs.has(this) &&
+            (!walkFilter || walkFilter(this)));
+    }
+    /**
+     * Return the Path object corresponding to path as resolved
+     * by realpath(3).
+     *
+     * If the realpath call fails for any reason, `undefined` is returned.
+     *
+     * Result is cached, and thus may be outdated if the filesystem is mutated.
+     * On success, returns a Path object.
+     */
+    async realpath() {
+        if (this.#realpath)
+            return this.#realpath;
+        if ((ENOREALPATH | ENOREADLINK | ENOENT) & this.#type)
+            return undefined;
+        try {
+            const rp = await this.#fs.promises.realpath(this.fullpath());
+            return (this.#realpath = this.resolve(rp));
+        }
+        catch (_) {
+            this.#markENOREALPATH();
+        }
+    }
+    /**
+     * Synchronous {@link realpath}
+     */
+    realpathSync() {
+        if (this.#realpath)
+            return this.#realpath;
+        if ((ENOREALPATH | ENOREADLINK | ENOENT) & this.#type)
+            return undefined;
+        try {
+            const rp = this.#fs.realpathSync(this.fullpath());
+            return (this.#realpath = this.resolve(rp));
+        }
+        catch (_) {
+            this.#markENOREALPATH();
+        }
+    }
+    /**
+     * Internal method to mark this Path object as the scurry cwd,
+     * called by {@link PathScurry#chdir}
+     *
+     * @internal
+     */
+    [setAsCwd](oldCwd) {
+        if (oldCwd === this)
+            return;
+        oldCwd.isCWD = false;
+        this.isCWD = true;
+        const changed = new Set([]);
+        let rp = [];
+        let p = this;
+        while (p && p.parent) {
+            changed.add(p);
+            p.#relative = rp.join(this.sep);
+            p.#relativePosix = rp.join('/');
+            p = p.parent;
+            rp.push('..');
+        }
+        // now un-memoize parents of old cwd
+        p = oldCwd;
+        while (p && p.parent && !changed.has(p)) {
+            p.#relative = undefined;
+            p.#relativePosix = undefined;
+            p = p.parent;
+        }
+    }
+}
+exports.PathBase = PathBase;
+/**
+ * Path class used on win32 systems
+ *
+ * Uses `'\\'` as the path separator for returned paths, either `'\\'` or `'/'`
+ * as the path separator for parsing paths.
+ */
+class PathWin32 extends PathBase {
+    /**
+     * Separator for generating path strings.
+     */
+    sep = '\\';
+    /**
+     * Separator for parsing path strings.
+     */
+    splitSep = eitherSep;
+    /**
+     * Do not create new Path objects directly.  They should always be accessed
+     * via the PathScurry class or other methods on the Path class.
+     *
+     * @internal
+     */
+    constructor(name, type = UNKNOWN, root, roots, nocase, children, opts) {
+        super(name, type, root, roots, nocase, children, opts);
+    }
+    /**
+     * @internal
+     */
+    newChild(name, type = UNKNOWN, opts = {}) {
+        return new PathWin32(name, type, this.root, this.roots, this.nocase, this.childrenCache(), opts);
+    }
+    /**
+     * @internal
+     */
+    getRootString(path) {
+        return node_path_1.win32.parse(path).root;
+    }
+    /**
+     * @internal
+     */
+    getRoot(rootPath) {
+        rootPath = uncToDrive(rootPath.toUpperCase());
+        if (rootPath === this.root.name) {
+            return this.root;
+        }
+        // ok, not that one, check if it matches another we know about
+        for (const [compare, root] of Object.entries(this.roots)) {
+            if (this.sameRoot(rootPath, compare)) {
+                return (this.roots[rootPath] = root);
+            }
+        }
+        // otherwise, have to create a new one.
+        return (this.roots[rootPath] = new PathScurryWin32(rootPath, this).root);
+    }
+    /**
+     * @internal
+     */
+    sameRoot(rootPath, compare = this.root.name) {
+        // windows can (rarely) have case-sensitive filesystem, but
+        // UNC and drive letters are always case-insensitive, and canonically
+        // represented uppercase.
+        rootPath = rootPath
+            .toUpperCase()
+            .replace(/\//g, '\\')
+            .replace(uncDriveRegexp, '$1\\');
+        return rootPath === compare;
+    }
+}
+exports.PathWin32 = PathWin32;
+/**
+ * Path class used on all posix systems.
+ *
+ * Uses `'/'` as the path separator.
+ */
+class PathPosix extends PathBase {
+    /**
+     * separator for parsing path strings
+     */
+    splitSep = '/';
+    /**
+     * separator for generating path strings
+     */
+    sep = '/';
+    /**
+     * Do not create new Path objects directly.  They should always be accessed
+     * via the PathScurry class or other methods on the Path class.
+     *
+     * @internal
+     */
+    constructor(name, type = UNKNOWN, root, roots, nocase, children, opts) {
+        super(name, type, root, roots, nocase, children, opts);
+    }
+    /**
+     * @internal
+     */
+    getRootString(path) {
+        return path.startsWith('/') ? '/' : '';
+    }
+    /**
+     * @internal
+     */
+    getRoot(_rootPath) {
+        return this.root;
+    }
+    /**
+     * @internal
+     */
+    newChild(name, type = UNKNOWN, opts = {}) {
+        return new PathPosix(name, type, this.root, this.roots, this.nocase, this.childrenCache(), opts);
+    }
+}
+exports.PathPosix = PathPosix;
+/**
+ * The base class for all PathScurry classes, providing the interface for path
+ * resolution and filesystem operations.
+ *
+ * Typically, you should *not* instantiate this class directly, but rather one
+ * of the platform-specific classes, or the exported {@link PathScurry} which
+ * defaults to the current platform.
+ */
+class PathScurryBase {
+    /**
+     * The root Path entry for the current working directory of this Scurry
+     */
+    root;
+    /**
+     * The string path for the root of this Scurry's current working directory
+     */
+    rootPath;
+    /**
+     * A collection of all roots encountered, referenced by rootPath
+     */
+    roots;
+    /**
+     * The Path entry corresponding to this PathScurry's current working directory.
+     */
+    cwd;
+    #resolveCache;
+    #resolvePosixCache;
+    #children;
+    /**
+     * Perform path comparisons case-insensitively.
+     *
+     * Defaults true on Darwin and Windows systems, false elsewhere.
+     */
+    nocase;
+    #fs;
+    /**
+     * This class should not be instantiated directly.
+     *
+     * Use PathScurryWin32, PathScurryDarwin, PathScurryPosix, or PathScurry
+     *
+     * @internal
+     */
+    constructor(cwd = process.cwd(), pathImpl, sep, { nocase, childrenCacheSize = 16 * 1024, fs = defaultFS, } = {}) {
+        this.#fs = fsFromOption(fs);
+        if (cwd instanceof URL || cwd.startsWith('file://')) {
+            cwd = (0, node_url_1.fileURLToPath)(cwd);
+        }
+        // resolve and split root, and then add to the store.
+        // this is the only time we call path.resolve()
+        const cwdPath = pathImpl.resolve(cwd);
+        this.roots = Object.create(null);
+        this.rootPath = this.parseRootPath(cwdPath);
+        this.#resolveCache = new ResolveCache();
+        this.#resolvePosixCache = new ResolveCache();
+        this.#children = new ChildrenCache(childrenCacheSize);
+        const split = cwdPath.substring(this.rootPath.length).split(sep);
+        // resolve('/') leaves '', splits to [''], we don't want that.
+        if (split.length === 1 && !split[0]) {
+            split.pop();
+        }
+        /* c8 ignore start */
+        if (nocase === undefined) {
+            throw new TypeError('must provide nocase setting to PathScurryBase ctor');
+        }
+        /* c8 ignore stop */
+        this.nocase = nocase;
+        this.root = this.newRoot(this.#fs);
+        this.roots[this.rootPath] = this.root;
+        let prev = this.root;
+        let len = split.length - 1;
+        const joinSep = pathImpl.sep;
+        let abs = this.rootPath;
+        let sawFirst = false;
+        for (const part of split) {
+            const l = len--;
+            prev = prev.child(part, {
+                relative: new Array(l).fill('..').join(joinSep),
+                relativePosix: new Array(l).fill('..').join('/'),
+                fullpath: (abs += (sawFirst ? '' : joinSep) + part),
+            });
+            sawFirst = true;
+        }
+        this.cwd = prev;
+    }
+    /**
+     * Get the depth of a provided path, string, or the cwd
+     */
+    depth(path = this.cwd) {
+        if (typeof path === 'string') {
+            path = this.cwd.resolve(path);
+        }
+        return path.depth();
+    }
+    /**
+     * Return the cache of child entries.  Exposed so subclasses can create
+     * child Path objects in a platform-specific way.
+     *
+     * @internal
+     */
+    childrenCache() {
+        return this.#children;
+    }
+    /**
+     * Resolve one or more path strings to a resolved string
+     *
+     * Same interface as require('path').resolve.
+     *
+     * Much faster than path.resolve() when called multiple times for the same
+     * path, because the resolved Path objects are cached.  Much slower
+     * otherwise.
+     */
+    resolve(...paths) {
+        // first figure out the minimum number of paths we have to test
+        // we always start at cwd, but any absolutes will bump the start
+        let r = '';
+        for (let i = paths.length - 1; i >= 0; i--) {
+            const p = paths[i];
+            if (!p || p === '.')
+                continue;
+            r = r ? `${p}/${r}` : p;
+            if (this.isAbsolute(p)) {
+                break;
+            }
+        }
+        const cached = this.#resolveCache.get(r);
+        if (cached !== undefined) {
+            return cached;
+        }
+        const result = this.cwd.resolve(r).fullpath();
+        this.#resolveCache.set(r, result);
+        return result;
+    }
+    /**
+     * Resolve one or more path strings to a resolved string, returning
+     * the posix path.  Identical to .resolve() on posix systems, but on
+     * windows will return a forward-slash separated UNC path.
+     *
+     * Same interface as require('path').resolve.
+     *
+     * Much faster than path.resolve() when called multiple times for the same
+     * path, because the resolved Path objects are cached.  Much slower
+     * otherwise.
+     */
+    resolvePosix(...paths) {
+        // first figure out the minimum number of paths we have to test
+        // we always start at cwd, but any absolutes will bump the start
+        let r = '';
+        for (let i = paths.length - 1; i >= 0; i--) {
+            const p = paths[i];
+            if (!p || p === '.')
+                continue;
+            r = r ? `${p}/${r}` : p;
+            if (this.isAbsolute(p)) {
+                break;
+            }
+        }
+        const cached = this.#resolvePosixCache.get(r);
+        if (cached !== undefined) {
+            return cached;
+        }
+        const result = this.cwd.resolve(r).fullpathPosix();
+        this.#resolvePosixCache.set(r, result);
+        return result;
+    }
+    /**
+     * find the relative path from the cwd to the supplied path string or entry
+     */
+    relative(entry = this.cwd) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        return entry.relative();
+    }
+    /**
+     * find the relative path from the cwd to the supplied path string or
+     * entry, using / as the path delimiter, even on Windows.
+     */
+    relativePosix(entry = this.cwd) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        return entry.relativePosix();
+    }
+    /**
+     * Return the basename for the provided string or Path object
+     */
+    basename(entry = this.cwd) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        return entry.name;
+    }
+    /**
+     * Return the dirname for the provided string or Path object
+     */
+    dirname(entry = this.cwd) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        return (entry.parent || entry).fullpath();
+    }
+    async readdir(entry = this.cwd, opts = {
+        withFileTypes: true,
+    }) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes } = opts;
+        if (!entry.canReaddir()) {
+            return [];
+        }
+        else {
+            const p = await entry.readdir();
+            return withFileTypes ? p : p.map(e => e.name);
+        }
+    }
+    readdirSync(entry = this.cwd, opts = {
+        withFileTypes: true,
+    }) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes = true } = opts;
+        if (!entry.canReaddir()) {
+            return [];
+        }
+        else if (withFileTypes) {
+            return entry.readdirSync();
+        }
+        else {
+            return entry.readdirSync().map(e => e.name);
+        }
+    }
+    /**
+     * Call lstat() on the string or Path object, and update all known
+     * information that can be determined.
+     *
+     * Note that unlike `fs.lstat()`, the returned value does not contain some
+     * information, such as `mode`, `dev`, `nlink`, and `ino`.  If that
+     * information is required, you will need to call `fs.lstat` yourself.
+     *
+     * If the Path refers to a nonexistent file, or if the lstat call fails for
+     * any reason, `undefined` is returned.  Otherwise the updated Path object is
+     * returned.
+     *
+     * Results are cached, and thus may be out of date if the filesystem is
+     * mutated.
+     */
+    async lstat(entry = this.cwd) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        return entry.lstat();
+    }
+    /**
+     * synchronous {@link PathScurryBase.lstat}
+     */
+    lstatSync(entry = this.cwd) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        return entry.lstatSync();
+    }
+    async readlink(entry = this.cwd, { withFileTypes } = {
+        withFileTypes: false,
+    }) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            withFileTypes = entry.withFileTypes;
+            entry = this.cwd;
+        }
+        const e = await entry.readlink();
+        return withFileTypes ? e : e?.fullpath();
+    }
+    readlinkSync(entry = this.cwd, { withFileTypes } = {
+        withFileTypes: false,
+    }) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            withFileTypes = entry.withFileTypes;
+            entry = this.cwd;
+        }
+        const e = entry.readlinkSync();
+        return withFileTypes ? e : e?.fullpath();
+    }
+    async realpath(entry = this.cwd, { withFileTypes } = {
+        withFileTypes: false,
+    }) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            withFileTypes = entry.withFileTypes;
+            entry = this.cwd;
+        }
+        const e = await entry.realpath();
+        return withFileTypes ? e : e?.fullpath();
+    }
+    realpathSync(entry = this.cwd, { withFileTypes } = {
+        withFileTypes: false,
+    }) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            withFileTypes = entry.withFileTypes;
+            entry = this.cwd;
+        }
+        const e = entry.realpathSync();
+        return withFileTypes ? e : e?.fullpath();
+    }
+    async walk(entry = this.cwd, opts = {}) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
+        const results = [];
+        if (!filter || filter(entry)) {
+            results.push(withFileTypes ? entry : entry.fullpath());
+        }
+        const dirs = new Set();
+        const walk = (dir, cb) => {
+            dirs.add(dir);
+            dir.readdirCB((er, entries) => {
+                /* c8 ignore start */
+                if (er) {
+                    return cb(er);
+                }
+                /* c8 ignore stop */
+                let len = entries.length;
+                if (!len)
+                    return cb();
+                const next = () => {
+                    if (--len === 0) {
+                        cb();
+                    }
+                };
+                for (const e of entries) {
+                    if (!filter || filter(e)) {
+                        results.push(withFileTypes ? e : e.fullpath());
+                    }
+                    if (follow && e.isSymbolicLink()) {
+                        e.realpath()
+                            .then(r => (r?.isUnknown() ? r.lstat() : r))
+                            .then(r => r?.shouldWalk(dirs, walkFilter) ? walk(r, next) : next());
+                    }
+                    else {
+                        if (e.shouldWalk(dirs, walkFilter)) {
+                            walk(e, next);
+                        }
+                        else {
+                            next();
+                        }
+                    }
+                }
+            }, true); // zalgooooooo
+        };
+        const start = entry;
+        return new Promise((res, rej) => {
+            walk(start, er => {
+                /* c8 ignore start */
+                if (er)
+                    return rej(er);
+                /* c8 ignore stop */
+                res(results);
+            });
+        });
+    }
+    walkSync(entry = this.cwd, opts = {}) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
+        const results = [];
+        if (!filter || filter(entry)) {
+            results.push(withFileTypes ? entry : entry.fullpath());
+        }
+        const dirs = new Set([entry]);
+        for (const dir of dirs) {
+            const entries = dir.readdirSync();
+            for (const e of entries) {
+                if (!filter || filter(e)) {
+                    results.push(withFileTypes ? e : e.fullpath());
+                }
+                let r = e;
+                if (e.isSymbolicLink()) {
+                    if (!(follow && (r = e.realpathSync())))
+                        continue;
+                    if (r.isUnknown())
+                        r.lstatSync();
+                }
+                if (r.shouldWalk(dirs, walkFilter)) {
+                    dirs.add(r);
+                }
+            }
+        }
+        return results;
+    }
+    /**
+     * Support for `for await`
+     *
+     * Alias for {@link PathScurryBase.iterate}
+     *
+     * Note: As of Node 19, this is very slow, compared to other methods of
+     * walking.  Consider using {@link PathScurryBase.stream} if memory overhead
+     * and backpressure are concerns, or {@link PathScurryBase.walk} if not.
+     */
+    [Symbol.asyncIterator]() {
+        return this.iterate();
+    }
+    iterate(entry = this.cwd, options = {}) {
+        // iterating async over the stream is significantly more performant,
+        // especially in the warm-cache scenario, because it buffers up directory
+        // entries in the background instead of waiting for a yield for each one.
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            options = entry;
+            entry = this.cwd;
+        }
+        return this.stream(entry, options)[Symbol.asyncIterator]();
+    }
+    /**
+     * Iterating over a PathScurry performs a synchronous walk.
+     *
+     * Alias for {@link PathScurryBase.iterateSync}
+     */
+    [Symbol.iterator]() {
+        return this.iterateSync();
+    }
+    *iterateSync(entry = this.cwd, opts = {}) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
+        if (!filter || filter(entry)) {
+            yield withFileTypes ? entry : entry.fullpath();
+        }
+        const dirs = new Set([entry]);
+        for (const dir of dirs) {
+            const entries = dir.readdirSync();
+            for (const e of entries) {
+                if (!filter || filter(e)) {
+                    yield withFileTypes ? e : e.fullpath();
+                }
+                let r = e;
+                if (e.isSymbolicLink()) {
+                    if (!(follow && (r = e.realpathSync())))
+                        continue;
+                    if (r.isUnknown())
+                        r.lstatSync();
+                }
+                if (r.shouldWalk(dirs, walkFilter)) {
+                    dirs.add(r);
+                }
+            }
+        }
+    }
+    stream(entry = this.cwd, opts = {}) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
+        const results = new minipass_1.Minipass({ objectMode: true });
+        if (!filter || filter(entry)) {
+            results.write(withFileTypes ? entry : entry.fullpath());
+        }
+        const dirs = new Set();
+        const queue = [entry];
+        let processing = 0;
+        const process = () => {
+            let paused = false;
+            while (!paused) {
+                const dir = queue.shift();
+                if (!dir) {
+                    if (processing === 0)
+                        results.end();
+                    return;
+                }
+                processing++;
+                dirs.add(dir);
+                const onReaddir = (er, entries, didRealpaths = false) => {
+                    /* c8 ignore start */
+                    if (er)
+                        return results.emit('error', er);
+                    /* c8 ignore stop */
+                    if (follow && !didRealpaths) {
+                        const promises = [];
+                        for (const e of entries) {
+                            if (e.isSymbolicLink()) {
+                                promises.push(e
+                                    .realpath()
+                                    .then((r) => r?.isUnknown() ? r.lstat() : r));
+                            }
+                        }
+                        if (promises.length) {
+                            Promise.all(promises).then(() => onReaddir(null, entries, true));
+                            return;
+                        }
+                    }
+                    for (const e of entries) {
+                        if (e && (!filter || filter(e))) {
+                            if (!results.write(withFileTypes ? e : e.fullpath())) {
+                                paused = true;
+                            }
+                        }
+                    }
+                    processing--;
+                    for (const e of entries) {
+                        const r = e.realpathCached() || e;
+                        if (r.shouldWalk(dirs, walkFilter)) {
+                            queue.push(r);
+                        }
+                    }
+                    if (paused && !results.flowing) {
+                        results.once('drain', process);
+                    }
+                    else if (!sync) {
+                        process();
+                    }
+                };
+                // zalgo containment
+                let sync = true;
+                dir.readdirCB(onReaddir, true);
+                sync = false;
+            }
+        };
+        process();
+        return results;
+    }
+    streamSync(entry = this.cwd, opts = {}) {
+        if (typeof entry === 'string') {
+            entry = this.cwd.resolve(entry);
+        }
+        else if (!(entry instanceof PathBase)) {
+            opts = entry;
+            entry = this.cwd;
+        }
+        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
+        const results = new minipass_1.Minipass({ objectMode: true });
+        const dirs = new Set();
+        if (!filter || filter(entry)) {
+            results.write(withFileTypes ? entry : entry.fullpath());
+        }
+        const queue = [entry];
+        let processing = 0;
+        const process = () => {
+            let paused = false;
+            while (!paused) {
+                const dir = queue.shift();
+                if (!dir) {
+                    if (processing === 0)
+                        results.end();
+                    return;
+                }
+                processing++;
+                dirs.add(dir);
+                const entries = dir.readdirSync();
+                for (const e of entries) {
+                    if (!filter || filter(e)) {
+                        if (!results.write(withFileTypes ? e : e.fullpath())) {
+                            paused = true;
+                        }
+                    }
+                }
+                processing--;
+                for (const e of entries) {
+                    let r = e;
+                    if (e.isSymbolicLink()) {
+                        if (!(follow && (r = e.realpathSync())))
+                            continue;
+                        if (r.isUnknown())
+                            r.lstatSync();
+                    }
+                    if (r.shouldWalk(dirs, walkFilter)) {
+                        queue.push(r);
+                    }
+                }
+            }
+            if (paused && !results.flowing)
+                results.once('drain', process);
+        };
+        process();
+        return results;
+    }
+    chdir(path = this.cwd) {
+        const oldCwd = this.cwd;
+        this.cwd = typeof path === 'string' ? this.cwd.resolve(path) : path;
+        this.cwd[setAsCwd](oldCwd);
+    }
+}
+exports.PathScurryBase = PathScurryBase;
+/**
+ * Windows implementation of {@link PathScurryBase}
+ *
+ * Defaults to case insensitve, uses `'\\'` to generate path strings.  Uses
+ * {@link PathWin32} for Path objects.
+ */
+class PathScurryWin32 extends PathScurryBase {
+    /**
+     * separator for generating path strings
+     */
+    sep = '\\';
+    constructor(cwd = process.cwd(), opts = {}) {
+        const { nocase = true } = opts;
+        super(cwd, node_path_1.win32, '\\', { ...opts, nocase });
+        this.nocase = nocase;
+        for (let p = this.cwd; p; p = p.parent) {
+            p.nocase = this.nocase;
+        }
+    }
+    /**
+     * @internal
+     */
+    parseRootPath(dir) {
+        // if the path starts with a single separator, it's not a UNC, and we'll
+        // just get separator as the root, and driveFromUNC will return \
+        // In that case, mount \ on the root from the cwd.
+        return node_path_1.win32.parse(dir).root.toUpperCase();
+    }
+    /**
+     * @internal
+     */
+    newRoot(fs) {
+        return new PathWin32(this.rootPath, IFDIR, undefined, this.roots, this.nocase, this.childrenCache(), { fs });
+    }
+    /**
+     * Return true if the provided path string is an absolute path
+     */
+    isAbsolute(p) {
+        return (p.startsWith('/') || p.startsWith('\\') || /^[a-z]:(\/|\\)/i.test(p));
+    }
+}
+exports.PathScurryWin32 = PathScurryWin32;
+/**
+ * {@link PathScurryBase} implementation for all posix systems other than Darwin.
+ *
+ * Defaults to case-sensitive matching, uses `'/'` to generate path strings.
+ *
+ * Uses {@link PathPosix} for Path objects.
+ */
+class PathScurryPosix extends PathScurryBase {
+    /**
+     * separator for generating path strings
+     */
+    sep = '/';
+    constructor(cwd = process.cwd(), opts = {}) {
+        const { nocase = false } = opts;
+        super(cwd, node_path_1.posix, '/', { ...opts, nocase });
+        this.nocase = nocase;
+    }
+    /**
+     * @internal
+     */
+    parseRootPath(_dir) {
+        return '/';
+    }
+    /**
+     * @internal
+     */
+    newRoot(fs) {
+        return new PathPosix(this.rootPath, IFDIR, undefined, this.roots, this.nocase, this.childrenCache(), { fs });
+    }
+    /**
+     * Return true if the provided path string is an absolute path
+     */
+    isAbsolute(p) {
+        return p.startsWith('/');
+    }
+}
+exports.PathScurryPosix = PathScurryPosix;
+/**
+ * {@link PathScurryBase} implementation for Darwin (macOS) systems.
+ *
+ * Defaults to case-insensitive matching, uses `'/'` for generating path
+ * strings.
+ *
+ * Uses {@link PathPosix} for Path objects.
+ */
+class PathScurryDarwin extends PathScurryPosix {
+    constructor(cwd = process.cwd(), opts = {}) {
+        const { nocase = true } = opts;
+        super(cwd, { ...opts, nocase });
+    }
+}
+exports.PathScurryDarwin = PathScurryDarwin;
+/**
+ * Default {@link PathBase} implementation for the current platform.
+ *
+ * {@link PathWin32} on Windows systems, {@link PathPosix} on all others.
+ */
+exports.Path = process.platform === 'win32' ? PathWin32 : PathPosix;
+/**
+ * Default {@link PathScurryBase} implementation for the current platform.
+ *
+ * {@link PathScurryWin32} on Windows systems, {@link PathScurryDarwin} on
+ * Darwin (macOS) systems, {@link PathScurryPosix} on all others.
+ */
+exports.PathScurry = process.platform === 'win32' ? PathScurryWin32
+    : process.platform === 'darwin' ? PathScurryDarwin
+        : PathScurryPosix;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 3852:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -64743,2031 +67988,6 @@ class Minipass extends events_1.EventEmitter {
     }
 }
 exports.Minipass = Minipass;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-
-/***/ 9569:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PathScurry = exports.Path = exports.PathScurryDarwin = exports.PathScurryPosix = exports.PathScurryWin32 = exports.PathScurryBase = exports.PathPosix = exports.PathWin32 = exports.PathBase = exports.ChildrenCache = exports.ResolveCache = void 0;
-const lru_cache_1 = __nccwpck_require__(3866);
-const path_1 = __nccwpck_require__(1017);
-const url_1 = __nccwpck_require__(7310);
-const actualFS = __importStar(__nccwpck_require__(7147));
-const fs_1 = __nccwpck_require__(7147);
-const realpathSync = fs_1.realpathSync.native;
-// TODO: test perf of fs/promises realpath vs realpathCB,
-// since the promises one uses realpath.native
-const promises_1 = __nccwpck_require__(3292);
-const minipass_1 = __nccwpck_require__(4968);
-const defaultFS = {
-    lstatSync: fs_1.lstatSync,
-    readdir: fs_1.readdir,
-    readdirSync: fs_1.readdirSync,
-    readlinkSync: fs_1.readlinkSync,
-    realpathSync,
-    promises: {
-        lstat: promises_1.lstat,
-        readdir: promises_1.readdir,
-        readlink: promises_1.readlink,
-        realpath: promises_1.realpath,
-    },
-};
-// if they just gave us require('fs') then use our default
-const fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === actualFS
-    ? defaultFS
-    : {
-        ...defaultFS,
-        ...fsOption,
-        promises: {
-            ...defaultFS.promises,
-            ...(fsOption.promises || {}),
-        },
-    };
-// turn something like //?/c:/ into c:\
-const uncDriveRegexp = /^\\\\\?\\([a-z]:)\\?$/i;
-const uncToDrive = (rootPath) => rootPath.replace(/\//g, '\\').replace(uncDriveRegexp, '$1\\');
-// windows paths are separated by either / or \
-const eitherSep = /[\\\/]/;
-const UNKNOWN = 0; // may not even exist, for all we know
-const IFIFO = 0b0001;
-const IFCHR = 0b0010;
-const IFDIR = 0b0100;
-const IFBLK = 0b0110;
-const IFREG = 0b1000;
-const IFLNK = 0b1010;
-const IFSOCK = 0b1100;
-const IFMT = 0b1111;
-// mask to unset low 4 bits
-const IFMT_UNKNOWN = ~IFMT;
-// set after successfully calling readdir() and getting entries.
-const READDIR_CALLED = 16;
-// set after a successful lstat()
-const LSTAT_CALLED = 32;
-// set if an entry (or one of its parents) is definitely not a dir
-const ENOTDIR = 64;
-// set if an entry (or one of its parents) does not exist
-// (can also be set on lstat errors like EACCES or ENAMETOOLONG)
-const ENOENT = 128;
-// cannot have child entries -- also verify &IFMT is either IFDIR or IFLNK
-// set if we fail to readlink
-const ENOREADLINK = 256;
-// set if we know realpath() will fail
-const ENOREALPATH = 512;
-const ENOCHILD = ENOTDIR | ENOENT | ENOREALPATH;
-const TYPEMASK = 1023;
-const entToType = (s) => s.isFile()
-    ? IFREG
-    : s.isDirectory()
-        ? IFDIR
-        : s.isSymbolicLink()
-            ? IFLNK
-            : s.isCharacterDevice()
-                ? IFCHR
-                : s.isBlockDevice()
-                    ? IFBLK
-                    : s.isSocket()
-                        ? IFSOCK
-                        : s.isFIFO()
-                            ? IFIFO
-                            : UNKNOWN;
-// normalize unicode path names
-const normalizeCache = new Map();
-const normalize = (s) => {
-    const c = normalizeCache.get(s);
-    if (c)
-        return c;
-    const n = s.normalize('NFKD');
-    normalizeCache.set(s, n);
-    return n;
-};
-const normalizeNocaseCache = new Map();
-const normalizeNocase = (s) => {
-    const c = normalizeNocaseCache.get(s);
-    if (c)
-        return c;
-    const n = normalize(s.toLowerCase());
-    normalizeNocaseCache.set(s, n);
-    return n;
-};
-/**
- * An LRUCache for storing resolved path strings or Path objects.
- * @internal
- */
-class ResolveCache extends lru_cache_1.LRUCache {
-    constructor() {
-        super({ max: 256 });
-    }
-}
-exports.ResolveCache = ResolveCache;
-// In order to prevent blowing out the js heap by allocating hundreds of
-// thousands of Path entries when walking extremely large trees, the "children"
-// in this tree are represented by storing an array of Path entries in an
-// LRUCache, indexed by the parent.  At any time, Path.children() may return an
-// empty array, indicating that it doesn't know about any of its children, and
-// thus has to rebuild that cache.  This is fine, it just means that we don't
-// benefit as much from having the cached entries, but huge directory walks
-// don't blow out the stack, and smaller ones are still as fast as possible.
-//
-//It does impose some complexity when building up the readdir data, because we
-//need to pass a reference to the children array that we started with.
-/**
- * an LRUCache for storing child entries.
- * @internal
- */
-class ChildrenCache extends lru_cache_1.LRUCache {
-    constructor(maxSize = 16 * 1024) {
-        super({
-            maxSize,
-            // parent + children
-            sizeCalculation: a => a.length + 1,
-        });
-    }
-}
-exports.ChildrenCache = ChildrenCache;
-const setAsCwd = Symbol('PathScurry setAsCwd');
-/**
- * Path objects are sort of like a super-powered
- * {@link https://nodejs.org/docs/latest/api/fs.html#class-fsdirent fs.Dirent}
- *
- * Each one represents a single filesystem entry on disk, which may or may not
- * exist. It includes methods for reading various types of information via
- * lstat, readlink, and readdir, and caches all information to the greatest
- * degree possible.
- *
- * Note that fs operations that would normally throw will instead return an
- * "empty" value. This is in order to prevent excessive overhead from error
- * stack traces.
- */
-class PathBase {
-    /**
-     * the basename of this path
-     *
-     * **Important**: *always* test the path name against any test string
-     * usingthe {@link isNamed} method, and not by directly comparing this
-     * string. Otherwise, unicode path strings that the system sees as identical
-     * will not be properly treated as the same path, leading to incorrect
-     * behavior and possible security issues.
-     */
-    name;
-    /**
-     * the Path entry corresponding to the path root.
-     *
-     * @internal
-     */
-    root;
-    /**
-     * All roots found within the current PathScurry family
-     *
-     * @internal
-     */
-    roots;
-    /**
-     * a reference to the parent path, or undefined in the case of root entries
-     *
-     * @internal
-     */
-    parent;
-    /**
-     * boolean indicating whether paths are compared case-insensitively
-     * @internal
-     */
-    nocase;
-    // potential default fs override
-    #fs;
-    // Stats fields
-    #dev;
-    get dev() {
-        return this.#dev;
-    }
-    #mode;
-    get mode() {
-        return this.#mode;
-    }
-    #nlink;
-    get nlink() {
-        return this.#nlink;
-    }
-    #uid;
-    get uid() {
-        return this.#uid;
-    }
-    #gid;
-    get gid() {
-        return this.#gid;
-    }
-    #rdev;
-    get rdev() {
-        return this.#rdev;
-    }
-    #blksize;
-    get blksize() {
-        return this.#blksize;
-    }
-    #ino;
-    get ino() {
-        return this.#ino;
-    }
-    #size;
-    get size() {
-        return this.#size;
-    }
-    #blocks;
-    get blocks() {
-        return this.#blocks;
-    }
-    #atimeMs;
-    get atimeMs() {
-        return this.#atimeMs;
-    }
-    #mtimeMs;
-    get mtimeMs() {
-        return this.#mtimeMs;
-    }
-    #ctimeMs;
-    get ctimeMs() {
-        return this.#ctimeMs;
-    }
-    #birthtimeMs;
-    get birthtimeMs() {
-        return this.#birthtimeMs;
-    }
-    #atime;
-    get atime() {
-        return this.#atime;
-    }
-    #mtime;
-    get mtime() {
-        return this.#mtime;
-    }
-    #ctime;
-    get ctime() {
-        return this.#ctime;
-    }
-    #birthtime;
-    get birthtime() {
-        return this.#birthtime;
-    }
-    #matchName;
-    #depth;
-    #fullpath;
-    #fullpathPosix;
-    #relative;
-    #relativePosix;
-    #type;
-    #children;
-    #linkTarget;
-    #realpath;
-    /**
-     * This property is for compatibility with the Dirent class as of
-     * Node v20, where Dirent['path'] refers to the path of the directory
-     * that was passed to readdir.  So, somewhat counterintuitively, this
-     * property refers to the *parent* path, not the path object itself.
-     * For root entries, it's the path to the entry itself.
-     */
-    get path() {
-        return (this.parent || this).fullpath();
-    }
-    /**
-     * Do not create new Path objects directly.  They should always be accessed
-     * via the PathScurry class or other methods on the Path class.
-     *
-     * @internal
-     */
-    constructor(name, type = UNKNOWN, root, roots, nocase, children, opts) {
-        this.name = name;
-        this.#matchName = nocase ? normalizeNocase(name) : normalize(name);
-        this.#type = type & TYPEMASK;
-        this.nocase = nocase;
-        this.roots = roots;
-        this.root = root || this;
-        this.#children = children;
-        this.#fullpath = opts.fullpath;
-        this.#relative = opts.relative;
-        this.#relativePosix = opts.relativePosix;
-        this.parent = opts.parent;
-        if (this.parent) {
-            this.#fs = this.parent.#fs;
-        }
-        else {
-            this.#fs = fsFromOption(opts.fs);
-        }
-    }
-    /**
-     * Returns the depth of the Path object from its root.
-     *
-     * For example, a path at `/foo/bar` would have a depth of 2.
-     */
-    depth() {
-        if (this.#depth !== undefined)
-            return this.#depth;
-        if (!this.parent)
-            return (this.#depth = 0);
-        return (this.#depth = this.parent.depth() + 1);
-    }
-    /**
-     * @internal
-     */
-    childrenCache() {
-        return this.#children;
-    }
-    /**
-     * Get the Path object referenced by the string path, resolved from this Path
-     */
-    resolve(path) {
-        if (!path) {
-            return this;
-        }
-        const rootPath = this.getRootString(path);
-        const dir = path.substring(rootPath.length);
-        const dirParts = dir.split(this.splitSep);
-        const result = rootPath
-            ? this.getRoot(rootPath).#resolveParts(dirParts)
-            : this.#resolveParts(dirParts);
-        return result;
-    }
-    #resolveParts(dirParts) {
-        let p = this;
-        for (const part of dirParts) {
-            p = p.child(part);
-        }
-        return p;
-    }
-    /**
-     * Returns the cached children Path objects, if still available.  If they
-     * have fallen out of the cache, then returns an empty array, and resets the
-     * READDIR_CALLED bit, so that future calls to readdir() will require an fs
-     * lookup.
-     *
-     * @internal
-     */
-    children() {
-        const cached = this.#children.get(this);
-        if (cached) {
-            return cached;
-        }
-        const children = Object.assign([], { provisional: 0 });
-        this.#children.set(this, children);
-        this.#type &= ~READDIR_CALLED;
-        return children;
-    }
-    /**
-     * Resolves a path portion and returns or creates the child Path.
-     *
-     * Returns `this` if pathPart is `''` or `'.'`, or `parent` if pathPart is
-     * `'..'`.
-     *
-     * This should not be called directly.  If `pathPart` contains any path
-     * separators, it will lead to unsafe undefined behavior.
-     *
-     * Use `Path.resolve()` instead.
-     *
-     * @internal
-     */
-    child(pathPart, opts) {
-        if (pathPart === '' || pathPart === '.') {
-            return this;
-        }
-        if (pathPart === '..') {
-            return this.parent || this;
-        }
-        // find the child
-        const children = this.children();
-        const name = this.nocase
-            ? normalizeNocase(pathPart)
-            : normalize(pathPart);
-        for (const p of children) {
-            if (p.#matchName === name) {
-                return p;
-            }
-        }
-        // didn't find it, create provisional child, since it might not
-        // actually exist.  If we know the parent isn't a dir, then
-        // in fact it CAN'T exist.
-        const s = this.parent ? this.sep : '';
-        const fullpath = this.#fullpath
-            ? this.#fullpath + s + pathPart
-            : undefined;
-        const pchild = this.newChild(pathPart, UNKNOWN, {
-            ...opts,
-            parent: this,
-            fullpath,
-        });
-        if (!this.canReaddir()) {
-            pchild.#type |= ENOENT;
-        }
-        // don't have to update provisional, because if we have real children,
-        // then provisional is set to children.length, otherwise a lower number
-        children.push(pchild);
-        return pchild;
-    }
-    /**
-     * The relative path from the cwd. If it does not share an ancestor with
-     * the cwd, then this ends up being equivalent to the fullpath()
-     */
-    relative() {
-        if (this.#relative !== undefined) {
-            return this.#relative;
-        }
-        const name = this.name;
-        const p = this.parent;
-        if (!p) {
-            return (this.#relative = this.name);
-        }
-        const pv = p.relative();
-        return pv + (!pv || !p.parent ? '' : this.sep) + name;
-    }
-    /**
-     * The relative path from the cwd, using / as the path separator.
-     * If it does not share an ancestor with
-     * the cwd, then this ends up being equivalent to the fullpathPosix()
-     * On posix systems, this is identical to relative().
-     */
-    relativePosix() {
-        if (this.sep === '/')
-            return this.relative();
-        if (this.#relativePosix !== undefined)
-            return this.#relativePosix;
-        const name = this.name;
-        const p = this.parent;
-        if (!p) {
-            return (this.#relativePosix = this.fullpathPosix());
-        }
-        const pv = p.relativePosix();
-        return pv + (!pv || !p.parent ? '' : '/') + name;
-    }
-    /**
-     * The fully resolved path string for this Path entry
-     */
-    fullpath() {
-        if (this.#fullpath !== undefined) {
-            return this.#fullpath;
-        }
-        const name = this.name;
-        const p = this.parent;
-        if (!p) {
-            return (this.#fullpath = this.name);
-        }
-        const pv = p.fullpath();
-        const fp = pv + (!p.parent ? '' : this.sep) + name;
-        return (this.#fullpath = fp);
-    }
-    /**
-     * On platforms other than windows, this is identical to fullpath.
-     *
-     * On windows, this is overridden to return the forward-slash form of the
-     * full UNC path.
-     */
-    fullpathPosix() {
-        if (this.#fullpathPosix !== undefined)
-            return this.#fullpathPosix;
-        if (this.sep === '/')
-            return (this.#fullpathPosix = this.fullpath());
-        if (!this.parent) {
-            const p = this.fullpath().replace(/\\/g, '/');
-            if (/^[a-z]:\//i.test(p)) {
-                return (this.#fullpathPosix = `//?/${p}`);
-            }
-            else {
-                return (this.#fullpathPosix = p);
-            }
-        }
-        const p = this.parent;
-        const pfpp = p.fullpathPosix();
-        const fpp = pfpp + (!pfpp || !p.parent ? '' : '/') + this.name;
-        return (this.#fullpathPosix = fpp);
-    }
-    /**
-     * Is the Path of an unknown type?
-     *
-     * Note that we might know *something* about it if there has been a previous
-     * filesystem operation, for example that it does not exist, or is not a
-     * link, or whether it has child entries.
-     */
-    isUnknown() {
-        return (this.#type & IFMT) === UNKNOWN;
-    }
-    isType(type) {
-        return this[`is${type}`]();
-    }
-    getType() {
-        return this.isUnknown()
-            ? 'Unknown'
-            : this.isDirectory()
-                ? 'Directory'
-                : this.isFile()
-                    ? 'File'
-                    : this.isSymbolicLink()
-                        ? 'SymbolicLink'
-                        : this.isFIFO()
-                            ? 'FIFO'
-                            : this.isCharacterDevice()
-                                ? 'CharacterDevice'
-                                : this.isBlockDevice()
-                                    ? 'BlockDevice'
-                                    : /* c8 ignore start */ this.isSocket()
-                                        ? 'Socket'
-                                        : 'Unknown';
-        /* c8 ignore stop */
-    }
-    /**
-     * Is the Path a regular file?
-     */
-    isFile() {
-        return (this.#type & IFMT) === IFREG;
-    }
-    /**
-     * Is the Path a directory?
-     */
-    isDirectory() {
-        return (this.#type & IFMT) === IFDIR;
-    }
-    /**
-     * Is the path a character device?
-     */
-    isCharacterDevice() {
-        return (this.#type & IFMT) === IFCHR;
-    }
-    /**
-     * Is the path a block device?
-     */
-    isBlockDevice() {
-        return (this.#type & IFMT) === IFBLK;
-    }
-    /**
-     * Is the path a FIFO pipe?
-     */
-    isFIFO() {
-        return (this.#type & IFMT) === IFIFO;
-    }
-    /**
-     * Is the path a socket?
-     */
-    isSocket() {
-        return (this.#type & IFMT) === IFSOCK;
-    }
-    /**
-     * Is the path a symbolic link?
-     */
-    isSymbolicLink() {
-        return (this.#type & IFLNK) === IFLNK;
-    }
-    /**
-     * Return the entry if it has been subject of a successful lstat, or
-     * undefined otherwise.
-     *
-     * Does not read the filesystem, so an undefined result *could* simply
-     * mean that we haven't called lstat on it.
-     */
-    lstatCached() {
-        return this.#type & LSTAT_CALLED ? this : undefined;
-    }
-    /**
-     * Return the cached link target if the entry has been the subject of a
-     * successful readlink, or undefined otherwise.
-     *
-     * Does not read the filesystem, so an undefined result *could* just mean we
-     * don't have any cached data. Only use it if you are very sure that a
-     * readlink() has been called at some point.
-     */
-    readlinkCached() {
-        return this.#linkTarget;
-    }
-    /**
-     * Returns the cached realpath target if the entry has been the subject
-     * of a successful realpath, or undefined otherwise.
-     *
-     * Does not read the filesystem, so an undefined result *could* just mean we
-     * don't have any cached data. Only use it if you are very sure that a
-     * realpath() has been called at some point.
-     */
-    realpathCached() {
-        return this.#realpath;
-    }
-    /**
-     * Returns the cached child Path entries array if the entry has been the
-     * subject of a successful readdir(), or [] otherwise.
-     *
-     * Does not read the filesystem, so an empty array *could* just mean we
-     * don't have any cached data. Only use it if you are very sure that a
-     * readdir() has been called recently enough to still be valid.
-     */
-    readdirCached() {
-        const children = this.children();
-        return children.slice(0, children.provisional);
-    }
-    /**
-     * Return true if it's worth trying to readlink.  Ie, we don't (yet) have
-     * any indication that readlink will definitely fail.
-     *
-     * Returns false if the path is known to not be a symlink, if a previous
-     * readlink failed, or if the entry does not exist.
-     */
-    canReadlink() {
-        if (this.#linkTarget)
-            return true;
-        if (!this.parent)
-            return false;
-        // cases where it cannot possibly succeed
-        const ifmt = this.#type & IFMT;
-        return !((ifmt !== UNKNOWN && ifmt !== IFLNK) ||
-            this.#type & ENOREADLINK ||
-            this.#type & ENOENT);
-    }
-    /**
-     * Return true if readdir has previously been successfully called on this
-     * path, indicating that cachedReaddir() is likely valid.
-     */
-    calledReaddir() {
-        return !!(this.#type & READDIR_CALLED);
-    }
-    /**
-     * Returns true if the path is known to not exist. That is, a previous lstat
-     * or readdir failed to verify its existence when that would have been
-     * expected, or a parent entry was marked either enoent or enotdir.
-     */
-    isENOENT() {
-        return !!(this.#type & ENOENT);
-    }
-    /**
-     * Return true if the path is a match for the given path name.  This handles
-     * case sensitivity and unicode normalization.
-     *
-     * Note: even on case-sensitive systems, it is **not** safe to test the
-     * equality of the `.name` property to determine whether a given pathname
-     * matches, due to unicode normalization mismatches.
-     *
-     * Always use this method instead of testing the `path.name` property
-     * directly.
-     */
-    isNamed(n) {
-        return !this.nocase
-            ? this.#matchName === normalize(n)
-            : this.#matchName === normalizeNocase(n);
-    }
-    /**
-     * Return the Path object corresponding to the target of a symbolic link.
-     *
-     * If the Path is not a symbolic link, or if the readlink call fails for any
-     * reason, `undefined` is returned.
-     *
-     * Result is cached, and thus may be outdated if the filesystem is mutated.
-     */
-    async readlink() {
-        const target = this.#linkTarget;
-        if (target) {
-            return target;
-        }
-        if (!this.canReadlink()) {
-            return undefined;
-        }
-        /* c8 ignore start */
-        // already covered by the canReadlink test, here for ts grumples
-        if (!this.parent) {
-            return undefined;
-        }
-        /* c8 ignore stop */
-        try {
-            const read = await this.#fs.promises.readlink(this.fullpath());
-            const linkTarget = this.parent.resolve(read);
-            if (linkTarget) {
-                return (this.#linkTarget = linkTarget);
-            }
-        }
-        catch (er) {
-            this.#readlinkFail(er.code);
-            return undefined;
-        }
-    }
-    /**
-     * Synchronous {@link PathBase.readlink}
-     */
-    readlinkSync() {
-        const target = this.#linkTarget;
-        if (target) {
-            return target;
-        }
-        if (!this.canReadlink()) {
-            return undefined;
-        }
-        /* c8 ignore start */
-        // already covered by the canReadlink test, here for ts grumples
-        if (!this.parent) {
-            return undefined;
-        }
-        /* c8 ignore stop */
-        try {
-            const read = this.#fs.readlinkSync(this.fullpath());
-            const linkTarget = this.parent.resolve(read);
-            if (linkTarget) {
-                return (this.#linkTarget = linkTarget);
-            }
-        }
-        catch (er) {
-            this.#readlinkFail(er.code);
-            return undefined;
-        }
-    }
-    #readdirSuccess(children) {
-        // succeeded, mark readdir called bit
-        this.#type |= READDIR_CALLED;
-        // mark all remaining provisional children as ENOENT
-        for (let p = children.provisional; p < children.length; p++) {
-            children[p].#markENOENT();
-        }
-    }
-    #markENOENT() {
-        // mark as UNKNOWN and ENOENT
-        if (this.#type & ENOENT)
-            return;
-        this.#type = (this.#type | ENOENT) & IFMT_UNKNOWN;
-        this.#markChildrenENOENT();
-    }
-    #markChildrenENOENT() {
-        // all children are provisional and do not exist
-        const children = this.children();
-        children.provisional = 0;
-        for (const p of children) {
-            p.#markENOENT();
-        }
-    }
-    #markENOREALPATH() {
-        this.#type |= ENOREALPATH;
-        this.#markENOTDIR();
-    }
-    // save the information when we know the entry is not a dir
-    #markENOTDIR() {
-        // entry is not a directory, so any children can't exist.
-        // this *should* be impossible, since any children created
-        // after it's been marked ENOTDIR should be marked ENOENT,
-        // so it won't even get to this point.
-        /* c8 ignore start */
-        if (this.#type & ENOTDIR)
-            return;
-        /* c8 ignore stop */
-        let t = this.#type;
-        // this could happen if we stat a dir, then delete it,
-        // then try to read it or one of its children.
-        if ((t & IFMT) === IFDIR)
-            t &= IFMT_UNKNOWN;
-        this.#type = t | ENOTDIR;
-        this.#markChildrenENOENT();
-    }
-    #readdirFail(code = '') {
-        // markENOTDIR and markENOENT also set provisional=0
-        if (code === 'ENOTDIR' || code === 'EPERM') {
-            this.#markENOTDIR();
-        }
-        else if (code === 'ENOENT') {
-            this.#markENOENT();
-        }
-        else {
-            this.children().provisional = 0;
-        }
-    }
-    #lstatFail(code = '') {
-        // Windows just raises ENOENT in this case, disable for win CI
-        /* c8 ignore start */
-        if (code === 'ENOTDIR') {
-            // already know it has a parent by this point
-            const p = this.parent;
-            p.#markENOTDIR();
-        }
-        else if (code === 'ENOENT') {
-            /* c8 ignore stop */
-            this.#markENOENT();
-        }
-    }
-    #readlinkFail(code = '') {
-        let ter = this.#type;
-        ter |= ENOREADLINK;
-        if (code === 'ENOENT')
-            ter |= ENOENT;
-        // windows gets a weird error when you try to readlink a file
-        if (code === 'EINVAL' || code === 'UNKNOWN') {
-            // exists, but not a symlink, we don't know WHAT it is, so remove
-            // all IFMT bits.
-            ter &= IFMT_UNKNOWN;
-        }
-        this.#type = ter;
-        // windows just gets ENOENT in this case.  We do cover the case,
-        // just disabled because it's impossible on Windows CI
-        /* c8 ignore start */
-        if (code === 'ENOTDIR' && this.parent) {
-            this.parent.#markENOTDIR();
-        }
-        /* c8 ignore stop */
-    }
-    #readdirAddChild(e, c) {
-        return (this.#readdirMaybePromoteChild(e, c) ||
-            this.#readdirAddNewChild(e, c));
-    }
-    #readdirAddNewChild(e, c) {
-        // alloc new entry at head, so it's never provisional
-        const type = entToType(e);
-        const child = this.newChild(e.name, type, { parent: this });
-        const ifmt = child.#type & IFMT;
-        if (ifmt !== IFDIR && ifmt !== IFLNK && ifmt !== UNKNOWN) {
-            child.#type |= ENOTDIR;
-        }
-        c.unshift(child);
-        c.provisional++;
-        return child;
-    }
-    #readdirMaybePromoteChild(e, c) {
-        for (let p = c.provisional; p < c.length; p++) {
-            const pchild = c[p];
-            const name = this.nocase
-                ? normalizeNocase(e.name)
-                : normalize(e.name);
-            if (name !== pchild.#matchName) {
-                continue;
-            }
-            return this.#readdirPromoteChild(e, pchild, p, c);
-        }
-    }
-    #readdirPromoteChild(e, p, index, c) {
-        const v = p.name;
-        // retain any other flags, but set ifmt from dirent
-        p.#type = (p.#type & IFMT_UNKNOWN) | entToType(e);
-        // case sensitivity fixing when we learn the true name.
-        if (v !== e.name)
-            p.name = e.name;
-        // just advance provisional index (potentially off the list),
-        // otherwise we have to splice/pop it out and re-insert at head
-        if (index !== c.provisional) {
-            if (index === c.length - 1)
-                c.pop();
-            else
-                c.splice(index, 1);
-            c.unshift(p);
-        }
-        c.provisional++;
-        return p;
-    }
-    /**
-     * Call lstat() on this Path, and update all known information that can be
-     * determined.
-     *
-     * Note that unlike `fs.lstat()`, the returned value does not contain some
-     * information, such as `mode`, `dev`, `nlink`, and `ino`.  If that
-     * information is required, you will need to call `fs.lstat` yourself.
-     *
-     * If the Path refers to a nonexistent file, or if the lstat call fails for
-     * any reason, `undefined` is returned.  Otherwise the updated Path object is
-     * returned.
-     *
-     * Results are cached, and thus may be out of date if the filesystem is
-     * mutated.
-     */
-    async lstat() {
-        if ((this.#type & ENOENT) === 0) {
-            try {
-                this.#applyStat(await this.#fs.promises.lstat(this.fullpath()));
-                return this;
-            }
-            catch (er) {
-                this.#lstatFail(er.code);
-            }
-        }
-    }
-    /**
-     * synchronous {@link PathBase.lstat}
-     */
-    lstatSync() {
-        if ((this.#type & ENOENT) === 0) {
-            try {
-                this.#applyStat(this.#fs.lstatSync(this.fullpath()));
-                return this;
-            }
-            catch (er) {
-                this.#lstatFail(er.code);
-            }
-        }
-    }
-    #applyStat(st) {
-        const { atime, atimeMs, birthtime, birthtimeMs, blksize, blocks, ctime, ctimeMs, dev, gid, ino, mode, mtime, mtimeMs, nlink, rdev, size, uid, } = st;
-        this.#atime = atime;
-        this.#atimeMs = atimeMs;
-        this.#birthtime = birthtime;
-        this.#birthtimeMs = birthtimeMs;
-        this.#blksize = blksize;
-        this.#blocks = blocks;
-        this.#ctime = ctime;
-        this.#ctimeMs = ctimeMs;
-        this.#dev = dev;
-        this.#gid = gid;
-        this.#ino = ino;
-        this.#mode = mode;
-        this.#mtime = mtime;
-        this.#mtimeMs = mtimeMs;
-        this.#nlink = nlink;
-        this.#rdev = rdev;
-        this.#size = size;
-        this.#uid = uid;
-        const ifmt = entToType(st);
-        // retain any other flags, but set the ifmt
-        this.#type = (this.#type & IFMT_UNKNOWN) | ifmt | LSTAT_CALLED;
-        if (ifmt !== UNKNOWN && ifmt !== IFDIR && ifmt !== IFLNK) {
-            this.#type |= ENOTDIR;
-        }
-    }
-    #onReaddirCB = [];
-    #readdirCBInFlight = false;
-    #callOnReaddirCB(children) {
-        this.#readdirCBInFlight = false;
-        const cbs = this.#onReaddirCB.slice();
-        this.#onReaddirCB.length = 0;
-        cbs.forEach(cb => cb(null, children));
-    }
-    /**
-     * Standard node-style callback interface to get list of directory entries.
-     *
-     * If the Path cannot or does not contain any children, then an empty array
-     * is returned.
-     *
-     * Results are cached, and thus may be out of date if the filesystem is
-     * mutated.
-     *
-     * @param cb The callback called with (er, entries).  Note that the `er`
-     * param is somewhat extraneous, as all readdir() errors are handled and
-     * simply result in an empty set of entries being returned.
-     * @param allowZalgo Boolean indicating that immediately known results should
-     * *not* be deferred with `queueMicrotask`. Defaults to `false`. Release
-     * zalgo at your peril, the dark pony lord is devious and unforgiving.
-     */
-    readdirCB(cb, allowZalgo = false) {
-        if (!this.canReaddir()) {
-            if (allowZalgo)
-                cb(null, []);
-            else
-                queueMicrotask(() => cb(null, []));
-            return;
-        }
-        const children = this.children();
-        if (this.calledReaddir()) {
-            const c = children.slice(0, children.provisional);
-            if (allowZalgo)
-                cb(null, c);
-            else
-                queueMicrotask(() => cb(null, c));
-            return;
-        }
-        // don't have to worry about zalgo at this point.
-        this.#onReaddirCB.push(cb);
-        if (this.#readdirCBInFlight) {
-            return;
-        }
-        this.#readdirCBInFlight = true;
-        // else read the directory, fill up children
-        // de-provisionalize any provisional children.
-        const fullpath = this.fullpath();
-        this.#fs.readdir(fullpath, { withFileTypes: true }, (er, entries) => {
-            if (er) {
-                this.#readdirFail(er.code);
-                children.provisional = 0;
-            }
-            else {
-                // if we didn't get an error, we always get entries.
-                //@ts-ignore
-                for (const e of entries) {
-                    this.#readdirAddChild(e, children);
-                }
-                this.#readdirSuccess(children);
-            }
-            this.#callOnReaddirCB(children.slice(0, children.provisional));
-            return;
-        });
-    }
-    #asyncReaddirInFlight;
-    /**
-     * Return an array of known child entries.
-     *
-     * If the Path cannot or does not contain any children, then an empty array
-     * is returned.
-     *
-     * Results are cached, and thus may be out of date if the filesystem is
-     * mutated.
-     */
-    async readdir() {
-        if (!this.canReaddir()) {
-            return [];
-        }
-        const children = this.children();
-        if (this.calledReaddir()) {
-            return children.slice(0, children.provisional);
-        }
-        // else read the directory, fill up children
-        // de-provisionalize any provisional children.
-        const fullpath = this.fullpath();
-        if (this.#asyncReaddirInFlight) {
-            await this.#asyncReaddirInFlight;
-        }
-        else {
-            /* c8 ignore start */
-            let resolve = () => { };
-            /* c8 ignore stop */
-            this.#asyncReaddirInFlight = new Promise(res => (resolve = res));
-            try {
-                for (const e of await this.#fs.promises.readdir(fullpath, {
-                    withFileTypes: true,
-                })) {
-                    this.#readdirAddChild(e, children);
-                }
-                this.#readdirSuccess(children);
-            }
-            catch (er) {
-                this.#readdirFail(er.code);
-                children.provisional = 0;
-            }
-            this.#asyncReaddirInFlight = undefined;
-            resolve();
-        }
-        return children.slice(0, children.provisional);
-    }
-    /**
-     * synchronous {@link PathBase.readdir}
-     */
-    readdirSync() {
-        if (!this.canReaddir()) {
-            return [];
-        }
-        const children = this.children();
-        if (this.calledReaddir()) {
-            return children.slice(0, children.provisional);
-        }
-        // else read the directory, fill up children
-        // de-provisionalize any provisional children.
-        const fullpath = this.fullpath();
-        try {
-            for (const e of this.#fs.readdirSync(fullpath, {
-                withFileTypes: true,
-            })) {
-                this.#readdirAddChild(e, children);
-            }
-            this.#readdirSuccess(children);
-        }
-        catch (er) {
-            this.#readdirFail(er.code);
-            children.provisional = 0;
-        }
-        return children.slice(0, children.provisional);
-    }
-    canReaddir() {
-        if (this.#type & ENOCHILD)
-            return false;
-        const ifmt = IFMT & this.#type;
-        // we always set ENOTDIR when setting IFMT, so should be impossible
-        /* c8 ignore start */
-        if (!(ifmt === UNKNOWN || ifmt === IFDIR || ifmt === IFLNK)) {
-            return false;
-        }
-        /* c8 ignore stop */
-        return true;
-    }
-    shouldWalk(dirs, walkFilter) {
-        return ((this.#type & IFDIR) === IFDIR &&
-            !(this.#type & ENOCHILD) &&
-            !dirs.has(this) &&
-            (!walkFilter || walkFilter(this)));
-    }
-    /**
-     * Return the Path object corresponding to path as resolved
-     * by realpath(3).
-     *
-     * If the realpath call fails for any reason, `undefined` is returned.
-     *
-     * Result is cached, and thus may be outdated if the filesystem is mutated.
-     * On success, returns a Path object.
-     */
-    async realpath() {
-        if (this.#realpath)
-            return this.#realpath;
-        if ((ENOREALPATH | ENOREADLINK | ENOENT) & this.#type)
-            return undefined;
-        try {
-            const rp = await this.#fs.promises.realpath(this.fullpath());
-            return (this.#realpath = this.resolve(rp));
-        }
-        catch (_) {
-            this.#markENOREALPATH();
-        }
-    }
-    /**
-     * Synchronous {@link realpath}
-     */
-    realpathSync() {
-        if (this.#realpath)
-            return this.#realpath;
-        if ((ENOREALPATH | ENOREADLINK | ENOENT) & this.#type)
-            return undefined;
-        try {
-            const rp = this.#fs.realpathSync(this.fullpath());
-            return (this.#realpath = this.resolve(rp));
-        }
-        catch (_) {
-            this.#markENOREALPATH();
-        }
-    }
-    /**
-     * Internal method to mark this Path object as the scurry cwd,
-     * called by {@link PathScurry#chdir}
-     *
-     * @internal
-     */
-    [setAsCwd](oldCwd) {
-        if (oldCwd === this)
-            return;
-        const changed = new Set([]);
-        let rp = [];
-        let p = this;
-        while (p && p.parent) {
-            changed.add(p);
-            p.#relative = rp.join(this.sep);
-            p.#relativePosix = rp.join('/');
-            p = p.parent;
-            rp.push('..');
-        }
-        // now un-memoize parents of old cwd
-        p = oldCwd;
-        while (p && p.parent && !changed.has(p)) {
-            p.#relative = undefined;
-            p.#relativePosix = undefined;
-            p = p.parent;
-        }
-    }
-}
-exports.PathBase = PathBase;
-/**
- * Path class used on win32 systems
- *
- * Uses `'\\'` as the path separator for returned paths, either `'\\'` or `'/'`
- * as the path separator for parsing paths.
- */
-class PathWin32 extends PathBase {
-    /**
-     * Separator for generating path strings.
-     */
-    sep = '\\';
-    /**
-     * Separator for parsing path strings.
-     */
-    splitSep = eitherSep;
-    /**
-     * Do not create new Path objects directly.  They should always be accessed
-     * via the PathScurry class or other methods on the Path class.
-     *
-     * @internal
-     */
-    constructor(name, type = UNKNOWN, root, roots, nocase, children, opts) {
-        super(name, type, root, roots, nocase, children, opts);
-    }
-    /**
-     * @internal
-     */
-    newChild(name, type = UNKNOWN, opts = {}) {
-        return new PathWin32(name, type, this.root, this.roots, this.nocase, this.childrenCache(), opts);
-    }
-    /**
-     * @internal
-     */
-    getRootString(path) {
-        return path_1.win32.parse(path).root;
-    }
-    /**
-     * @internal
-     */
-    getRoot(rootPath) {
-        rootPath = uncToDrive(rootPath.toUpperCase());
-        if (rootPath === this.root.name) {
-            return this.root;
-        }
-        // ok, not that one, check if it matches another we know about
-        for (const [compare, root] of Object.entries(this.roots)) {
-            if (this.sameRoot(rootPath, compare)) {
-                return (this.roots[rootPath] = root);
-            }
-        }
-        // otherwise, have to create a new one.
-        return (this.roots[rootPath] = new PathScurryWin32(rootPath, this).root);
-    }
-    /**
-     * @internal
-     */
-    sameRoot(rootPath, compare = this.root.name) {
-        // windows can (rarely) have case-sensitive filesystem, but
-        // UNC and drive letters are always case-insensitive, and canonically
-        // represented uppercase.
-        rootPath = rootPath
-            .toUpperCase()
-            .replace(/\//g, '\\')
-            .replace(uncDriveRegexp, '$1\\');
-        return rootPath === compare;
-    }
-}
-exports.PathWin32 = PathWin32;
-/**
- * Path class used on all posix systems.
- *
- * Uses `'/'` as the path separator.
- */
-class PathPosix extends PathBase {
-    /**
-     * separator for parsing path strings
-     */
-    splitSep = '/';
-    /**
-     * separator for generating path strings
-     */
-    sep = '/';
-    /**
-     * Do not create new Path objects directly.  They should always be accessed
-     * via the PathScurry class or other methods on the Path class.
-     *
-     * @internal
-     */
-    constructor(name, type = UNKNOWN, root, roots, nocase, children, opts) {
-        super(name, type, root, roots, nocase, children, opts);
-    }
-    /**
-     * @internal
-     */
-    getRootString(path) {
-        return path.startsWith('/') ? '/' : '';
-    }
-    /**
-     * @internal
-     */
-    getRoot(_rootPath) {
-        return this.root;
-    }
-    /**
-     * @internal
-     */
-    newChild(name, type = UNKNOWN, opts = {}) {
-        return new PathPosix(name, type, this.root, this.roots, this.nocase, this.childrenCache(), opts);
-    }
-}
-exports.PathPosix = PathPosix;
-/**
- * The base class for all PathScurry classes, providing the interface for path
- * resolution and filesystem operations.
- *
- * Typically, you should *not* instantiate this class directly, but rather one
- * of the platform-specific classes, or the exported {@link PathScurry} which
- * defaults to the current platform.
- */
-class PathScurryBase {
-    /**
-     * The root Path entry for the current working directory of this Scurry
-     */
-    root;
-    /**
-     * The string path for the root of this Scurry's current working directory
-     */
-    rootPath;
-    /**
-     * A collection of all roots encountered, referenced by rootPath
-     */
-    roots;
-    /**
-     * The Path entry corresponding to this PathScurry's current working directory.
-     */
-    cwd;
-    #resolveCache;
-    #resolvePosixCache;
-    #children;
-    /**
-     * Perform path comparisons case-insensitively.
-     *
-     * Defaults true on Darwin and Windows systems, false elsewhere.
-     */
-    nocase;
-    #fs;
-    /**
-     * This class should not be instantiated directly.
-     *
-     * Use PathScurryWin32, PathScurryDarwin, PathScurryPosix, or PathScurry
-     *
-     * @internal
-     */
-    constructor(cwd = process.cwd(), pathImpl, sep, { nocase, childrenCacheSize = 16 * 1024, fs = defaultFS, } = {}) {
-        this.#fs = fsFromOption(fs);
-        if (cwd instanceof URL || cwd.startsWith('file://')) {
-            cwd = (0, url_1.fileURLToPath)(cwd);
-        }
-        // resolve and split root, and then add to the store.
-        // this is the only time we call path.resolve()
-        const cwdPath = pathImpl.resolve(cwd);
-        this.roots = Object.create(null);
-        this.rootPath = this.parseRootPath(cwdPath);
-        this.#resolveCache = new ResolveCache();
-        this.#resolvePosixCache = new ResolveCache();
-        this.#children = new ChildrenCache(childrenCacheSize);
-        const split = cwdPath.substring(this.rootPath.length).split(sep);
-        // resolve('/') leaves '', splits to [''], we don't want that.
-        if (split.length === 1 && !split[0]) {
-            split.pop();
-        }
-        /* c8 ignore start */
-        if (nocase === undefined) {
-            throw new TypeError('must provide nocase setting to PathScurryBase ctor');
-        }
-        /* c8 ignore stop */
-        this.nocase = nocase;
-        this.root = this.newRoot(this.#fs);
-        this.roots[this.rootPath] = this.root;
-        let prev = this.root;
-        let len = split.length - 1;
-        const joinSep = pathImpl.sep;
-        let abs = this.rootPath;
-        let sawFirst = false;
-        for (const part of split) {
-            const l = len--;
-            prev = prev.child(part, {
-                relative: new Array(l).fill('..').join(joinSep),
-                relativePosix: new Array(l).fill('..').join('/'),
-                fullpath: (abs += (sawFirst ? '' : joinSep) + part),
-            });
-            sawFirst = true;
-        }
-        this.cwd = prev;
-    }
-    /**
-     * Get the depth of a provided path, string, or the cwd
-     */
-    depth(path = this.cwd) {
-        if (typeof path === 'string') {
-            path = this.cwd.resolve(path);
-        }
-        return path.depth();
-    }
-    /**
-     * Return the cache of child entries.  Exposed so subclasses can create
-     * child Path objects in a platform-specific way.
-     *
-     * @internal
-     */
-    childrenCache() {
-        return this.#children;
-    }
-    /**
-     * Resolve one or more path strings to a resolved string
-     *
-     * Same interface as require('path').resolve.
-     *
-     * Much faster than path.resolve() when called multiple times for the same
-     * path, because the resolved Path objects are cached.  Much slower
-     * otherwise.
-     */
-    resolve(...paths) {
-        // first figure out the minimum number of paths we have to test
-        // we always start at cwd, but any absolutes will bump the start
-        let r = '';
-        for (let i = paths.length - 1; i >= 0; i--) {
-            const p = paths[i];
-            if (!p || p === '.')
-                continue;
-            r = r ? `${p}/${r}` : p;
-            if (this.isAbsolute(p)) {
-                break;
-            }
-        }
-        const cached = this.#resolveCache.get(r);
-        if (cached !== undefined) {
-            return cached;
-        }
-        const result = this.cwd.resolve(r).fullpath();
-        this.#resolveCache.set(r, result);
-        return result;
-    }
-    /**
-     * Resolve one or more path strings to a resolved string, returning
-     * the posix path.  Identical to .resolve() on posix systems, but on
-     * windows will return a forward-slash separated UNC path.
-     *
-     * Same interface as require('path').resolve.
-     *
-     * Much faster than path.resolve() when called multiple times for the same
-     * path, because the resolved Path objects are cached.  Much slower
-     * otherwise.
-     */
-    resolvePosix(...paths) {
-        // first figure out the minimum number of paths we have to test
-        // we always start at cwd, but any absolutes will bump the start
-        let r = '';
-        for (let i = paths.length - 1; i >= 0; i--) {
-            const p = paths[i];
-            if (!p || p === '.')
-                continue;
-            r = r ? `${p}/${r}` : p;
-            if (this.isAbsolute(p)) {
-                break;
-            }
-        }
-        const cached = this.#resolvePosixCache.get(r);
-        if (cached !== undefined) {
-            return cached;
-        }
-        const result = this.cwd.resolve(r).fullpathPosix();
-        this.#resolvePosixCache.set(r, result);
-        return result;
-    }
-    /**
-     * find the relative path from the cwd to the supplied path string or entry
-     */
-    relative(entry = this.cwd) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        return entry.relative();
-    }
-    /**
-     * find the relative path from the cwd to the supplied path string or
-     * entry, using / as the path delimiter, even on Windows.
-     */
-    relativePosix(entry = this.cwd) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        return entry.relativePosix();
-    }
-    /**
-     * Return the basename for the provided string or Path object
-     */
-    basename(entry = this.cwd) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        return entry.name;
-    }
-    /**
-     * Return the dirname for the provided string or Path object
-     */
-    dirname(entry = this.cwd) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        return (entry.parent || entry).fullpath();
-    }
-    async readdir(entry = this.cwd, opts = {
-        withFileTypes: true,
-    }) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes } = opts;
-        if (!entry.canReaddir()) {
-            return [];
-        }
-        else {
-            const p = await entry.readdir();
-            return withFileTypes ? p : p.map(e => e.name);
-        }
-    }
-    readdirSync(entry = this.cwd, opts = {
-        withFileTypes: true,
-    }) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes = true } = opts;
-        if (!entry.canReaddir()) {
-            return [];
-        }
-        else if (withFileTypes) {
-            return entry.readdirSync();
-        }
-        else {
-            return entry.readdirSync().map(e => e.name);
-        }
-    }
-    /**
-     * Call lstat() on the string or Path object, and update all known
-     * information that can be determined.
-     *
-     * Note that unlike `fs.lstat()`, the returned value does not contain some
-     * information, such as `mode`, `dev`, `nlink`, and `ino`.  If that
-     * information is required, you will need to call `fs.lstat` yourself.
-     *
-     * If the Path refers to a nonexistent file, or if the lstat call fails for
-     * any reason, `undefined` is returned.  Otherwise the updated Path object is
-     * returned.
-     *
-     * Results are cached, and thus may be out of date if the filesystem is
-     * mutated.
-     */
-    async lstat(entry = this.cwd) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        return entry.lstat();
-    }
-    /**
-     * synchronous {@link PathScurryBase.lstat}
-     */
-    lstatSync(entry = this.cwd) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        return entry.lstatSync();
-    }
-    async readlink(entry = this.cwd, { withFileTypes } = {
-        withFileTypes: false,
-    }) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            withFileTypes = entry.withFileTypes;
-            entry = this.cwd;
-        }
-        const e = await entry.readlink();
-        return withFileTypes ? e : e?.fullpath();
-    }
-    readlinkSync(entry = this.cwd, { withFileTypes } = {
-        withFileTypes: false,
-    }) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            withFileTypes = entry.withFileTypes;
-            entry = this.cwd;
-        }
-        const e = entry.readlinkSync();
-        return withFileTypes ? e : e?.fullpath();
-    }
-    async realpath(entry = this.cwd, { withFileTypes } = {
-        withFileTypes: false,
-    }) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            withFileTypes = entry.withFileTypes;
-            entry = this.cwd;
-        }
-        const e = await entry.realpath();
-        return withFileTypes ? e : e?.fullpath();
-    }
-    realpathSync(entry = this.cwd, { withFileTypes } = {
-        withFileTypes: false,
-    }) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            withFileTypes = entry.withFileTypes;
-            entry = this.cwd;
-        }
-        const e = entry.realpathSync();
-        return withFileTypes ? e : e?.fullpath();
-    }
-    async walk(entry = this.cwd, opts = {}) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        const results = [];
-        if (!filter || filter(entry)) {
-            results.push(withFileTypes ? entry : entry.fullpath());
-        }
-        const dirs = new Set();
-        const walk = (dir, cb) => {
-            dirs.add(dir);
-            dir.readdirCB((er, entries) => {
-                /* c8 ignore start */
-                if (er) {
-                    return cb(er);
-                }
-                /* c8 ignore stop */
-                let len = entries.length;
-                if (!len)
-                    return cb();
-                const next = () => {
-                    if (--len === 0) {
-                        cb();
-                    }
-                };
-                for (const e of entries) {
-                    if (!filter || filter(e)) {
-                        results.push(withFileTypes ? e : e.fullpath());
-                    }
-                    if (follow && e.isSymbolicLink()) {
-                        e.realpath()
-                            .then(r => (r?.isUnknown() ? r.lstat() : r))
-                            .then(r => r?.shouldWalk(dirs, walkFilter) ? walk(r, next) : next());
-                    }
-                    else {
-                        if (e.shouldWalk(dirs, walkFilter)) {
-                            walk(e, next);
-                        }
-                        else {
-                            next();
-                        }
-                    }
-                }
-            }, true); // zalgooooooo
-        };
-        const start = entry;
-        return new Promise((res, rej) => {
-            walk(start, er => {
-                /* c8 ignore start */
-                if (er)
-                    return rej(er);
-                /* c8 ignore stop */
-                res(results);
-            });
-        });
-    }
-    walkSync(entry = this.cwd, opts = {}) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        const results = [];
-        if (!filter || filter(entry)) {
-            results.push(withFileTypes ? entry : entry.fullpath());
-        }
-        const dirs = new Set([entry]);
-        for (const dir of dirs) {
-            const entries = dir.readdirSync();
-            for (const e of entries) {
-                if (!filter || filter(e)) {
-                    results.push(withFileTypes ? e : e.fullpath());
-                }
-                let r = e;
-                if (e.isSymbolicLink()) {
-                    if (!(follow && (r = e.realpathSync())))
-                        continue;
-                    if (r.isUnknown())
-                        r.lstatSync();
-                }
-                if (r.shouldWalk(dirs, walkFilter)) {
-                    dirs.add(r);
-                }
-            }
-        }
-        return results;
-    }
-    /**
-     * Support for `for await`
-     *
-     * Alias for {@link PathScurryBase.iterate}
-     *
-     * Note: As of Node 19, this is very slow, compared to other methods of
-     * walking.  Consider using {@link PathScurryBase.stream} if memory overhead
-     * and backpressure are concerns, or {@link PathScurryBase.walk} if not.
-     */
-    [Symbol.asyncIterator]() {
-        return this.iterate();
-    }
-    iterate(entry = this.cwd, options = {}) {
-        // iterating async over the stream is significantly more performant,
-        // especially in the warm-cache scenario, because it buffers up directory
-        // entries in the background instead of waiting for a yield for each one.
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            options = entry;
-            entry = this.cwd;
-        }
-        return this.stream(entry, options)[Symbol.asyncIterator]();
-    }
-    /**
-     * Iterating over a PathScurry performs a synchronous walk.
-     *
-     * Alias for {@link PathScurryBase.iterateSync}
-     */
-    [Symbol.iterator]() {
-        return this.iterateSync();
-    }
-    *iterateSync(entry = this.cwd, opts = {}) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        if (!filter || filter(entry)) {
-            yield withFileTypes ? entry : entry.fullpath();
-        }
-        const dirs = new Set([entry]);
-        for (const dir of dirs) {
-            const entries = dir.readdirSync();
-            for (const e of entries) {
-                if (!filter || filter(e)) {
-                    yield withFileTypes ? e : e.fullpath();
-                }
-                let r = e;
-                if (e.isSymbolicLink()) {
-                    if (!(follow && (r = e.realpathSync())))
-                        continue;
-                    if (r.isUnknown())
-                        r.lstatSync();
-                }
-                if (r.shouldWalk(dirs, walkFilter)) {
-                    dirs.add(r);
-                }
-            }
-        }
-    }
-    stream(entry = this.cwd, opts = {}) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        const results = new minipass_1.Minipass({ objectMode: true });
-        if (!filter || filter(entry)) {
-            results.write(withFileTypes ? entry : entry.fullpath());
-        }
-        const dirs = new Set();
-        const queue = [entry];
-        let processing = 0;
-        const process = () => {
-            let paused = false;
-            while (!paused) {
-                const dir = queue.shift();
-                if (!dir) {
-                    if (processing === 0)
-                        results.end();
-                    return;
-                }
-                processing++;
-                dirs.add(dir);
-                const onReaddir = (er, entries, didRealpaths = false) => {
-                    /* c8 ignore start */
-                    if (er)
-                        return results.emit('error', er);
-                    /* c8 ignore stop */
-                    if (follow && !didRealpaths) {
-                        const promises = [];
-                        for (const e of entries) {
-                            if (e.isSymbolicLink()) {
-                                promises.push(e
-                                    .realpath()
-                                    .then((r) => r?.isUnknown() ? r.lstat() : r));
-                            }
-                        }
-                        if (promises.length) {
-                            Promise.all(promises).then(() => onReaddir(null, entries, true));
-                            return;
-                        }
-                    }
-                    for (const e of entries) {
-                        if (e && (!filter || filter(e))) {
-                            if (!results.write(withFileTypes ? e : e.fullpath())) {
-                                paused = true;
-                            }
-                        }
-                    }
-                    processing--;
-                    for (const e of entries) {
-                        const r = e.realpathCached() || e;
-                        if (r.shouldWalk(dirs, walkFilter)) {
-                            queue.push(r);
-                        }
-                    }
-                    if (paused && !results.flowing) {
-                        results.once('drain', process);
-                    }
-                    else if (!sync) {
-                        process();
-                    }
-                };
-                // zalgo containment
-                let sync = true;
-                dir.readdirCB(onReaddir, true);
-                sync = false;
-            }
-        };
-        process();
-        return results;
-    }
-    streamSync(entry = this.cwd, opts = {}) {
-        if (typeof entry === 'string') {
-            entry = this.cwd.resolve(entry);
-        }
-        else if (!(entry instanceof PathBase)) {
-            opts = entry;
-            entry = this.cwd;
-        }
-        const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        const results = new minipass_1.Minipass({ objectMode: true });
-        const dirs = new Set();
-        if (!filter || filter(entry)) {
-            results.write(withFileTypes ? entry : entry.fullpath());
-        }
-        const queue = [entry];
-        let processing = 0;
-        const process = () => {
-            let paused = false;
-            while (!paused) {
-                const dir = queue.shift();
-                if (!dir) {
-                    if (processing === 0)
-                        results.end();
-                    return;
-                }
-                processing++;
-                dirs.add(dir);
-                const entries = dir.readdirSync();
-                for (const e of entries) {
-                    if (!filter || filter(e)) {
-                        if (!results.write(withFileTypes ? e : e.fullpath())) {
-                            paused = true;
-                        }
-                    }
-                }
-                processing--;
-                for (const e of entries) {
-                    let r = e;
-                    if (e.isSymbolicLink()) {
-                        if (!(follow && (r = e.realpathSync())))
-                            continue;
-                        if (r.isUnknown())
-                            r.lstatSync();
-                    }
-                    if (r.shouldWalk(dirs, walkFilter)) {
-                        queue.push(r);
-                    }
-                }
-            }
-            if (paused && !results.flowing)
-                results.once('drain', process);
-        };
-        process();
-        return results;
-    }
-    chdir(path = this.cwd) {
-        const oldCwd = this.cwd;
-        this.cwd = typeof path === 'string' ? this.cwd.resolve(path) : path;
-        this.cwd[setAsCwd](oldCwd);
-    }
-}
-exports.PathScurryBase = PathScurryBase;
-/**
- * Windows implementation of {@link PathScurryBase}
- *
- * Defaults to case insensitve, uses `'\\'` to generate path strings.  Uses
- * {@link PathWin32} for Path objects.
- */
-class PathScurryWin32 extends PathScurryBase {
-    /**
-     * separator for generating path strings
-     */
-    sep = '\\';
-    constructor(cwd = process.cwd(), opts = {}) {
-        const { nocase = true } = opts;
-        super(cwd, path_1.win32, '\\', { ...opts, nocase });
-        this.nocase = nocase;
-        for (let p = this.cwd; p; p = p.parent) {
-            p.nocase = this.nocase;
-        }
-    }
-    /**
-     * @internal
-     */
-    parseRootPath(dir) {
-        // if the path starts with a single separator, it's not a UNC, and we'll
-        // just get separator as the root, and driveFromUNC will return \
-        // In that case, mount \ on the root from the cwd.
-        return path_1.win32.parse(dir).root.toUpperCase();
-    }
-    /**
-     * @internal
-     */
-    newRoot(fs) {
-        return new PathWin32(this.rootPath, IFDIR, undefined, this.roots, this.nocase, this.childrenCache(), { fs });
-    }
-    /**
-     * Return true if the provided path string is an absolute path
-     */
-    isAbsolute(p) {
-        return (p.startsWith('/') || p.startsWith('\\') || /^[a-z]:(\/|\\)/i.test(p));
-    }
-}
-exports.PathScurryWin32 = PathScurryWin32;
-/**
- * {@link PathScurryBase} implementation for all posix systems other than Darwin.
- *
- * Defaults to case-sensitive matching, uses `'/'` to generate path strings.
- *
- * Uses {@link PathPosix} for Path objects.
- */
-class PathScurryPosix extends PathScurryBase {
-    /**
-     * separator for generating path strings
-     */
-    sep = '/';
-    constructor(cwd = process.cwd(), opts = {}) {
-        const { nocase = false } = opts;
-        super(cwd, path_1.posix, '/', { ...opts, nocase });
-        this.nocase = nocase;
-    }
-    /**
-     * @internal
-     */
-    parseRootPath(_dir) {
-        return '/';
-    }
-    /**
-     * @internal
-     */
-    newRoot(fs) {
-        return new PathPosix(this.rootPath, IFDIR, undefined, this.roots, this.nocase, this.childrenCache(), { fs });
-    }
-    /**
-     * Return true if the provided path string is an absolute path
-     */
-    isAbsolute(p) {
-        return p.startsWith('/');
-    }
-}
-exports.PathScurryPosix = PathScurryPosix;
-/**
- * {@link PathScurryBase} implementation for Darwin (macOS) systems.
- *
- * Defaults to case-insensitive matching, uses `'/'` for generating path
- * strings.
- *
- * Uses {@link PathPosix} for Path objects.
- */
-class PathScurryDarwin extends PathScurryPosix {
-    constructor(cwd = process.cwd(), opts = {}) {
-        const { nocase = true } = opts;
-        super(cwd, { ...opts, nocase });
-    }
-}
-exports.PathScurryDarwin = PathScurryDarwin;
-/**
- * Default {@link PathBase} implementation for the current platform.
- *
- * {@link PathWin32} on Windows systems, {@link PathPosix} on all others.
- */
-exports.Path = process.platform === 'win32' ? PathWin32 : PathPosix;
-/**
- * Default {@link PathScurryBase} implementation for the current platform.
- *
- * {@link PathScurryWin32} on Windows systems, {@link PathScurryDarwin} on
- * Darwin (macOS) systems, {@link PathScurryPosix} on all others.
- */
-exports.PathScurry = process.platform === 'win32'
-    ? PathScurryWin32
-    : process.platform === 'darwin'
-        ? PathScurryDarwin
-        : PathScurryPosix;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
