@@ -6226,7 +6226,7 @@ const refDependencyCandidates = [
   commonSchema
 ];
 function throwAjvError(errors) {
-  if (!(errors == null ? void 0 : errors.length)) {
+  if (!errors?.length) {
     throw new TypeError("Unknown error");
   }
   const error = errors[0];
@@ -6235,8 +6235,7 @@ function throwAjvError(errors) {
   );
 }
 function compileAjvSchema(schema, options = {}) {
-  var _a;
-  const disableCache = (_a = options == null ? void 0 : options.disableCache) != null ? _a : false;
+  const disableCache = options?.disableCache ?? false;
   const cacheKey = disableCache ? "" : JSON.stringify(schema);
   if (!disableCache) {
     const cached = compiledSchemaCache.get(cacheKey);
@@ -6309,15 +6308,14 @@ function* getAllRefs(schema) {
 function entityKindSchemaValidator(schema) {
   const validate = compileAjvSchema(schema);
   return (data) => {
-    var _a;
     const result = validate(data);
     if (result === true) {
       return data;
     }
-    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter(
+    const softCandidates = validate.errors?.filter(
       (e) => ["/kind", "/apiVersion"].includes(e.instancePath)
     );
-    if ((softCandidates == null ? void 0 : softCandidates.length) && softCandidates.every((e) => e.keyword === "enum")) {
+    if (softCandidates?.length && softCandidates.every((e) => e.keyword === "enum")) {
       return false;
     }
     throw throwAjvError(validate.errors);
@@ -7011,7 +7009,8 @@ var System_v1alpha1_schema_json_esm_examples = [
 		},
 		spec: {
 			owner: "artist-relations-team",
-			domain: "artists"
+			domain: "artists",
+			type: "service"
 		}
 	}
 ];
@@ -7058,6 +7057,16 @@ var System_v1alpha1_schema_json_esm_allOf = [
 							"artists"
 						],
 						minLength: 1
+					},
+					type: {
+						type: "string",
+						description: "The type of system. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their catalog hierarchy.",
+						examples: [
+							"product",
+							"service",
+							"feature-set"
+						],
+						minLength: 1
 					}
 				}
 			}
@@ -7098,7 +7107,8 @@ var Domain_v1alpha1_schema_json_esm_examples = [
 		},
 		spec: {
 			owner: "artist-relations-team",
-			subdomainOf: "audio"
+			subdomainOf: "audio",
+			type: "product-group"
 		}
 	}
 ];
@@ -7143,6 +7153,15 @@ var Domain_v1alpha1_schema_json_esm_allOf = [
 						description: "An entity reference to another domain of which the domain is a part.",
 						examples: [
 							"audio"
+						],
+						minLength: 1
+					},
+					type: {
+						type: "string",
+						description: "The type of domain. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their catalog hierarchy.",
+						examples: [
+							"product-group",
+							"bundle"
 						],
 						minLength: 1
 					}
@@ -7335,15 +7354,9 @@ const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
 
 
 
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, key + "" , value);
-  return value;
-};
 class DefaultNamespaceEntityPolicy {
+  namespace;
   constructor(namespace = DEFAULT_NAMESPACE) {
-    __publicField(this, "namespace");
     this.namespace = namespace;
   }
   async enforce(entity) {
@@ -7444,8 +7457,7 @@ class CommonValidatorFunctions {
    * @param value - The value to check
    */
   static isValidString(value) {
-    var _a;
-    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+    return typeof value === "string" && value?.trim()?.length >= 1;
   }
   /**
    * Checks that the value is a string value that's not empty.
@@ -7453,8 +7465,7 @@ class CommonValidatorFunctions {
    * @param value - The value to check
    */
   static isNonEmptyString(value) {
-    var _a;
-    return typeof value === "string" && ((_a = value == null ? void 0 : value.trim()) == null ? void 0 : _a.length) >= 1;
+    return typeof value === "string" && value?.trim()?.length >= 1;
   }
 }
 
@@ -7540,21 +7551,13 @@ function makeValidator(overrides = {}) {
 
 
 
-
-var FieldFormatEntityPolicy_esm_defProp = Object.defineProperty;
-var FieldFormatEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? FieldFormatEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var FieldFormatEntityPolicy_esm_publicField = (obj, key, value) => {
-  FieldFormatEntityPolicy_esm_defNormalProp(obj, key + "" , value);
-  return value;
-};
 class FieldFormatEntityPolicy {
+  validators;
   constructor(validators = makeValidator()) {
-    FieldFormatEntityPolicy_esm_publicField(this, "validators");
     this.validators = validators;
   }
   async enforce(entity) {
-    var _a, _b, _c, _d, _e, _f, _g;
-    function require2(field, value, validator) {
+    function require(field, value, validator) {
       if (value === void 0 || value === null) {
         throw new Error(`${field} must have a value`);
       }
@@ -7607,40 +7610,40 @@ class FieldFormatEntityPolicy {
       }
     }
     function optional(field, value, validator) {
-      return value === void 0 || require2(field, value, validator);
+      return value === void 0 || require(field, value, validator);
     }
-    require2("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
-    require2("kind", entity.kind, this.validators.isValidKind);
-    require2("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
+    require("apiVersion", entity.apiVersion, this.validators.isValidApiVersion);
+    require("kind", entity.kind, this.validators.isValidKind);
+    require("metadata.name", entity.metadata.name, this.validators.isValidEntityName);
     optional(
       "metadata.namespace",
       entity.metadata.namespace,
       this.validators.isValidNamespace
     );
-    for (const [k, v] of Object.entries((_a = entity.metadata.labels) != null ? _a : [])) {
-      require2(`labels.${k}`, k, this.validators.isValidLabelKey);
-      require2(`labels.${k}`, v, this.validators.isValidLabelValue);
+    for (const [k, v] of Object.entries(entity.metadata.labels ?? [])) {
+      require(`labels.${k}`, k, this.validators.isValidLabelKey);
+      require(`labels.${k}`, v, this.validators.isValidLabelValue);
     }
-    for (const [k, v] of Object.entries((_b = entity.metadata.annotations) != null ? _b : [])) {
-      require2(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
-      require2(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
+    for (const [k, v] of Object.entries(entity.metadata.annotations ?? [])) {
+      require(`annotations.${k}`, k, this.validators.isValidAnnotationKey);
+      require(`annotations.${k}`, v, this.validators.isValidAnnotationValue);
     }
-    const tags = (_c = entity.metadata.tags) != null ? _c : [];
+    const tags = entity.metadata.tags ?? [];
     for (let i = 0; i < tags.length; ++i) {
-      require2(`tags.${i}`, tags[i], this.validators.isValidTag);
+      require(`tags.${i}`, tags[i], this.validators.isValidTag);
     }
-    const links = (_d = entity.metadata.links) != null ? _d : [];
+    const links = entity.metadata.links ?? [];
     for (let i = 0; i < links.length; ++i) {
-      require2(`links.${i}.url`, (_e = links[i]) == null ? void 0 : _e.url, CommonValidatorFunctions.isValidUrl);
+      require(`links.${i}.url`, links[i]?.url, CommonValidatorFunctions.isValidUrl);
       optional(
         `links.${i}.title`,
-        (_f = links[i]) == null ? void 0 : _f.title,
+        links[i]?.title,
         CommonValidatorFunctions.isNonEmptyString
       );
       optional(
         `links.${i}.icon`,
-        (_g = links[i]) == null ? void 0 : _g.icon,
-        KubernetesValidatorFunctions.isValidObjectName
+        links[i]?.icon,
+        CommonValidatorFunctions.isNonEmptyString
       );
     }
     return entity;
@@ -7651,16 +7654,10 @@ class FieldFormatEntityPolicy {
 //# sourceMappingURL=FieldFormatEntityPolicy.esm.js.map
 
 ;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/NoForeignRootFieldsEntityPolicy.esm.js
-var NoForeignRootFieldsEntityPolicy_esm_defProp = Object.defineProperty;
-var NoForeignRootFieldsEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? NoForeignRootFieldsEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var NoForeignRootFieldsEntityPolicy_esm_publicField = (obj, key, value) => {
-  NoForeignRootFieldsEntityPolicy_esm_defNormalProp(obj, key + "" , value);
-  return value;
-};
 const defaultKnownFields = ["apiVersion", "kind", "metadata", "spec"];
 class NoForeignRootFieldsEntityPolicy {
+  knownFields;
   constructor(knownFields = defaultKnownFields) {
-    NoForeignRootFieldsEntityPolicy_esm_publicField(this, "knownFields");
     this.knownFields = knownFields;
   }
   async enforce(entity) {
@@ -7682,16 +7679,8 @@ class NoForeignRootFieldsEntityPolicy {
 
 
 
-var SchemaValidEntityPolicy_esm_defProp = Object.defineProperty;
-var SchemaValidEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? SchemaValidEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var SchemaValidEntityPolicy_esm_publicField = (obj, key, value) => {
-  SchemaValidEntityPolicy_esm_defNormalProp(obj, key + "" , value);
-  return value;
-};
 class SchemaValidEntityPolicy {
-  constructor() {
-    SchemaValidEntityPolicy_esm_publicField(this, "validate");
-  }
+  validate;
   async enforce(entity) {
     if (!this.validate) {
       const ajv = new (ajv_default())({ allowUnionTypes: true });
@@ -8234,7 +8223,7 @@ const ajv_esm_refDependencyCandidates = [
   common_schema_json_esm_commonSchema
 ];
 function ajv_esm_throwAjvError(errors) {
-  if (!(errors == null ? void 0 : errors.length)) {
+  if (!errors?.length) {
     throw new TypeError("Unknown error");
   }
   const error = errors[0];
@@ -8243,8 +8232,7 @@ function ajv_esm_throwAjvError(errors) {
   );
 }
 function ajv_esm_compileAjvSchema(schema, options = {}) {
-  var _a;
-  const disableCache = (_a = options == null ? void 0 : options.disableCache) != null ? _a : false;
+  const disableCache = options?.disableCache ?? false;
   const cacheKey = disableCache ? "" : JSON.stringify(schema);
   if (!disableCache) {
     const cached = ajv_esm_compiledSchemaCache.get(cacheKey);
@@ -8317,15 +8305,14 @@ function* ajv_esm_getAllRefs(schema) {
 function entityKindSchemaValidator_esm_entityKindSchemaValidator(schema) {
   const validate = ajv_esm_compileAjvSchema(schema);
   return (data) => {
-    var _a;
     const result = validate(data);
     if (result === true) {
       return data;
     }
-    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter(
+    const softCandidates = validate.errors?.filter(
       (e) => ["/kind", "/apiVersion"].includes(e.instancePath)
     );
-    if ((softCandidates == null ? void 0 : softCandidates.length) && softCandidates.every((e) => e.keyword === "enum")) {
+    if (softCandidates?.length && softCandidates.every((e) => e.keyword === "enum")) {
       return false;
     }
     throw ajv_esm_throwAjvError(validate.errors);
@@ -8355,6 +8342,7 @@ var Template_v1beta3_schema_json_esm_examples = [
 		spec: {
 			owner: "artist-relations-team",
 			type: "website",
+			lifecycle: "production",
 			parameters: {
 				required: [
 					"name",
@@ -8458,6 +8446,16 @@ var Template_v1beta3_schema_json_esm_allOf = [
 						description: "The user (or group) owner of the template",
 						minLength: 1
 					},
+					lifecycle: {
+						type: "string",
+						description: "The lifecycle state of the template.",
+						examples: [
+							"experimental",
+							"production",
+							"deprecated"
+						],
+						minLength: 1
+					},
 					parameters: {
 						oneOf: [
 							{
@@ -8533,6 +8531,23 @@ var Template_v1beta3_schema_json_esm_allOf = [
 							EXPERIMENTAL_strategy: {
 								type: "string",
 								description: "Recovery strategy for your task (none or startOver). By default none"
+							}
+						}
+					},
+					EXPERIMENTAL_formDecorators: {
+						type: "array",
+						description: "A list of decorators and their inputs that the form should trigger before submitting the job",
+						items: {
+							type: "object",
+							properties: {
+								id: {
+									type: "string",
+									description: "The form hook ID"
+								},
+								input: {
+									type: "object",
+									description: "A object describing the inputs to the form hook."
+								}
 							}
 						}
 					},
@@ -8703,7 +8718,7 @@ const isTemplateEntityV1beta3 = (entity) => entity.apiVersion === "scaffolder.ba
 //# sourceMappingURL=TemplateEntityV1beta3.esm.js.map
 
 ;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/annotations.schema.json
-const annotations_schema_namespaceObject = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema","$id":"Entity metadata annotations","description":"Individual annotation format validations","type":"object","required":["metadata"],"additionalProperties":true,"properties":{"metadata":{"type":"object","properties":{"annotations":{"type":"object","description":"Key/value pairs of non-identifying auxiliary information attached to the entity.","additionalProperties":false,"patternProperties":{"^.+$":{"type":"string"}},"allOf":[{"properties":{"backstage.io/managed-by-location":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/managed-by-origin-location":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/techdocs-ref":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/source-location":{"type":"string","pattern":"((url|gitlab|github|azure/api):.*|(dir):.*/)$"}}},{"properties":{"backstage.io/view-url":{"type":"string","format":"uri"}}},{"properties":{"backstage.io/edit-url":{"type":"string","format":"uri"}}},{"properties":{"graph.microsoft.com/group-id":{"type":"string","format":"uuid"}}},{"properties":{"graph.microsoft.com/user-id":{"type":"string","format":"uuid"}}},{"properties":{"datadog/dashboard-url":{"type":"string","format":"uri"}}},{"properties":{"backstage.io/ldap-uuid":{"type":"string","format":"uuid"}}},{"properties":{"backstage.io/ldap-dn":{"type":"string"}}},{"properties":{"backstage.io/ldap-rdn":{"type":"string"}}},{"properties":{"jenkins.io/github-folder":{"type":"string"}}},{"properties":{"github.com/project-slug":{"type":"string"}}},{"properties":{"github.com/team-slug":{"type":"string"}}},{"properties":{"github.com/user-login":{"type":"string"}}},{"properties":{"rollbar.com/project-slug":{"type":"string"}}},{"properties":{"circleci.com/project-slug":{"type":"string"}}},{"properties":{"sonarqube.org/project-key":{"type":"string"}}},{"properties":{"backstage.io/code-coverage":{"type":"string"}}},{"properties":{"github.com/project-slug":{"type":"string"}}},{"properties":{"sentry.io/project-slug":{"type":"string"}}},{"properties":{"aws.com/lambda-function-name":{"type":"string"}}},{"properties":{"aws.com/lambda-region":{"type":"string"}}},{"properties":{"jira/project-key":{"type":"string"}}},{"properties":{"snyk.io/org-name":{"type":"string"}}},{"properties":{"graph.microsoft.com/tenant-id":{"type":"string"}}}]}}}}}');
+const annotations_schema_namespaceObject = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema","$id":"Entity metadata annotations","description":"Individual annotation format validations","type":"object","required":["metadata"],"additionalProperties":true,"properties":{"metadata":{"type":"object","properties":{"annotations":{"type":"object","description":"Key/value pairs of non-identifying auxiliary information attached to the entity.","additionalProperties":false,"patternProperties":{"^.+$":{"type":"string"}},"allOf":[{"properties":{"backstage.io/managed-by-location":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/managed-by-origin-location":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/techdocs-ref":{"type":"string","pattern":"(url|gitlab|github|azure/api|dir):.*"}}},{"properties":{"backstage.io/source-location":{"type":"string","pattern":"^(?:dir:.*|(?:(?:github|gitlab|url):.+/|azure/api:.*\\\\?path=.*/)(?:[^/]+\\\\.[^/]+)?)$"}}},{"properties":{"backstage.io/view-url":{"type":"string","format":"uri"}}},{"properties":{"backstage.io/edit-url":{"type":"string","format":"uri"}}},{"properties":{"graph.microsoft.com/group-id":{"type":"string","format":"uuid"}}},{"properties":{"graph.microsoft.com/user-id":{"type":"string","format":"uuid"}}},{"properties":{"datadog/dashboard-url":{"type":"string","format":"uri"}}},{"properties":{"backstage.io/ldap-uuid":{"type":"string","format":"uuid"}}},{"properties":{"backstage.io/ldap-dn":{"type":"string"}}},{"properties":{"backstage.io/ldap-rdn":{"type":"string"}}},{"properties":{"jenkins.io/github-folder":{"type":"string"}}},{"properties":{"github.com/project-slug":{"type":"string"}}},{"properties":{"github.com/team-slug":{"type":"string"}}},{"properties":{"github.com/user-login":{"type":"string"}}},{"properties":{"rollbar.com/project-slug":{"type":"string"}}},{"properties":{"circleci.com/project-slug":{"type":"string"}}},{"properties":{"sonarqube.org/project-key":{"type":"string"}}},{"properties":{"backstage.io/code-coverage":{"type":"string"}}},{"properties":{"github.com/project-slug":{"type":"string"}}},{"properties":{"sentry.io/project-slug":{"type":"string"}}},{"properties":{"aws.com/lambda-function-name":{"type":"string"}}},{"properties":{"aws.com/lambda-region":{"type":"string"}}},{"properties":{"jira/project-key":{"type":"string"}}},{"properties":{"snyk.io/org-name":{"type":"string"}}},{"properties":{"graph.microsoft.com/tenant-id":{"type":"string"}}}]}}}}}');
 ;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/repository.schema.json
 const repository_schema_namespaceObject = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema","$id":"RepositoryEntityV1","description":"A repository represents an SCM repository and its related entities.","examples":[{"apiVersion":"roadie.io/v1","kind":"Repository","metadata":{"name":"authx","description":"An authentication library for verifying the identity of a caller","scmOwner":"RoadieHQ","defaultBranch":"main","visibility":"private","language":"TypeScript","securityAndAnalysis":{"secretScanning":"disabled","secretScanningPushProtection":"disabled","secretScanningValidityChecks":"disabled","dependabotSecurityUpdates":"enabled"},"lastPush":"2024-01-04","createdAt":"2022-01-21","potentialOwners":["user:default/punkle","user:default/sblausten"],"isFork":"false","commits":{"lastWeek":0,"lastMonth":12,"lastThreeMonths":12,"lastSixMonths":14,"lastYear":23}},"spec":{"owner":"user:default/punkle","hasPart":["component:default/authx"]}}],"allOf":[{"$ref":"Entity"},{"type":"object","required":["spec"],"properties":{"apiVersion":{"enum":["roadie.io/v1"]},"kind":{"enum":["Repository"]},"spec":{"type":"object","required":[],"properties":{"owner":{"type":"string","description":"An entity reference to the owner of the repository.","examples":["artist-relations-team","user:john.johnson"],"minLength":1},"hasPart":{"type":"array","description":"An array of references to other entities that the repository houses.","items":{"type":"string","minLength":1}},"system":{"type":"string","description":"An entity reference to the system that the repository belongs to.","minLength":1}}}}}]}');
 ;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/src/schemas/product.schema.json
