@@ -1834,7 +1834,7 @@ function isLoopbackAddress(host) {
 
 /***/ }),
 
-/***/ 1250:
+/***/ 620:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -5706,7 +5706,7 @@ var jsYaml = {
 // EXTERNAL MODULE: ./node_modules/ajv/dist/ajv.js
 var dist_ajv = __nccwpck_require__(2426);
 var ajv_default = /*#__PURE__*/__nccwpck_require__.n(dist_ajv);
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/Entity.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/Entity.schema.json.esm.js
 var $schema = "http://json-schema.org/draft-07/schema";
 var $id = "Entity";
 var description = "The parts of the format that's common to all versions/kinds of entity.";
@@ -5797,7 +5797,7 @@ var entitySchema = {
 
 //# sourceMappingURL=Entity.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/EntityEnvelope.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/EntityEnvelope.schema.json.esm.js
 var EntityEnvelope_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var EntityEnvelope_schema_json_esm_$id = "EntityEnvelope";
 var EntityEnvelope_schema_json_esm_description = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
@@ -5886,7 +5886,7 @@ var entityEnvelopeSchema = {
 
 //# sourceMappingURL=EntityEnvelope.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/EntityMeta.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/EntityMeta.schema.json.esm.js
 var EntityMeta_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var EntityMeta_schema_json_esm_$id = "EntityMeta";
 var EntityMeta_schema_json_esm_description = "Metadata fields common to all versions/kinds of entity.";
@@ -6050,7 +6050,7 @@ var entityMetaSchema = {
 
 //# sourceMappingURL=EntityMeta.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/shared/common.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/shared/common.schema.json.esm.js
 var common_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var common_schema_json_esm_$id = "common";
 var common_schema_json_esm_type = "object";
@@ -6211,7 +6211,7 @@ var commonSchema = {
 
 //# sourceMappingURL=common.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/ajv.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/validation/ajv.esm.js
 
 
 
@@ -6303,7 +6303,7 @@ function* getAllRefs(schema) {
 
 //# sourceMappingURL=ajv.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/entityKindSchemaValidator.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/validation/entityKindSchemaValidator.esm.js
 
 
 function entityKindSchemaValidator(schema) {
@@ -6327,7 +6327,7 @@ function entityKindSchemaValidator(schema) {
 
 //# sourceMappingURL=entityKindSchemaValidator.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/API.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/API.v1alpha1.schema.json.esm.js
 var API_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var API_v1alpha1_schema_json_esm_$id = "ApiV1alpha1";
 var API_v1alpha1_schema_json_esm_description = "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats.";
@@ -6444,7 +6444,7 @@ var API_v1alpha1_schema_json_esm_schema = {
 // EXTERNAL MODULE: ./node_modules/lodash/lodash.js
 var lodash = __nccwpck_require__(250);
 var lodash_default = /*#__PURE__*/__nccwpck_require__.n(lodash);
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/util.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/util.esm.js
 
 
 
@@ -6465,7 +6465,7 @@ function ajvCompiledJsonSchemaValidator(schema) {
 
 //# sourceMappingURL=util.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/ApiEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/ApiEntityV1alpha1.esm.js
 
 
 
@@ -6474,7 +6474,7 @@ const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(API_v1alpha1_s
 
 //# sourceMappingURL=ApiEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Component.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/Component.v1alpha1.schema.json.esm.js
 var Component_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var Component_v1alpha1_schema_json_esm_$id = "ComponentV1alpha1";
 var Component_v1alpha1_schema_json_esm_description = "A Component describes a software component. It is typically intimately linked to the source code that constitutes the component, and should be what a developer may regard a \"unit of software\", usually with a distinct deployable or linkable artifact.";
@@ -6607,7 +6607,7 @@ var Component_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=Component.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/ComponentEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/ComponentEntityV1alpha1.esm.js
 
 
 
@@ -6616,7 +6616,7 @@ const componentEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Componen
 
 //# sourceMappingURL=ComponentEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Group.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/Group.v1alpha1.schema.json.esm.js
 var Group_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var Group_v1alpha1_schema_json_esm_$id = "GroupV1alpha1";
 var Group_v1alpha1_schema_json_esm_description = "A group describes an organizational entity, such as for example a team, a business unit, or a loose collection of people in an interest group. Members of these groups are modeled in the catalog as kind User.";
@@ -6759,7 +6759,7 @@ var Group_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=Group.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/GroupEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/GroupEntityV1alpha1.esm.js
 
 
 
@@ -6768,7 +6768,7 @@ const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Group_v1alph
 
 //# sourceMappingURL=GroupEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Location.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/Location.v1alpha1.schema.json.esm.js
 var Location_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var Location_v1alpha1_schema_json_esm_$id = "LocationV1alpha1";
 var Location_v1alpha1_schema_json_esm_description = "A location is a marker that references other places to look for catalog data.";
@@ -6870,7 +6870,7 @@ var Location_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=Location.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/LocationEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/LocationEntityV1alpha1.esm.js
 
 
 
@@ -6879,7 +6879,7 @@ const locationEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Location_
 
 //# sourceMappingURL=LocationEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/User.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/User.v1alpha1.schema.json.esm.js
 var User_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var User_v1alpha1_schema_json_esm_$id = "UserV1alpha1";
 var User_v1alpha1_schema_json_esm_description = "A user describes a person, such as an employee, a contractor, or similar. Users belong to Group entities in the catalog. These catalog user entries are connected to the way that authentication within the Backstage ecosystem works. See the auth section of the docs for a discussion of these concepts.";
@@ -6988,7 +6988,7 @@ var User_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=User.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/UserEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/UserEntityV1alpha1.esm.js
 
 
 
@@ -6997,7 +6997,7 @@ const userEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(User_v1alpha1
 
 //# sourceMappingURL=UserEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/System.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/System.v1alpha1.schema.json.esm.js
 var System_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var System_v1alpha1_schema_json_esm_$id = "SystemV1alpha1";
 var System_v1alpha1_schema_json_esm_description = "A system is a collection of resources and components. The system may expose or consume one or several APIs. It is viewed as abstraction level that provides potential consumers insights into exposed features without needing a too detailed view into the details of all components. This also gives the owning team the possibility to decide about published artifacts and APIs.";
@@ -7075,7 +7075,7 @@ var System_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=System.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/SystemEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/SystemEntityV1alpha1.esm.js
 
 
 
@@ -7084,7 +7084,7 @@ const systemEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(System_v1al
 
 //# sourceMappingURL=SystemEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Domain.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/Domain.v1alpha1.schema.json.esm.js
 var Domain_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var Domain_v1alpha1_schema_json_esm_$id = "DomainV1alpha1";
 var Domain_v1alpha1_schema_json_esm_description = "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.";
@@ -7162,7 +7162,7 @@ var Domain_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=Domain.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/DomainEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/DomainEntityV1alpha1.esm.js
 
 
 
@@ -7171,7 +7171,7 @@ const domainEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Domain_v1al
 
 //# sourceMappingURL=DomainEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/schema/kinds/Resource.v1alpha1.schema.json.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/schema/kinds/Resource.v1alpha1.schema.json.esm.js
 var Resource_v1alpha1_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
 var Resource_v1alpha1_schema_json_esm_$id = "ResourceV1alpha1";
 var Resource_v1alpha1_schema_json_esm_description = "A resource describes the infrastructure a system needs to operate, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with components and systems allows to visualize resource footprint, and create tooling around them.";
@@ -7266,7 +7266,7 @@ var Resource_v1alpha1_schema_json_esm_schema = {
 
 //# sourceMappingURL=Resource.v1alpha1.schema.json.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/kinds/ResourceEntityV1alpha1.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/kinds/ResourceEntityV1alpha1.esm.js
 
 
 
@@ -7275,7 +7275,7 @@ const resourceEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(Resource_
 
 //# sourceMappingURL=ResourceEntityV1alpha1.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/EntityPolicies.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/EntityPolicies.esm.js
 class AllEntityPolicies {
   constructor(policies) {
     this.policies = policies;
@@ -7320,7 +7320,7 @@ const EntityPolicies = {
 
 //# sourceMappingURL=EntityPolicies.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/constants.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/entity/constants.esm.js
 const DEFAULT_NAMESPACE = "default";
 const ANNOTATION_VIEW_URL = "backstage.io/view-url";
 const ANNOTATION_EDIT_URL = "backstage.io/edit-url";
@@ -7331,7 +7331,7 @@ const ANNOTATION_KUBERNETES_AUTH_PROVIDER = "kubernetes.io/auth-provider";
 
 //# sourceMappingURL=constants.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/DefaultNamespaceEntityPolicy.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/entity/policies/DefaultNamespaceEntityPolicy.esm.js
 
 
 
@@ -7357,7 +7357,7 @@ class DefaultNamespaceEntityPolicy {
 
 //# sourceMappingURL=DefaultNamespaceEntityPolicy.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/CommonValidatorFunctions.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/validation/CommonValidatorFunctions.esm.js
 
 
 class CommonValidatorFunctions {
@@ -7461,7 +7461,7 @@ class CommonValidatorFunctions {
 
 //# sourceMappingURL=CommonValidatorFunctions.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/KubernetesValidatorFunctions.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/validation/KubernetesValidatorFunctions.esm.js
 
 
 class KubernetesValidatorFunctions {
@@ -7509,7 +7509,7 @@ class KubernetesValidatorFunctions {
 
 //# sourceMappingURL=KubernetesValidatorFunctions.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/validation/makeValidator.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/validation/makeValidator.esm.js
 
 
 const defaultValidators = {
@@ -7535,7 +7535,7 @@ function makeValidator(overrides = {}) {
 
 //# sourceMappingURL=makeValidator.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/FieldFormatEntityPolicy.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/entity/policies/FieldFormatEntityPolicy.esm.js
 
 
 
@@ -7650,7 +7650,7 @@ class FieldFormatEntityPolicy {
 
 //# sourceMappingURL=FieldFormatEntityPolicy.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/NoForeignRootFieldsEntityPolicy.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/entity/policies/NoForeignRootFieldsEntityPolicy.esm.js
 var NoForeignRootFieldsEntityPolicy_esm_defProp = Object.defineProperty;
 var NoForeignRootFieldsEntityPolicy_esm_defNormalProp = (obj, key, value) => key in obj ? NoForeignRootFieldsEntityPolicy_esm_defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var NoForeignRootFieldsEntityPolicy_esm_publicField = (obj, key, value) => {
@@ -7676,7 +7676,7 @@ class NoForeignRootFieldsEntityPolicy {
 
 //# sourceMappingURL=NoForeignRootFieldsEntityPolicy.esm.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@roadiehq/roadie-backstage-entity-validator/node_modules/@backstage/catalog-model/dist/entity/policies/SchemaValidEntityPolicy.esm.js
+;// CONCATENATED MODULE: ./node_modules/@backstage/catalog-model/dist/entity/policies/SchemaValidEntityPolicy.esm.js
 
 
 
@@ -7713,627 +7713,6 @@ class SchemaValidEntityPolicy {
 
 
 //# sourceMappingURL=SchemaValidEntityPolicy.esm.js.map
-
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/Entity.schema.json.esm.js
-var Entity_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
-var Entity_schema_json_esm_$id = "Entity";
-var Entity_schema_json_esm_description = "The parts of the format that's common to all versions/kinds of entity.";
-var Entity_schema_json_esm_examples = [
-	{
-		apiVersion: "backstage.io/v1alpha1",
-		kind: "Component",
-		metadata: {
-			name: "LoremService",
-			description: "Creates Lorems like a pro.",
-			labels: {
-				product_name: "Random value Generator"
-			},
-			annotations: {
-				docs: "https://github.com/..../tree/develop/doc"
-			}
-		},
-		spec: {
-			type: "service",
-			lifecycle: "production",
-			owner: "tools"
-		}
-	}
-];
-var schema_Entity_schema_json_esm_type = "object";
-var Entity_schema_json_esm_required = [
-	"apiVersion",
-	"kind",
-	"metadata"
-];
-var Entity_schema_json_esm_additionalProperties = false;
-var Entity_schema_json_esm_properties = {
-	apiVersion: {
-		type: "string",
-		description: "The version of specification format for this particular entity that this is written against.",
-		minLength: 1,
-		examples: [
-			"backstage.io/v1alpha1",
-			"my-company.net/v1",
-			"1.0"
-		]
-	},
-	kind: {
-		type: "string",
-		description: "The high level entity type being described.",
-		minLength: 1,
-		examples: [
-			"API",
-			"Component",
-			"Domain",
-			"Group",
-			"Location",
-			"Resource",
-			"System",
-			"Template",
-			"User"
-		]
-	},
-	metadata: {
-		$ref: "EntityMeta"
-	},
-	spec: {
-		type: "object",
-		description: "The specification data describing the entity itself."
-	},
-	relations: {
-		type: "array",
-		description: "The relations that this entity has with other entities.",
-		items: {
-			$ref: "common#relation"
-		}
-	},
-	status: {
-		$ref: "common#status"
-	}
-};
-var Entity_schema_json_esm_entitySchema = {
-	$schema: Entity_schema_json_esm_$schema,
-	$id: Entity_schema_json_esm_$id,
-	description: Entity_schema_json_esm_description,
-	examples: Entity_schema_json_esm_examples,
-	type: schema_Entity_schema_json_esm_type,
-	required: Entity_schema_json_esm_required,
-	additionalProperties: Entity_schema_json_esm_additionalProperties,
-	properties: Entity_schema_json_esm_properties
-};
-
-
-//# sourceMappingURL=Entity.schema.json.esm.js.map
-
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/EntityEnvelope.schema.json.esm.js
-var schema_EntityEnvelope_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
-var schema_EntityEnvelope_schema_json_esm_$id = "EntityEnvelope";
-var schema_EntityEnvelope_schema_json_esm_description = "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.";
-var schema_EntityEnvelope_schema_json_esm_examples = [
-	{
-		apiVersion: "backstage.io/v1alpha1",
-		kind: "Component",
-		metadata: {
-			name: "LoremService"
-		}
-	}
-];
-var schema_EntityEnvelope_schema_json_esm_type = "object";
-var schema_EntityEnvelope_schema_json_esm_required = [
-	"apiVersion",
-	"kind",
-	"metadata"
-];
-var schema_EntityEnvelope_schema_json_esm_additionalProperties = true;
-var schema_EntityEnvelope_schema_json_esm_properties = {
-	apiVersion: {
-		type: "string",
-		description: "The version of specification format for this particular entity that this is written against.",
-		minLength: 1,
-		examples: [
-			"backstage.io/v1alpha1",
-			"my-company.net/v1",
-			"1.0"
-		]
-	},
-	kind: {
-		type: "string",
-		description: "The high level entity type being described.",
-		minLength: 1,
-		examples: [
-			"API",
-			"Component",
-			"Domain",
-			"Group",
-			"Location",
-			"Resource",
-			"System",
-			"Template",
-			"User"
-		]
-	},
-	metadata: {
-		type: "object",
-		required: [
-			"name"
-		],
-		additionalProperties: true,
-		properties: {
-			name: {
-				type: "string",
-				description: "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
-				examples: [
-					"metadata-proxy"
-				],
-				minLength: 1
-			},
-			namespace: {
-				type: "string",
-				description: "The namespace that the entity belongs to.",
-				"default": "default",
-				examples: [
-					"default",
-					"admin"
-				],
-				minLength: 1
-			}
-		}
-	}
-};
-var EntityEnvelope_schema_json_esm_entityEnvelopeSchema = {
-	$schema: schema_EntityEnvelope_schema_json_esm_$schema,
-	$id: schema_EntityEnvelope_schema_json_esm_$id,
-	description: schema_EntityEnvelope_schema_json_esm_description,
-	examples: schema_EntityEnvelope_schema_json_esm_examples,
-	type: schema_EntityEnvelope_schema_json_esm_type,
-	required: schema_EntityEnvelope_schema_json_esm_required,
-	additionalProperties: schema_EntityEnvelope_schema_json_esm_additionalProperties,
-	properties: schema_EntityEnvelope_schema_json_esm_properties
-};
-
-
-//# sourceMappingURL=EntityEnvelope.schema.json.esm.js.map
-
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/EntityMeta.schema.json.esm.js
-var schema_EntityMeta_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
-var schema_EntityMeta_schema_json_esm_$id = "EntityMeta";
-var schema_EntityMeta_schema_json_esm_description = "Metadata fields common to all versions/kinds of entity.";
-var schema_EntityMeta_schema_json_esm_examples = [
-	{
-		uid: "e01199ab-08cc-44c2-8e19-5c29ded82521",
-		etag: "lsndfkjsndfkjnsdfkjnsd==",
-		name: "my-component-yay",
-		namespace: "the-namespace",
-		labels: {
-			"backstage.io/custom": "ValueStuff"
-		},
-		annotations: {
-			"example.com/bindings": "are-secret"
-		},
-		tags: [
-			"java",
-			"data"
-		]
-	}
-];
-var schema_EntityMeta_schema_json_esm_type = "object";
-var schema_EntityMeta_schema_json_esm_required = [
-	"name"
-];
-var schema_EntityMeta_schema_json_esm_additionalProperties = true;
-var schema_EntityMeta_schema_json_esm_properties = {
-	uid: {
-		type: "string",
-		description: "A globally unique ID for the entity. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, but the server is free to reject requests that do so in such a way that it breaks semantics.",
-		examples: [
-			"e01199ab-08cc-44c2-8e19-5c29ded82521"
-		],
-		minLength: 1
-	},
-	etag: {
-		type: "string",
-		description: "An opaque string that changes for each update operation to any part of the entity, including metadata. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, and the server will then reject the operation if it does not match the current stored value.",
-		examples: [
-			"lsndfkjsndfkjnsdfkjnsd=="
-		],
-		minLength: 1
-	},
-	name: {
-		type: "string",
-		description: "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
-		examples: [
-			"metadata-proxy"
-		],
-		minLength: 1
-	},
-	namespace: {
-		type: "string",
-		description: "The namespace that the entity belongs to.",
-		"default": "default",
-		examples: [
-			"default",
-			"admin"
-		],
-		minLength: 1
-	},
-	title: {
-		type: "string",
-		description: "A display name of the entity, to be presented in user interfaces instead of the name property, when available.",
-		examples: [
-			"React SSR Template"
-		],
-		minLength: 1
-	},
-	description: {
-		type: "string",
-		description: "A short (typically relatively few words, on one line) description of the entity."
-	},
-	labels: {
-		type: "object",
-		description: "Key/value pairs of identifying information attached to the entity.",
-		additionalProperties: true,
-		patternProperties: {
-			"^.+$": {
-				type: "string"
-			}
-		}
-	},
-	annotations: {
-		type: "object",
-		description: "Key/value pairs of non-identifying auxiliary information attached to the entity.",
-		additionalProperties: true,
-		patternProperties: {
-			"^.+$": {
-				type: "string"
-			}
-		}
-	},
-	tags: {
-		type: "array",
-		description: "A list of single-valued strings, to for example classify catalog entities in various ways.",
-		items: {
-			type: "string",
-			minLength: 1
-		}
-	},
-	links: {
-		type: "array",
-		description: "A list of external hyperlinks related to the entity. Links can provide additional contextual information that may be located outside of Backstage itself. For example, an admin dashboard or external CMS page.",
-		items: {
-			type: "object",
-			required: [
-				"url"
-			],
-			properties: {
-				url: {
-					type: "string",
-					description: "A url in a standard uri format.",
-					examples: [
-						"https://admin.example-org.com"
-					],
-					minLength: 1
-				},
-				title: {
-					type: "string",
-					description: "A user friendly display name for the link.",
-					examples: [
-						"Admin Dashboard"
-					],
-					minLength: 1
-				},
-				icon: {
-					type: "string",
-					description: "A key representing a visual icon to be displayed in the UI.",
-					examples: [
-						"dashboard"
-					],
-					minLength: 1
-				},
-				type: {
-					type: "string",
-					description: "An optional value to categorize links into specific groups.",
-					examples: [
-						"runbook",
-						"documentation",
-						"logs",
-						"dashboard"
-					],
-					minLength: 1
-				}
-			}
-		}
-	}
-};
-var EntityMeta_schema_json_esm_entityMetaSchema = {
-	$schema: schema_EntityMeta_schema_json_esm_$schema,
-	$id: schema_EntityMeta_schema_json_esm_$id,
-	description: schema_EntityMeta_schema_json_esm_description,
-	examples: schema_EntityMeta_schema_json_esm_examples,
-	type: schema_EntityMeta_schema_json_esm_type,
-	required: schema_EntityMeta_schema_json_esm_required,
-	additionalProperties: schema_EntityMeta_schema_json_esm_additionalProperties,
-	properties: schema_EntityMeta_schema_json_esm_properties
-};
-
-
-//# sourceMappingURL=EntityMeta.schema.json.esm.js.map
-
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/schema/shared/common.schema.json.esm.js
-var shared_common_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
-var shared_common_schema_json_esm_$id = "common";
-var shared_common_schema_json_esm_type = "object";
-var shared_common_schema_json_esm_description = "Common definitions to import from other schemas";
-var common_schema_json_esm_definitions = {
-	reference: {
-		$id: "#reference",
-		type: "object",
-		description: "A reference by name to another entity.",
-		required: [
-			"kind",
-			"namespace",
-			"name"
-		],
-		additionalProperties: false,
-		properties: {
-			kind: {
-				type: "string",
-				description: "The kind field of the entity.",
-				minLength: 1
-			},
-			namespace: {
-				type: "string",
-				description: "The metadata.namespace field of the entity.",
-				minLength: 1
-			},
-			name: {
-				type: "string",
-				description: "The metadata.name field of the entity.",
-				minLength: 1
-			}
-		}
-	},
-	relation: {
-		$id: "#relation",
-		type: "object",
-		description: "A directed relation from one entity to another.",
-		required: [
-			"type",
-			"targetRef"
-		],
-		additionalProperties: false,
-		properties: {
-			type: {
-				type: "string",
-				minLength: 1,
-				pattern: "^\\w+$",
-				description: "The type of relation."
-			},
-			target: {
-				$ref: "#reference",
-				deprecated: true
-			},
-			targetRef: {
-				type: "string",
-				minLength: 1,
-				description: "The entity ref of the target of this relation."
-			}
-		}
-	},
-	status: {
-		$id: "#status",
-		type: "object",
-		description: "The current status of the entity, as claimed by various sources.",
-		required: [
-		],
-		additionalProperties: true,
-		properties: {
-			items: {
-				type: "array",
-				items: {
-					$ref: "#statusItem"
-				}
-			}
-		}
-	},
-	statusItem: {
-		$id: "#statusItem",
-		type: "object",
-		description: "A specific status item on a well known format.",
-		required: [
-			"type",
-			"level",
-			"message"
-		],
-		additionalProperties: true,
-		properties: {
-			type: {
-				type: "string",
-				minLength: 1
-			},
-			level: {
-				$ref: "#statusLevel",
-				description: "The status level / severity of the status item."
-			},
-			message: {
-				type: "string",
-				description: "A brief message describing the status, intended for human consumption."
-			},
-			error: {
-				$ref: "#error",
-				description: "An optional serialized error object related to the status."
-			}
-		}
-	},
-	statusLevel: {
-		$id: "#statusLevel",
-		type: "string",
-		description: "A status level / severity.",
-		"enum": [
-			"info",
-			"warning",
-			"error"
-		]
-	},
-	error: {
-		$id: "#error",
-		type: "object",
-		description: "A serialized error object.",
-		required: [
-			"name",
-			"message"
-		],
-		additionalProperties: true,
-		properties: {
-			name: {
-				type: "string",
-				examples: [
-					"Error",
-					"InputError"
-				],
-				description: "The type name of the error",
-				minLength: 1
-			},
-			message: {
-				type: "string",
-				description: "The message of the error"
-			},
-			code: {
-				type: "string",
-				description: "An error code associated with the error"
-			},
-			stack: {
-				type: "string",
-				description: "An error stack trace"
-			}
-		}
-	}
-};
-var common_schema_json_esm_commonSchema = {
-	$schema: shared_common_schema_json_esm_$schema,
-	$id: shared_common_schema_json_esm_$id,
-	type: shared_common_schema_json_esm_type,
-	description: shared_common_schema_json_esm_description,
-	definitions: common_schema_json_esm_definitions
-};
-
-
-//# sourceMappingURL=common.schema.json.esm.js.map
-
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/validation/ajv.esm.js
-
-
-
-
-
-
-const ajv_esm_compiledSchemaCache = /* @__PURE__ */ new Map();
-const ajv_esm_refDependencyCandidates = [
-  EntityEnvelope_schema_json_esm_entityEnvelopeSchema,
-  Entity_schema_json_esm_entitySchema,
-  EntityMeta_schema_json_esm_entityMetaSchema,
-  common_schema_json_esm_commonSchema
-];
-function ajv_esm_throwAjvError(errors) {
-  if (!(errors == null ? void 0 : errors.length)) {
-    throw new TypeError("Unknown error");
-  }
-  const error = errors[0];
-  throw new TypeError(
-    `${error.instancePath || "<root>"} ${error.message}${error.params ? ` - ${Object.entries(error.params).map(([key, val]) => `${key}: ${val}`).join(", ")}` : ""}`
-  );
-}
-function ajv_esm_compileAjvSchema(schema, options = {}) {
-  var _a;
-  const disableCache = (_a = options == null ? void 0 : options.disableCache) != null ? _a : false;
-  const cacheKey = disableCache ? "" : JSON.stringify(schema);
-  if (!disableCache) {
-    const cached = ajv_esm_compiledSchemaCache.get(cacheKey);
-    if (cached) {
-      return cached;
-    }
-  }
-  const extraSchemas = ajv_esm_getExtraSchemas(schema);
-  const ajv = new (ajv_default())({
-    allowUnionTypes: true,
-    allErrors: true,
-    validateSchema: true
-  });
-  if (extraSchemas.length) {
-    ajv.addSchema(extraSchemas, void 0, void 0, true);
-  }
-  const compiled = ajv.compile(schema);
-  if (!disableCache) {
-    ajv_esm_compiledSchemaCache.set(cacheKey, compiled);
-  }
-  return compiled;
-}
-function ajv_esm_getExtraSchemas(schema) {
-  if (typeof schema !== "object") {
-    return [];
-  }
-  const seen = /* @__PURE__ */ new Set();
-  if (schema.$id) {
-    seen.add(schema.$id);
-  }
-  const selected = new Array();
-  const todo = [schema];
-  while (todo.length) {
-    const current = todo.pop();
-    for (const ref of ajv_esm_getAllRefs(current)) {
-      if (!seen.has(ref)) {
-        seen.add(ref);
-        const match = ajv_esm_refDependencyCandidates.find((c) => c.$id === ref);
-        if (match) {
-          selected.push(match);
-          todo.push(match);
-        }
-      }
-    }
-  }
-  return selected;
-}
-function* ajv_esm_getAllRefs(schema) {
-  const todo = [schema];
-  while (todo.length) {
-    const current = todo.pop();
-    if (typeof current === "object" && current) {
-      for (const [key, value] of Object.entries(current)) {
-        if (key === "$ref" && typeof value === "string") {
-          yield value.split("#")[0];
-        } else {
-          todo.push(value);
-        }
-      }
-    }
-  }
-}
-
-
-//# sourceMappingURL=ajv.esm.js.map
-
-;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/node_modules/@backstage/catalog-model/dist/validation/entityKindSchemaValidator.esm.js
-
-
-function entityKindSchemaValidator_esm_entityKindSchemaValidator(schema) {
-  const validate = ajv_esm_compileAjvSchema(schema);
-  return (data) => {
-    var _a;
-    const result = validate(data);
-    if (result === true) {
-      return data;
-    }
-    const softCandidates = (_a = validate.errors) == null ? void 0 : _a.filter(
-      (e) => ["/kind", "/apiVersion"].includes(e.instancePath)
-    );
-    if ((softCandidates == null ? void 0 : softCandidates.length) && softCandidates.every((e) => e.keyword === "enum")) {
-      return false;
-    }
-    throw ajv_esm_throwAjvError(validate.errors);
-  };
-}
-
-
-//# sourceMappingURL=entityKindSchemaValidator.esm.js.map
 
 ;// CONCATENATED MODULE: ./node_modules/@backstage/plugin-scaffolder-common/dist/Template.v1beta3.schema.json.esm.js
 var Template_v1beta3_schema_json_esm_$schema = "http://json-schema.org/draft-07/schema";
@@ -8690,7 +8069,7 @@ var Template_v1beta3_schema_json_esm_schema = {
 
 
 
-const validator = entityKindSchemaValidator_esm_entityKindSchemaValidator(Template_v1beta3_schema_json_esm_schema);
+const validator = entityKindSchemaValidator(Template_v1beta3_schema_json_esm_schema);
 const templateEntityV1beta3Validator = {
   // TODO(freben): Emulate the old KindValidator until we fix that type
   async check(data) {
@@ -15015,61 +14394,7 @@ function range(a, b, str) {
 
 /***/ }),
 
-/***/ 8206:
-/***/ ((module) => {
-
-"use strict";
-
-
-// do not edit .js files directly - edit src/index.jst
-
-
-
-module.exports = function equal(a, b) {
-  if (a === b) return true;
-
-  if (a && b && typeof a == 'object' && typeof b == 'object') {
-    if (a.constructor !== b.constructor) return false;
-
-    var length, i, keys;
-    if (Array.isArray(a)) {
-      length = a.length;
-      if (length != b.length) return false;
-      for (i = length; i-- !== 0;)
-        if (!equal(a[i], b[i])) return false;
-      return true;
-    }
-
-
-
-    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
-    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
-    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
-
-    keys = Object.keys(a);
-    length = keys.length;
-    if (length !== Object.keys(b).length) return false;
-
-    for (i = length; i-- !== 0;)
-      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
-
-    for (i = length; i-- !== 0;) {
-      var key = keys[i];
-
-      if (!equal(a[key], b[key])) return false;
-    }
-
-    return true;
-  }
-
-  // true if both NaN, false otherwise
-  return a!==a && b!==b;
-};
-
-
-/***/ }),
-
-/***/ 1046:
+/***/ 3717:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var balanced = __nccwpck_require__(9417);
@@ -15275,6 +14600,60 @@ function expand(str, isTop) {
   return expansions;
 }
 
+
+
+/***/ }),
+
+/***/ 8206:
+/***/ ((module) => {
+
+"use strict";
+
+
+// do not edit .js files directly - edit src/index.jst
+
+
+
+module.exports = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+
+    var length, i, keys;
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (!equal(a[i], b[i])) return false;
+      return true;
+    }
+
+
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      var key = keys[i];
+
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  }
+
+  // true if both NaN, false otherwise
+  return a!==a && b!==b;
+};
 
 
 /***/ }),
@@ -57185,6 +56564,159 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 4351:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const glob = __nccwpck_require__(8211);
+const { validateFromFile } = __nccwpck_require__(620);
+
+const usage = `
+Usage: validate-entity [OPTION] [FILE]
+
+Validates Backstage entity definition files.  Files may be specified as
+arguments or via STDIN, one per line.
+
+OPTION:
+-h  display help
+-q  minimal output while validating entities
+-i  validate files provided over standard input
+-l  location of custom validation schema file
+`.trim();
+
+async function validate(files, { github, verbose, validationSchemaFileLocation }) {
+  const errors = [];
+  let successCount = 0;
+
+  for (const file of files) {
+    try {
+      if (github) {
+        core.setOutput('time', new Date().toTimeString());
+      }
+
+      await validateFromFile(file, verbose, validationSchemaFileLocation);
+      successCount++;
+    } catch (err) {
+      errors.push({ file, error: err.message });
+      if (!verbose) {
+        console.error(`Failed to validate ${file}: ${err.message}`);
+      }
+    }
+  }
+
+  // Print summary
+  const totalFiles = files.length;
+  const failedCount = errors.length;
+
+  if (failedCount > 0) {
+    console.error(`\n${'='.repeat(60)}`);
+    console.error(`Validation Summary:`);
+    console.error(`  Total files: ${totalFiles}`);
+    console.error(`  ✓ Passed: ${successCount}`);
+    console.error(`  ✗ Failed: ${failedCount}`);
+    console.error(`${'='.repeat(60)}`);
+
+    if (verbose) {
+      console.error(`\nFailed files:`);
+      errors.forEach(({ file, error }) => {
+        console.error(`  ✗ ${file}`);
+        console.error(`    ${error}`);
+      });
+    }
+
+    if (github) {
+      const errorSummary = errors.map(e => `${e.file}: ${e.error}`).join('\n');
+      core.setFailed(`Validation failed for ${failedCount} file(s):\n${errorSummary}`);
+    }
+
+    return 1;
+  }
+
+  if (verbose) {
+    console.log(`\n✓ All ${totalFiles} file(s) validated successfully`);
+  }
+
+  return 0;
+}
+
+async function main() {
+  const argv = __nccwpck_require__(5871)(process.argv.slice(2), {
+    boolean: ['h', 'i', 'q'],
+    default: {
+      // help
+      h: false,
+      // read file(s) to validate from STDIN
+      i: false,
+      // quiet output
+      q: false,
+    }
+  });
+
+  if (argv.h) {
+    console.log(usage);
+    return 0;
+  }
+
+  const options = {
+    verbose: !argv.q,
+    github: false,
+    validationSchemaFileLocation: argv.l
+  };
+
+  // files to validate
+  let files = [];
+
+  // this will be empty in non-github environments
+  const ghPath = core.getInput('path');
+  if (ghPath) {
+    // add one or more files seperated by comma
+    files = files.concat(ghPath.split(','));
+    options.github = true;
+  }
+
+  const ghVerbose = core.getInput('verbose');
+  if (ghVerbose) {
+    options.verbose = ghVerbose === 'true';
+  }
+
+  const ghValidationSchemaFileLocation = core.getInput('validationSchemaFileLocation');
+  if (ghValidationSchemaFileLocation) {
+    options.validationSchemaFileLocation = ghValidationSchemaFileLocation;
+  }
+
+  // add files specified as arguments
+  files = files.concat(argv._);
+
+  if (argv.i) {
+    // add files specified over STDIN
+    files = files.concat((__nccwpck_require__(7147).readFileSync)(0)
+      .toString()
+      .split('\n')
+      .filter(l => l.length > 0));
+  }
+
+  // Expand glob patterns like services/*/catalog.yaml into a list of files
+  files = files.map(file => glob.sync(file)).flat();
+
+  if (files.length === 0) {
+    console.error('No files specified to validate');
+    return 1;
+  }
+
+  return await validate(files, options);
+}
+
+// Export for testing
+module.exports = { validate };
+
+// Only run main if this is the entry point
+if (require.main === require.cache[eval('__filename')]) {
+  main().then(process.exit);
+}
+
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
@@ -59075,7 +58607,7 @@ module.exports = parseParams
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Glob = void 0;
-const minimatch_1 = __nccwpck_require__(658);
+const minimatch_1 = __nccwpck_require__(4501);
 const node_url_1 = __nccwpck_require__(1041);
 const path_scurry_1 = __nccwpck_require__(1081);
 const pattern_js_1 = __nccwpck_require__(6866);
@@ -59329,7 +58861,7 @@ exports.Glob = Glob;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.hasMagic = void 0;
-const minimatch_1 = __nccwpck_require__(658);
+const minimatch_1 = __nccwpck_require__(4501);
 /**
  * Return true if the patterns provided contain any magic glob characters,
  * given the options provided.
@@ -59367,7 +58899,7 @@ exports.hasMagic = hasMagic;
 // Ignores are always parsed in dot:true mode
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Ignore = void 0;
-const minimatch_1 = __nccwpck_require__(658);
+const minimatch_1 = __nccwpck_require__(4501);
 const pattern_js_1 = __nccwpck_require__(6866);
 const defaultPlatform = (typeof process === 'object' &&
     process &&
@@ -59494,10 +59026,10 @@ exports.globStream = globStream;
 exports.globSync = globSync;
 exports.globIterateSync = globIterateSync;
 exports.globIterate = globIterate;
-const minimatch_1 = __nccwpck_require__(658);
+const minimatch_1 = __nccwpck_require__(4501);
 const glob_js_1 = __nccwpck_require__(2487);
 const has_magic_js_1 = __nccwpck_require__(3133);
-var minimatch_2 = __nccwpck_require__(658);
+var minimatch_2 = __nccwpck_require__(4501);
 Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return minimatch_2.escape; } }));
 Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return minimatch_2.unescape; } }));
 var glob_js_2 = __nccwpck_require__(2487);
@@ -59565,7 +59097,7 @@ exports.glob.glob = exports.glob;
 // this is just a very light wrapper around 2 arrays with an offset index
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Pattern = void 0;
-const minimatch_1 = __nccwpck_require__(658);
+const minimatch_1 = __nccwpck_require__(4501);
 const isPatternList = (pl) => pl.length >= 1;
 const isGlobList = (gl) => gl.length >= 1;
 /**
@@ -59791,7 +59323,7 @@ exports.Pattern = Pattern;
 // synchronous utility for filtering entries and calculating subwalks
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Processor = exports.SubWalks = exports.MatchRecord = exports.HasWalkedCache = void 0;
-const minimatch_1 = __nccwpck_require__(658);
+const minimatch_1 = __nccwpck_require__(4501);
 /**
  * A cache of which patterns have been processed for a given Path
  */
@@ -60485,7 +60017,7 @@ exports.GlobStream = GlobStream;
 
 /***/ }),
 
-/***/ 2401:
+/***/ 4149:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -60506,7 +60038,7 @@ exports.assertValidPattern = assertValidPattern;
 
 /***/ }),
 
-/***/ 6034:
+/***/ 5136:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -60514,8 +60046,8 @@ exports.assertValidPattern = assertValidPattern;
 // parse a single path portion
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AST = void 0;
-const brace_expressions_js_1 = __nccwpck_require__(3096);
-const unescape_js_1 = __nccwpck_require__(7226);
+const brace_expressions_js_1 = __nccwpck_require__(1812);
+const unescape_js_1 = __nccwpck_require__(5698);
 const types = new Set(['!', '?', '+', '*', '@']);
 const isExtglobType = (c) => types.has(c);
 // Patterns that get prepended to bind to the start of either the
@@ -61105,7 +60637,7 @@ exports.AST = AST;
 
 /***/ }),
 
-/***/ 3096:
+/***/ 1812:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -61264,7 +60796,7 @@ exports.parseClass = parseClass;
 
 /***/ }),
 
-/***/ 1496:
+/***/ 2804:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -61293,7 +60825,7 @@ exports.escape = escape;
 
 /***/ }),
 
-/***/ 658:
+/***/ 4501:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -61303,11 +60835,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.unescape = exports.escape = exports.AST = exports.Minimatch = exports.match = exports.makeRe = exports.braceExpand = exports.defaults = exports.filter = exports.GLOBSTAR = exports.sep = exports.minimatch = void 0;
-const brace_expansion_1 = __importDefault(__nccwpck_require__(1046));
-const assert_valid_pattern_js_1 = __nccwpck_require__(2401);
-const ast_js_1 = __nccwpck_require__(6034);
-const escape_js_1 = __nccwpck_require__(1496);
-const unescape_js_1 = __nccwpck_require__(7226);
+const brace_expansion_1 = __importDefault(__nccwpck_require__(3717));
+const assert_valid_pattern_js_1 = __nccwpck_require__(4149);
+const ast_js_1 = __nccwpck_require__(5136);
+const escape_js_1 = __nccwpck_require__(2804);
+const unescape_js_1 = __nccwpck_require__(5698);
 const minimatch = (p, pattern, options = {}) => {
     (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
     // shortcut: comments match nothing.
@@ -62302,11 +61834,11 @@ class Minimatch {
 }
 exports.Minimatch = Minimatch;
 /* c8 ignore start */
-var ast_js_2 = __nccwpck_require__(6034);
+var ast_js_2 = __nccwpck_require__(5136);
 Object.defineProperty(exports, "AST", ({ enumerable: true, get: function () { return ast_js_2.AST; } }));
-var escape_js_2 = __nccwpck_require__(1496);
+var escape_js_2 = __nccwpck_require__(2804);
 Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return escape_js_2.escape; } }));
-var unescape_js_2 = __nccwpck_require__(7226);
+var unescape_js_2 = __nccwpck_require__(5698);
 Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return unescape_js_2.unescape; } }));
 /* c8 ignore stop */
 exports.minimatch.AST = ast_js_1.AST;
@@ -62317,7 +61849,7 @@ exports.minimatch.unescape = unescape_js_1.unescape;
 
 /***/ }),
 
-/***/ 7226:
+/***/ 5698:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -62345,1559 +61877,6 @@ const unescape = (s, { windowsPathsNoEscape = false, } = {}) => {
 };
 exports.unescape = unescape;
 //# sourceMappingURL=unescape.js.map
-
-/***/ }),
-
-/***/ 3866:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/**
- * @module LRUCache
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LRUCache = void 0;
-const perf = typeof performance === 'object' &&
-    performance &&
-    typeof performance.now === 'function'
-    ? performance
-    : Date;
-const warned = new Set();
-/* c8 ignore start */
-const PROCESS = (typeof process === 'object' && !!process ? process : {});
-/* c8 ignore start */
-const emitWarning = (msg, type, code, fn) => {
-    typeof PROCESS.emitWarning === 'function'
-        ? PROCESS.emitWarning(msg, type, code, fn)
-        : console.error(`[${code}] ${type}: ${msg}`);
-};
-let AC = globalThis.AbortController;
-let AS = globalThis.AbortSignal;
-/* c8 ignore start */
-if (typeof AC === 'undefined') {
-    //@ts-ignore
-    AS = class AbortSignal {
-        onabort;
-        _onabort = [];
-        reason;
-        aborted = false;
-        addEventListener(_, fn) {
-            this._onabort.push(fn);
-        }
-    };
-    //@ts-ignore
-    AC = class AbortController {
-        constructor() {
-            warnACPolyfill();
-        }
-        signal = new AS();
-        abort(reason) {
-            if (this.signal.aborted)
-                return;
-            //@ts-ignore
-            this.signal.reason = reason;
-            //@ts-ignore
-            this.signal.aborted = true;
-            //@ts-ignore
-            for (const fn of this.signal._onabort) {
-                fn(reason);
-            }
-            this.signal.onabort?.(reason);
-        }
-    };
-    let printACPolyfillWarning = PROCESS.env?.LRU_CACHE_IGNORE_AC_WARNING !== '1';
-    const warnACPolyfill = () => {
-        if (!printACPolyfillWarning)
-            return;
-        printACPolyfillWarning = false;
-        emitWarning('AbortController is not defined. If using lru-cache in ' +
-            'node 14, load an AbortController polyfill from the ' +
-            '`node-abort-controller` package. A minimal polyfill is ' +
-            'provided for use by LRUCache.fetch(), but it should not be ' +
-            'relied upon in other contexts (eg, passing it to other APIs that ' +
-            'use AbortController/AbortSignal might have undesirable effects). ' +
-            'You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.', 'NO_ABORT_CONTROLLER', 'ENOTSUP', warnACPolyfill);
-    };
-}
-/* c8 ignore stop */
-const shouldWarn = (code) => !warned.has(code);
-const TYPE = Symbol('type');
-const isPosInt = (n) => n && n === Math.floor(n) && n > 0 && isFinite(n);
-/* c8 ignore start */
-// This is a little bit ridiculous, tbh.
-// The maximum array length is 2^32-1 or thereabouts on most JS impls.
-// And well before that point, you're caching the entire world, I mean,
-// that's ~32GB of just integers for the next/prev links, plus whatever
-// else to hold that many keys and values.  Just filling the memory with
-// zeroes at init time is brutal when you get that big.
-// But why not be complete?
-// Maybe in the future, these limits will have expanded.
-const getUintArray = (max) => !isPosInt(max)
-    ? null
-    : max <= Math.pow(2, 8)
-        ? Uint8Array
-        : max <= Math.pow(2, 16)
-            ? Uint16Array
-            : max <= Math.pow(2, 32)
-                ? Uint32Array
-                : max <= Number.MAX_SAFE_INTEGER
-                    ? ZeroArray
-                    : null;
-/* c8 ignore stop */
-class ZeroArray extends Array {
-    constructor(size) {
-        super(size);
-        this.fill(0);
-    }
-}
-class Stack {
-    heap;
-    length;
-    // private constructor
-    static #constructing = false;
-    static create(max) {
-        const HeapCls = getUintArray(max);
-        if (!HeapCls)
-            return [];
-        Stack.#constructing = true;
-        const s = new Stack(max, HeapCls);
-        Stack.#constructing = false;
-        return s;
-    }
-    constructor(max, HeapCls) {
-        /* c8 ignore start */
-        if (!Stack.#constructing) {
-            throw new TypeError('instantiate Stack using Stack.create(n)');
-        }
-        /* c8 ignore stop */
-        this.heap = new HeapCls(max);
-        this.length = 0;
-    }
-    push(n) {
-        this.heap[this.length++] = n;
-    }
-    pop() {
-        return this.heap[--this.length];
-    }
-}
-/**
- * Default export, the thing you're using this module to get.
- *
- * The `K` and `V` types define the key and value types, respectively. The
- * optional `FC` type defines the type of the `context` object passed to
- * `cache.fetch()` and `cache.memo()`.
- *
- * Keys and values **must not** be `null` or `undefined`.
- *
- * All properties from the options object (with the exception of `max`,
- * `maxSize`, `fetchMethod`, `memoMethod`, `dispose` and `disposeAfter`) are
- * added as normal public members. (The listed options are read-only getters.)
- *
- * Changing any of these will alter the defaults for subsequent method calls.
- */
-class LRUCache {
-    // options that cannot be changed without disaster
-    #max;
-    #maxSize;
-    #dispose;
-    #disposeAfter;
-    #fetchMethod;
-    #memoMethod;
-    /**
-     * {@link LRUCache.OptionsBase.ttl}
-     */
-    ttl;
-    /**
-     * {@link LRUCache.OptionsBase.ttlResolution}
-     */
-    ttlResolution;
-    /**
-     * {@link LRUCache.OptionsBase.ttlAutopurge}
-     */
-    ttlAutopurge;
-    /**
-     * {@link LRUCache.OptionsBase.updateAgeOnGet}
-     */
-    updateAgeOnGet;
-    /**
-     * {@link LRUCache.OptionsBase.updateAgeOnHas}
-     */
-    updateAgeOnHas;
-    /**
-     * {@link LRUCache.OptionsBase.allowStale}
-     */
-    allowStale;
-    /**
-     * {@link LRUCache.OptionsBase.noDisposeOnSet}
-     */
-    noDisposeOnSet;
-    /**
-     * {@link LRUCache.OptionsBase.noUpdateTTL}
-     */
-    noUpdateTTL;
-    /**
-     * {@link LRUCache.OptionsBase.maxEntrySize}
-     */
-    maxEntrySize;
-    /**
-     * {@link LRUCache.OptionsBase.sizeCalculation}
-     */
-    sizeCalculation;
-    /**
-     * {@link LRUCache.OptionsBase.noDeleteOnFetchRejection}
-     */
-    noDeleteOnFetchRejection;
-    /**
-     * {@link LRUCache.OptionsBase.noDeleteOnStaleGet}
-     */
-    noDeleteOnStaleGet;
-    /**
-     * {@link LRUCache.OptionsBase.allowStaleOnFetchAbort}
-     */
-    allowStaleOnFetchAbort;
-    /**
-     * {@link LRUCache.OptionsBase.allowStaleOnFetchRejection}
-     */
-    allowStaleOnFetchRejection;
-    /**
-     * {@link LRUCache.OptionsBase.ignoreFetchAbort}
-     */
-    ignoreFetchAbort;
-    // computed properties
-    #size;
-    #calculatedSize;
-    #keyMap;
-    #keyList;
-    #valList;
-    #next;
-    #prev;
-    #head;
-    #tail;
-    #free;
-    #disposed;
-    #sizes;
-    #starts;
-    #ttls;
-    #hasDispose;
-    #hasFetchMethod;
-    #hasDisposeAfter;
-    /**
-     * Do not call this method unless you need to inspect the
-     * inner workings of the cache.  If anything returned by this
-     * object is modified in any way, strange breakage may occur.
-     *
-     * These fields are private for a reason!
-     *
-     * @internal
-     */
-    static unsafeExposeInternals(c) {
-        return {
-            // properties
-            starts: c.#starts,
-            ttls: c.#ttls,
-            sizes: c.#sizes,
-            keyMap: c.#keyMap,
-            keyList: c.#keyList,
-            valList: c.#valList,
-            next: c.#next,
-            prev: c.#prev,
-            get head() {
-                return c.#head;
-            },
-            get tail() {
-                return c.#tail;
-            },
-            free: c.#free,
-            // methods
-            isBackgroundFetch: (p) => c.#isBackgroundFetch(p),
-            backgroundFetch: (k, index, options, context) => c.#backgroundFetch(k, index, options, context),
-            moveToTail: (index) => c.#moveToTail(index),
-            indexes: (options) => c.#indexes(options),
-            rindexes: (options) => c.#rindexes(options),
-            isStale: (index) => c.#isStale(index),
-        };
-    }
-    // Protected read-only members
-    /**
-     * {@link LRUCache.OptionsBase.max} (read-only)
-     */
-    get max() {
-        return this.#max;
-    }
-    /**
-     * {@link LRUCache.OptionsBase.maxSize} (read-only)
-     */
-    get maxSize() {
-        return this.#maxSize;
-    }
-    /**
-     * The total computed size of items in the cache (read-only)
-     */
-    get calculatedSize() {
-        return this.#calculatedSize;
-    }
-    /**
-     * The number of items stored in the cache (read-only)
-     */
-    get size() {
-        return this.#size;
-    }
-    /**
-     * {@link LRUCache.OptionsBase.fetchMethod} (read-only)
-     */
-    get fetchMethod() {
-        return this.#fetchMethod;
-    }
-    get memoMethod() {
-        return this.#memoMethod;
-    }
-    /**
-     * {@link LRUCache.OptionsBase.dispose} (read-only)
-     */
-    get dispose() {
-        return this.#dispose;
-    }
-    /**
-     * {@link LRUCache.OptionsBase.disposeAfter} (read-only)
-     */
-    get disposeAfter() {
-        return this.#disposeAfter;
-    }
-    constructor(options) {
-        const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, } = options;
-        if (max !== 0 && !isPosInt(max)) {
-            throw new TypeError('max option must be a nonnegative integer');
-        }
-        const UintArray = max ? getUintArray(max) : Array;
-        if (!UintArray) {
-            throw new Error('invalid max value: ' + max);
-        }
-        this.#max = max;
-        this.#maxSize = maxSize;
-        this.maxEntrySize = maxEntrySize || this.#maxSize;
-        this.sizeCalculation = sizeCalculation;
-        if (this.sizeCalculation) {
-            if (!this.#maxSize && !this.maxEntrySize) {
-                throw new TypeError('cannot set sizeCalculation without setting maxSize or maxEntrySize');
-            }
-            if (typeof this.sizeCalculation !== 'function') {
-                throw new TypeError('sizeCalculation set to non-function');
-            }
-        }
-        if (memoMethod !== undefined &&
-            typeof memoMethod !== 'function') {
-            throw new TypeError('memoMethod must be a function if defined');
-        }
-        this.#memoMethod = memoMethod;
-        if (fetchMethod !== undefined &&
-            typeof fetchMethod !== 'function') {
-            throw new TypeError('fetchMethod must be a function if specified');
-        }
-        this.#fetchMethod = fetchMethod;
-        this.#hasFetchMethod = !!fetchMethod;
-        this.#keyMap = new Map();
-        this.#keyList = new Array(max).fill(undefined);
-        this.#valList = new Array(max).fill(undefined);
-        this.#next = new UintArray(max);
-        this.#prev = new UintArray(max);
-        this.#head = 0;
-        this.#tail = 0;
-        this.#free = Stack.create(max);
-        this.#size = 0;
-        this.#calculatedSize = 0;
-        if (typeof dispose === 'function') {
-            this.#dispose = dispose;
-        }
-        if (typeof disposeAfter === 'function') {
-            this.#disposeAfter = disposeAfter;
-            this.#disposed = [];
-        }
-        else {
-            this.#disposeAfter = undefined;
-            this.#disposed = undefined;
-        }
-        this.#hasDispose = !!this.#dispose;
-        this.#hasDisposeAfter = !!this.#disposeAfter;
-        this.noDisposeOnSet = !!noDisposeOnSet;
-        this.noUpdateTTL = !!noUpdateTTL;
-        this.noDeleteOnFetchRejection = !!noDeleteOnFetchRejection;
-        this.allowStaleOnFetchRejection = !!allowStaleOnFetchRejection;
-        this.allowStaleOnFetchAbort = !!allowStaleOnFetchAbort;
-        this.ignoreFetchAbort = !!ignoreFetchAbort;
-        // NB: maxEntrySize is set to maxSize if it's set
-        if (this.maxEntrySize !== 0) {
-            if (this.#maxSize !== 0) {
-                if (!isPosInt(this.#maxSize)) {
-                    throw new TypeError('maxSize must be a positive integer if specified');
-                }
-            }
-            if (!isPosInt(this.maxEntrySize)) {
-                throw new TypeError('maxEntrySize must be a positive integer if specified');
-            }
-            this.#initializeSizeTracking();
-        }
-        this.allowStale = !!allowStale;
-        this.noDeleteOnStaleGet = !!noDeleteOnStaleGet;
-        this.updateAgeOnGet = !!updateAgeOnGet;
-        this.updateAgeOnHas = !!updateAgeOnHas;
-        this.ttlResolution =
-            isPosInt(ttlResolution) || ttlResolution === 0
-                ? ttlResolution
-                : 1;
-        this.ttlAutopurge = !!ttlAutopurge;
-        this.ttl = ttl || 0;
-        if (this.ttl) {
-            if (!isPosInt(this.ttl)) {
-                throw new TypeError('ttl must be a positive integer if specified');
-            }
-            this.#initializeTTLTracking();
-        }
-        // do not allow completely unbounded caches
-        if (this.#max === 0 && this.ttl === 0 && this.#maxSize === 0) {
-            throw new TypeError('At least one of max, maxSize, or ttl is required');
-        }
-        if (!this.ttlAutopurge && !this.#max && !this.#maxSize) {
-            const code = 'LRU_CACHE_UNBOUNDED';
-            if (shouldWarn(code)) {
-                warned.add(code);
-                const msg = 'TTL caching without ttlAutopurge, max, or maxSize can ' +
-                    'result in unbounded memory consumption.';
-                emitWarning(msg, 'UnboundedCacheWarning', code, LRUCache);
-            }
-        }
-    }
-    /**
-     * Return the number of ms left in the item's TTL. If item is not in cache,
-     * returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
-     */
-    getRemainingTTL(key) {
-        return this.#keyMap.has(key) ? Infinity : 0;
-    }
-    #initializeTTLTracking() {
-        const ttls = new ZeroArray(this.#max);
-        const starts = new ZeroArray(this.#max);
-        this.#ttls = ttls;
-        this.#starts = starts;
-        this.#setItemTTL = (index, ttl, start = perf.now()) => {
-            starts[index] = ttl !== 0 ? start : 0;
-            ttls[index] = ttl;
-            if (ttl !== 0 && this.ttlAutopurge) {
-                const t = setTimeout(() => {
-                    if (this.#isStale(index)) {
-                        this.#delete(this.#keyList[index], 'expire');
-                    }
-                }, ttl + 1);
-                // unref() not supported on all platforms
-                /* c8 ignore start */
-                if (t.unref) {
-                    t.unref();
-                }
-                /* c8 ignore stop */
-            }
-        };
-        this.#updateItemAge = index => {
-            starts[index] = ttls[index] !== 0 ? perf.now() : 0;
-        };
-        this.#statusTTL = (status, index) => {
-            if (ttls[index]) {
-                const ttl = ttls[index];
-                const start = starts[index];
-                /* c8 ignore next */
-                if (!ttl || !start)
-                    return;
-                status.ttl = ttl;
-                status.start = start;
-                status.now = cachedNow || getNow();
-                const age = status.now - start;
-                status.remainingTTL = ttl - age;
-            }
-        };
-        // debounce calls to perf.now() to 1s so we're not hitting
-        // that costly call repeatedly.
-        let cachedNow = 0;
-        const getNow = () => {
-            const n = perf.now();
-            if (this.ttlResolution > 0) {
-                cachedNow = n;
-                const t = setTimeout(() => (cachedNow = 0), this.ttlResolution);
-                // not available on all platforms
-                /* c8 ignore start */
-                if (t.unref) {
-                    t.unref();
-                }
-                /* c8 ignore stop */
-            }
-            return n;
-        };
-        this.getRemainingTTL = key => {
-            const index = this.#keyMap.get(key);
-            if (index === undefined) {
-                return 0;
-            }
-            const ttl = ttls[index];
-            const start = starts[index];
-            if (!ttl || !start) {
-                return Infinity;
-            }
-            const age = (cachedNow || getNow()) - start;
-            return ttl - age;
-        };
-        this.#isStale = index => {
-            const s = starts[index];
-            const t = ttls[index];
-            return !!t && !!s && (cachedNow || getNow()) - s > t;
-        };
-    }
-    // conditionally set private methods related to TTL
-    #updateItemAge = () => { };
-    #statusTTL = () => { };
-    #setItemTTL = () => { };
-    /* c8 ignore stop */
-    #isStale = () => false;
-    #initializeSizeTracking() {
-        const sizes = new ZeroArray(this.#max);
-        this.#calculatedSize = 0;
-        this.#sizes = sizes;
-        this.#removeItemSize = index => {
-            this.#calculatedSize -= sizes[index];
-            sizes[index] = 0;
-        };
-        this.#requireSize = (k, v, size, sizeCalculation) => {
-            // provisionally accept background fetches.
-            // actual value size will be checked when they return.
-            if (this.#isBackgroundFetch(v)) {
-                return 0;
-            }
-            if (!isPosInt(size)) {
-                if (sizeCalculation) {
-                    if (typeof sizeCalculation !== 'function') {
-                        throw new TypeError('sizeCalculation must be a function');
-                    }
-                    size = sizeCalculation(v, k);
-                    if (!isPosInt(size)) {
-                        throw new TypeError('sizeCalculation return invalid (expect positive integer)');
-                    }
-                }
-                else {
-                    throw new TypeError('invalid size value (must be positive integer). ' +
-                        'When maxSize or maxEntrySize is used, sizeCalculation ' +
-                        'or size must be set.');
-                }
-            }
-            return size;
-        };
-        this.#addItemSize = (index, size, status) => {
-            sizes[index] = size;
-            if (this.#maxSize) {
-                const maxSize = this.#maxSize - sizes[index];
-                while (this.#calculatedSize > maxSize) {
-                    this.#evict(true);
-                }
-            }
-            this.#calculatedSize += sizes[index];
-            if (status) {
-                status.entrySize = size;
-                status.totalCalculatedSize = this.#calculatedSize;
-            }
-        };
-    }
-    #removeItemSize = _i => { };
-    #addItemSize = (_i, _s, _st) => { };
-    #requireSize = (_k, _v, size, sizeCalculation) => {
-        if (size || sizeCalculation) {
-            throw new TypeError('cannot set size without setting maxSize or maxEntrySize on cache');
-        }
-        return 0;
-    };
-    *#indexes({ allowStale = this.allowStale } = {}) {
-        if (this.#size) {
-            for (let i = this.#tail; true;) {
-                if (!this.#isValidIndex(i)) {
-                    break;
-                }
-                if (allowStale || !this.#isStale(i)) {
-                    yield i;
-                }
-                if (i === this.#head) {
-                    break;
-                }
-                else {
-                    i = this.#prev[i];
-                }
-            }
-        }
-    }
-    *#rindexes({ allowStale = this.allowStale } = {}) {
-        if (this.#size) {
-            for (let i = this.#head; true;) {
-                if (!this.#isValidIndex(i)) {
-                    break;
-                }
-                if (allowStale || !this.#isStale(i)) {
-                    yield i;
-                }
-                if (i === this.#tail) {
-                    break;
-                }
-                else {
-                    i = this.#next[i];
-                }
-            }
-        }
-    }
-    #isValidIndex(index) {
-        return (index !== undefined &&
-            this.#keyMap.get(this.#keyList[index]) === index);
-    }
-    /**
-     * Return a generator yielding `[key, value]` pairs,
-     * in order from most recently used to least recently used.
-     */
-    *entries() {
-        for (const i of this.#indexes()) {
-            if (this.#valList[i] !== undefined &&
-                this.#keyList[i] !== undefined &&
-                !this.#isBackgroundFetch(this.#valList[i])) {
-                yield [this.#keyList[i], this.#valList[i]];
-            }
-        }
-    }
-    /**
-     * Inverse order version of {@link LRUCache.entries}
-     *
-     * Return a generator yielding `[key, value]` pairs,
-     * in order from least recently used to most recently used.
-     */
-    *rentries() {
-        for (const i of this.#rindexes()) {
-            if (this.#valList[i] !== undefined &&
-                this.#keyList[i] !== undefined &&
-                !this.#isBackgroundFetch(this.#valList[i])) {
-                yield [this.#keyList[i], this.#valList[i]];
-            }
-        }
-    }
-    /**
-     * Return a generator yielding the keys in the cache,
-     * in order from most recently used to least recently used.
-     */
-    *keys() {
-        for (const i of this.#indexes()) {
-            const k = this.#keyList[i];
-            if (k !== undefined &&
-                !this.#isBackgroundFetch(this.#valList[i])) {
-                yield k;
-            }
-        }
-    }
-    /**
-     * Inverse order version of {@link LRUCache.keys}
-     *
-     * Return a generator yielding the keys in the cache,
-     * in order from least recently used to most recently used.
-     */
-    *rkeys() {
-        for (const i of this.#rindexes()) {
-            const k = this.#keyList[i];
-            if (k !== undefined &&
-                !this.#isBackgroundFetch(this.#valList[i])) {
-                yield k;
-            }
-        }
-    }
-    /**
-     * Return a generator yielding the values in the cache,
-     * in order from most recently used to least recently used.
-     */
-    *values() {
-        for (const i of this.#indexes()) {
-            const v = this.#valList[i];
-            if (v !== undefined &&
-                !this.#isBackgroundFetch(this.#valList[i])) {
-                yield this.#valList[i];
-            }
-        }
-    }
-    /**
-     * Inverse order version of {@link LRUCache.values}
-     *
-     * Return a generator yielding the values in the cache,
-     * in order from least recently used to most recently used.
-     */
-    *rvalues() {
-        for (const i of this.#rindexes()) {
-            const v = this.#valList[i];
-            if (v !== undefined &&
-                !this.#isBackgroundFetch(this.#valList[i])) {
-                yield this.#valList[i];
-            }
-        }
-    }
-    /**
-     * Iterating over the cache itself yields the same results as
-     * {@link LRUCache.entries}
-     */
-    [Symbol.iterator]() {
-        return this.entries();
-    }
-    /**
-     * A String value that is used in the creation of the default string
-     * description of an object. Called by the built-in method
-     * `Object.prototype.toString`.
-     */
-    [Symbol.toStringTag] = 'LRUCache';
-    /**
-     * Find a value for which the supplied fn method returns a truthy value,
-     * similar to `Array.find()`. fn is called as `fn(value, key, cache)`.
-     */
-    find(fn, getOptions = {}) {
-        for (const i of this.#indexes()) {
-            const v = this.#valList[i];
-            const value = this.#isBackgroundFetch(v)
-                ? v.__staleWhileFetching
-                : v;
-            if (value === undefined)
-                continue;
-            if (fn(value, this.#keyList[i], this)) {
-                return this.get(this.#keyList[i], getOptions);
-            }
-        }
-    }
-    /**
-     * Call the supplied function on each item in the cache, in order from most
-     * recently used to least recently used.
-     *
-     * `fn` is called as `fn(value, key, cache)`.
-     *
-     * If `thisp` is provided, function will be called in the `this`-context of
-     * the provided object, or the cache if no `thisp` object is provided.
-     *
-     * Does not update age or recenty of use, or iterate over stale values.
-     */
-    forEach(fn, thisp = this) {
-        for (const i of this.#indexes()) {
-            const v = this.#valList[i];
-            const value = this.#isBackgroundFetch(v)
-                ? v.__staleWhileFetching
-                : v;
-            if (value === undefined)
-                continue;
-            fn.call(thisp, value, this.#keyList[i], this);
-        }
-    }
-    /**
-     * The same as {@link LRUCache.forEach} but items are iterated over in
-     * reverse order.  (ie, less recently used items are iterated over first.)
-     */
-    rforEach(fn, thisp = this) {
-        for (const i of this.#rindexes()) {
-            const v = this.#valList[i];
-            const value = this.#isBackgroundFetch(v)
-                ? v.__staleWhileFetching
-                : v;
-            if (value === undefined)
-                continue;
-            fn.call(thisp, value, this.#keyList[i], this);
-        }
-    }
-    /**
-     * Delete any stale entries. Returns true if anything was removed,
-     * false otherwise.
-     */
-    purgeStale() {
-        let deleted = false;
-        for (const i of this.#rindexes({ allowStale: true })) {
-            if (this.#isStale(i)) {
-                this.#delete(this.#keyList[i], 'expire');
-                deleted = true;
-            }
-        }
-        return deleted;
-    }
-    /**
-     * Get the extended info about a given entry, to get its value, size, and
-     * TTL info simultaneously. Returns `undefined` if the key is not present.
-     *
-     * Unlike {@link LRUCache#dump}, which is designed to be portable and survive
-     * serialization, the `start` value is always the current timestamp, and the
-     * `ttl` is a calculated remaining time to live (negative if expired).
-     *
-     * Always returns stale values, if their info is found in the cache, so be
-     * sure to check for expirations (ie, a negative {@link LRUCache.Entry#ttl})
-     * if relevant.
-     */
-    info(key) {
-        const i = this.#keyMap.get(key);
-        if (i === undefined)
-            return undefined;
-        const v = this.#valList[i];
-        const value = this.#isBackgroundFetch(v)
-            ? v.__staleWhileFetching
-            : v;
-        if (value === undefined)
-            return undefined;
-        const entry = { value };
-        if (this.#ttls && this.#starts) {
-            const ttl = this.#ttls[i];
-            const start = this.#starts[i];
-            if (ttl && start) {
-                const remain = ttl - (perf.now() - start);
-                entry.ttl = remain;
-                entry.start = Date.now();
-            }
-        }
-        if (this.#sizes) {
-            entry.size = this.#sizes[i];
-        }
-        return entry;
-    }
-    /**
-     * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
-     * passed to {@link LRLUCache#load}.
-     *
-     * The `start` fields are calculated relative to a portable `Date.now()`
-     * timestamp, even if `performance.now()` is available.
-     *
-     * Stale entries are always included in the `dump`, even if
-     * {@link LRUCache.OptionsBase.allowStale} is false.
-     *
-     * Note: this returns an actual array, not a generator, so it can be more
-     * easily passed around.
-     */
-    dump() {
-        const arr = [];
-        for (const i of this.#indexes({ allowStale: true })) {
-            const key = this.#keyList[i];
-            const v = this.#valList[i];
-            const value = this.#isBackgroundFetch(v)
-                ? v.__staleWhileFetching
-                : v;
-            if (value === undefined || key === undefined)
-                continue;
-            const entry = { value };
-            if (this.#ttls && this.#starts) {
-                entry.ttl = this.#ttls[i];
-                // always dump the start relative to a portable timestamp
-                // it's ok for this to be a bit slow, it's a rare operation.
-                const age = perf.now() - this.#starts[i];
-                entry.start = Math.floor(Date.now() - age);
-            }
-            if (this.#sizes) {
-                entry.size = this.#sizes[i];
-            }
-            arr.unshift([key, entry]);
-        }
-        return arr;
-    }
-    /**
-     * Reset the cache and load in the items in entries in the order listed.
-     *
-     * The shape of the resulting cache may be different if the same options are
-     * not used in both caches.
-     *
-     * The `start` fields are assumed to be calculated relative to a portable
-     * `Date.now()` timestamp, even if `performance.now()` is available.
-     */
-    load(arr) {
-        this.clear();
-        for (const [key, entry] of arr) {
-            if (entry.start) {
-                // entry.start is a portable timestamp, but we may be using
-                // node's performance.now(), so calculate the offset, so that
-                // we get the intended remaining TTL, no matter how long it's
-                // been on ice.
-                //
-                // it's ok for this to be a bit slow, it's a rare operation.
-                const age = Date.now() - entry.start;
-                entry.start = perf.now() - age;
-            }
-            this.set(key, entry.value, entry);
-        }
-    }
-    /**
-     * Add a value to the cache.
-     *
-     * Note: if `undefined` is specified as a value, this is an alias for
-     * {@link LRUCache#delete}
-     *
-     * Fields on the {@link LRUCache.SetOptions} options param will override
-     * their corresponding values in the constructor options for the scope
-     * of this single `set()` operation.
-     *
-     * If `start` is provided, then that will set the effective start
-     * time for the TTL calculation. Note that this must be a previous
-     * value of `performance.now()` if supported, or a previous value of
-     * `Date.now()` if not.
-     *
-     * Options object may also include `size`, which will prevent
-     * calling the `sizeCalculation` function and just use the specified
-     * number if it is a positive integer, and `noDisposeOnSet` which
-     * will prevent calling a `dispose` function in the case of
-     * overwrites.
-     *
-     * If the `size` (or return value of `sizeCalculation`) for a given
-     * entry is greater than `maxEntrySize`, then the item will not be
-     * added to the cache.
-     *
-     * Will update the recency of the entry.
-     *
-     * If the value is `undefined`, then this is an alias for
-     * `cache.delete(key)`. `undefined` is never stored in the cache.
-     */
-    set(k, v, setOptions = {}) {
-        if (v === undefined) {
-            this.delete(k);
-            return this;
-        }
-        const { ttl = this.ttl, start, noDisposeOnSet = this.noDisposeOnSet, sizeCalculation = this.sizeCalculation, status, } = setOptions;
-        let { noUpdateTTL = this.noUpdateTTL } = setOptions;
-        const size = this.#requireSize(k, v, setOptions.size || 0, sizeCalculation);
-        // if the item doesn't fit, don't do anything
-        // NB: maxEntrySize set to maxSize by default
-        if (this.maxEntrySize && size > this.maxEntrySize) {
-            if (status) {
-                status.set = 'miss';
-                status.maxEntrySizeExceeded = true;
-            }
-            // have to delete, in case something is there already.
-            this.#delete(k, 'set');
-            return this;
-        }
-        let index = this.#size === 0 ? undefined : this.#keyMap.get(k);
-        if (index === undefined) {
-            // addition
-            index = (this.#size === 0
-                ? this.#tail
-                : this.#free.length !== 0
-                    ? this.#free.pop()
-                    : this.#size === this.#max
-                        ? this.#evict(false)
-                        : this.#size);
-            this.#keyList[index] = k;
-            this.#valList[index] = v;
-            this.#keyMap.set(k, index);
-            this.#next[this.#tail] = index;
-            this.#prev[index] = this.#tail;
-            this.#tail = index;
-            this.#size++;
-            this.#addItemSize(index, size, status);
-            if (status)
-                status.set = 'add';
-            noUpdateTTL = false;
-        }
-        else {
-            // update
-            this.#moveToTail(index);
-            const oldVal = this.#valList[index];
-            if (v !== oldVal) {
-                if (this.#hasFetchMethod && this.#isBackgroundFetch(oldVal)) {
-                    oldVal.__abortController.abort(new Error('replaced'));
-                    const { __staleWhileFetching: s } = oldVal;
-                    if (s !== undefined && !noDisposeOnSet) {
-                        if (this.#hasDispose) {
-                            this.#dispose?.(s, k, 'set');
-                        }
-                        if (this.#hasDisposeAfter) {
-                            this.#disposed?.push([s, k, 'set']);
-                        }
-                    }
-                }
-                else if (!noDisposeOnSet) {
-                    if (this.#hasDispose) {
-                        this.#dispose?.(oldVal, k, 'set');
-                    }
-                    if (this.#hasDisposeAfter) {
-                        this.#disposed?.push([oldVal, k, 'set']);
-                    }
-                }
-                this.#removeItemSize(index);
-                this.#addItemSize(index, size, status);
-                this.#valList[index] = v;
-                if (status) {
-                    status.set = 'replace';
-                    const oldValue = oldVal && this.#isBackgroundFetch(oldVal)
-                        ? oldVal.__staleWhileFetching
-                        : oldVal;
-                    if (oldValue !== undefined)
-                        status.oldValue = oldValue;
-                }
-            }
-            else if (status) {
-                status.set = 'update';
-            }
-        }
-        if (ttl !== 0 && !this.#ttls) {
-            this.#initializeTTLTracking();
-        }
-        if (this.#ttls) {
-            if (!noUpdateTTL) {
-                this.#setItemTTL(index, ttl, start);
-            }
-            if (status)
-                this.#statusTTL(status, index);
-        }
-        if (!noDisposeOnSet && this.#hasDisposeAfter && this.#disposed) {
-            const dt = this.#disposed;
-            let task;
-            while ((task = dt?.shift())) {
-                this.#disposeAfter?.(...task);
-            }
-        }
-        return this;
-    }
-    /**
-     * Evict the least recently used item, returning its value or
-     * `undefined` if cache is empty.
-     */
-    pop() {
-        try {
-            while (this.#size) {
-                const val = this.#valList[this.#head];
-                this.#evict(true);
-                if (this.#isBackgroundFetch(val)) {
-                    if (val.__staleWhileFetching) {
-                        return val.__staleWhileFetching;
-                    }
-                }
-                else if (val !== undefined) {
-                    return val;
-                }
-            }
-        }
-        finally {
-            if (this.#hasDisposeAfter && this.#disposed) {
-                const dt = this.#disposed;
-                let task;
-                while ((task = dt?.shift())) {
-                    this.#disposeAfter?.(...task);
-                }
-            }
-        }
-    }
-    #evict(free) {
-        const head = this.#head;
-        const k = this.#keyList[head];
-        const v = this.#valList[head];
-        if (this.#hasFetchMethod && this.#isBackgroundFetch(v)) {
-            v.__abortController.abort(new Error('evicted'));
-        }
-        else if (this.#hasDispose || this.#hasDisposeAfter) {
-            if (this.#hasDispose) {
-                this.#dispose?.(v, k, 'evict');
-            }
-            if (this.#hasDisposeAfter) {
-                this.#disposed?.push([v, k, 'evict']);
-            }
-        }
-        this.#removeItemSize(head);
-        // if we aren't about to use the index, then null these out
-        if (free) {
-            this.#keyList[head] = undefined;
-            this.#valList[head] = undefined;
-            this.#free.push(head);
-        }
-        if (this.#size === 1) {
-            this.#head = this.#tail = 0;
-            this.#free.length = 0;
-        }
-        else {
-            this.#head = this.#next[head];
-        }
-        this.#keyMap.delete(k);
-        this.#size--;
-        return head;
-    }
-    /**
-     * Check if a key is in the cache, without updating the recency of use.
-     * Will return false if the item is stale, even though it is technically
-     * in the cache.
-     *
-     * Check if a key is in the cache, without updating the recency of
-     * use. Age is updated if {@link LRUCache.OptionsBase.updateAgeOnHas} is set
-     * to `true` in either the options or the constructor.
-     *
-     * Will return `false` if the item is stale, even though it is technically in
-     * the cache. The difference can be determined (if it matters) by using a
-     * `status` argument, and inspecting the `has` field.
-     *
-     * Will not update item age unless
-     * {@link LRUCache.OptionsBase.updateAgeOnHas} is set.
-     */
-    has(k, hasOptions = {}) {
-        const { updateAgeOnHas = this.updateAgeOnHas, status } = hasOptions;
-        const index = this.#keyMap.get(k);
-        if (index !== undefined) {
-            const v = this.#valList[index];
-            if (this.#isBackgroundFetch(v) &&
-                v.__staleWhileFetching === undefined) {
-                return false;
-            }
-            if (!this.#isStale(index)) {
-                if (updateAgeOnHas) {
-                    this.#updateItemAge(index);
-                }
-                if (status) {
-                    status.has = 'hit';
-                    this.#statusTTL(status, index);
-                }
-                return true;
-            }
-            else if (status) {
-                status.has = 'stale';
-                this.#statusTTL(status, index);
-            }
-        }
-        else if (status) {
-            status.has = 'miss';
-        }
-        return false;
-    }
-    /**
-     * Like {@link LRUCache#get} but doesn't update recency or delete stale
-     * items.
-     *
-     * Returns `undefined` if the item is stale, unless
-     * {@link LRUCache.OptionsBase.allowStale} is set.
-     */
-    peek(k, peekOptions = {}) {
-        const { allowStale = this.allowStale } = peekOptions;
-        const index = this.#keyMap.get(k);
-        if (index === undefined ||
-            (!allowStale && this.#isStale(index))) {
-            return;
-        }
-        const v = this.#valList[index];
-        // either stale and allowed, or forcing a refresh of non-stale value
-        return this.#isBackgroundFetch(v) ? v.__staleWhileFetching : v;
-    }
-    #backgroundFetch(k, index, options, context) {
-        const v = index === undefined ? undefined : this.#valList[index];
-        if (this.#isBackgroundFetch(v)) {
-            return v;
-        }
-        const ac = new AC();
-        const { signal } = options;
-        // when/if our AC signals, then stop listening to theirs.
-        signal?.addEventListener('abort', () => ac.abort(signal.reason), {
-            signal: ac.signal,
-        });
-        const fetchOpts = {
-            signal: ac.signal,
-            options,
-            context,
-        };
-        const cb = (v, updateCache = false) => {
-            const { aborted } = ac.signal;
-            const ignoreAbort = options.ignoreFetchAbort && v !== undefined;
-            if (options.status) {
-                if (aborted && !updateCache) {
-                    options.status.fetchAborted = true;
-                    options.status.fetchError = ac.signal.reason;
-                    if (ignoreAbort)
-                        options.status.fetchAbortIgnored = true;
-                }
-                else {
-                    options.status.fetchResolved = true;
-                }
-            }
-            if (aborted && !ignoreAbort && !updateCache) {
-                return fetchFail(ac.signal.reason);
-            }
-            // either we didn't abort, and are still here, or we did, and ignored
-            const bf = p;
-            if (this.#valList[index] === p) {
-                if (v === undefined) {
-                    if (bf.__staleWhileFetching) {
-                        this.#valList[index] = bf.__staleWhileFetching;
-                    }
-                    else {
-                        this.#delete(k, 'fetch');
-                    }
-                }
-                else {
-                    if (options.status)
-                        options.status.fetchUpdated = true;
-                    this.set(k, v, fetchOpts.options);
-                }
-            }
-            return v;
-        };
-        const eb = (er) => {
-            if (options.status) {
-                options.status.fetchRejected = true;
-                options.status.fetchError = er;
-            }
-            return fetchFail(er);
-        };
-        const fetchFail = (er) => {
-            const { aborted } = ac.signal;
-            const allowStaleAborted = aborted && options.allowStaleOnFetchAbort;
-            const allowStale = allowStaleAborted || options.allowStaleOnFetchRejection;
-            const noDelete = allowStale || options.noDeleteOnFetchRejection;
-            const bf = p;
-            if (this.#valList[index] === p) {
-                // if we allow stale on fetch rejections, then we need to ensure that
-                // the stale value is not removed from the cache when the fetch fails.
-                const del = !noDelete || bf.__staleWhileFetching === undefined;
-                if (del) {
-                    this.#delete(k, 'fetch');
-                }
-                else if (!allowStaleAborted) {
-                    // still replace the *promise* with the stale value,
-                    // since we are done with the promise at this point.
-                    // leave it untouched if we're still waiting for an
-                    // aborted background fetch that hasn't yet returned.
-                    this.#valList[index] = bf.__staleWhileFetching;
-                }
-            }
-            if (allowStale) {
-                if (options.status && bf.__staleWhileFetching !== undefined) {
-                    options.status.returnedStale = true;
-                }
-                return bf.__staleWhileFetching;
-            }
-            else if (bf.__returned === bf) {
-                throw er;
-            }
-        };
-        const pcall = (res, rej) => {
-            const fmp = this.#fetchMethod?.(k, v, fetchOpts);
-            if (fmp && fmp instanceof Promise) {
-                fmp.then(v => res(v === undefined ? undefined : v), rej);
-            }
-            // ignored, we go until we finish, regardless.
-            // defer check until we are actually aborting,
-            // so fetchMethod can override.
-            ac.signal.addEventListener('abort', () => {
-                if (!options.ignoreFetchAbort ||
-                    options.allowStaleOnFetchAbort) {
-                    res(undefined);
-                    // when it eventually resolves, update the cache.
-                    if (options.allowStaleOnFetchAbort) {
-                        res = v => cb(v, true);
-                    }
-                }
-            });
-        };
-        if (options.status)
-            options.status.fetchDispatched = true;
-        const p = new Promise(pcall).then(cb, eb);
-        const bf = Object.assign(p, {
-            __abortController: ac,
-            __staleWhileFetching: v,
-            __returned: undefined,
-        });
-        if (index === undefined) {
-            // internal, don't expose status.
-            this.set(k, bf, { ...fetchOpts.options, status: undefined });
-            index = this.#keyMap.get(k);
-        }
-        else {
-            this.#valList[index] = bf;
-        }
-        return bf;
-    }
-    #isBackgroundFetch(p) {
-        if (!this.#hasFetchMethod)
-            return false;
-        const b = p;
-        return (!!b &&
-            b instanceof Promise &&
-            b.hasOwnProperty('__staleWhileFetching') &&
-            b.__abortController instanceof AC);
-    }
-    async fetch(k, fetchOptions = {}) {
-        const { 
-        // get options
-        allowStale = this.allowStale, updateAgeOnGet = this.updateAgeOnGet, noDeleteOnStaleGet = this.noDeleteOnStaleGet, 
-        // set options
-        ttl = this.ttl, noDisposeOnSet = this.noDisposeOnSet, size = 0, sizeCalculation = this.sizeCalculation, noUpdateTTL = this.noUpdateTTL, 
-        // fetch exclusive options
-        noDeleteOnFetchRejection = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection = this.allowStaleOnFetchRejection, ignoreFetchAbort = this.ignoreFetchAbort, allowStaleOnFetchAbort = this.allowStaleOnFetchAbort, context, forceRefresh = false, status, signal, } = fetchOptions;
-        if (!this.#hasFetchMethod) {
-            if (status)
-                status.fetch = 'get';
-            return this.get(k, {
-                allowStale,
-                updateAgeOnGet,
-                noDeleteOnStaleGet,
-                status,
-            });
-        }
-        const options = {
-            allowStale,
-            updateAgeOnGet,
-            noDeleteOnStaleGet,
-            ttl,
-            noDisposeOnSet,
-            size,
-            sizeCalculation,
-            noUpdateTTL,
-            noDeleteOnFetchRejection,
-            allowStaleOnFetchRejection,
-            allowStaleOnFetchAbort,
-            ignoreFetchAbort,
-            status,
-            signal,
-        };
-        let index = this.#keyMap.get(k);
-        if (index === undefined) {
-            if (status)
-                status.fetch = 'miss';
-            const p = this.#backgroundFetch(k, index, options, context);
-            return (p.__returned = p);
-        }
-        else {
-            // in cache, maybe already fetching
-            const v = this.#valList[index];
-            if (this.#isBackgroundFetch(v)) {
-                const stale = allowStale && v.__staleWhileFetching !== undefined;
-                if (status) {
-                    status.fetch = 'inflight';
-                    if (stale)
-                        status.returnedStale = true;
-                }
-                return stale ? v.__staleWhileFetching : (v.__returned = v);
-            }
-            // if we force a refresh, that means do NOT serve the cached value,
-            // unless we are already in the process of refreshing the cache.
-            const isStale = this.#isStale(index);
-            if (!forceRefresh && !isStale) {
-                if (status)
-                    status.fetch = 'hit';
-                this.#moveToTail(index);
-                if (updateAgeOnGet) {
-                    this.#updateItemAge(index);
-                }
-                if (status)
-                    this.#statusTTL(status, index);
-                return v;
-            }
-            // ok, it is stale or a forced refresh, and not already fetching.
-            // refresh the cache.
-            const p = this.#backgroundFetch(k, index, options, context);
-            const hasStale = p.__staleWhileFetching !== undefined;
-            const staleVal = hasStale && allowStale;
-            if (status) {
-                status.fetch = isStale ? 'stale' : 'refresh';
-                if (staleVal && isStale)
-                    status.returnedStale = true;
-            }
-            return staleVal ? p.__staleWhileFetching : (p.__returned = p);
-        }
-    }
-    async forceFetch(k, fetchOptions = {}) {
-        const v = await this.fetch(k, fetchOptions);
-        if (v === undefined)
-            throw new Error('fetch() returned undefined');
-        return v;
-    }
-    memo(k, memoOptions = {}) {
-        const memoMethod = this.#memoMethod;
-        if (!memoMethod) {
-            throw new Error('no memoMethod provided to constructor');
-        }
-        const { context, forceRefresh, ...options } = memoOptions;
-        const v = this.get(k, options);
-        if (!forceRefresh && v !== undefined)
-            return v;
-        const vv = memoMethod(k, v, {
-            options,
-            context,
-        });
-        this.set(k, vv, options);
-        return vv;
-    }
-    /**
-     * Return a value from the cache. Will update the recency of the cache
-     * entry found.
-     *
-     * If the key is not found, get() will return `undefined`.
-     */
-    get(k, getOptions = {}) {
-        const { allowStale = this.allowStale, updateAgeOnGet = this.updateAgeOnGet, noDeleteOnStaleGet = this.noDeleteOnStaleGet, status, } = getOptions;
-        const index = this.#keyMap.get(k);
-        if (index !== undefined) {
-            const value = this.#valList[index];
-            const fetching = this.#isBackgroundFetch(value);
-            if (status)
-                this.#statusTTL(status, index);
-            if (this.#isStale(index)) {
-                if (status)
-                    status.get = 'stale';
-                // delete only if not an in-flight background fetch
-                if (!fetching) {
-                    if (!noDeleteOnStaleGet) {
-                        this.#delete(k, 'expire');
-                    }
-                    if (status && allowStale)
-                        status.returnedStale = true;
-                    return allowStale ? value : undefined;
-                }
-                else {
-                    if (status &&
-                        allowStale &&
-                        value.__staleWhileFetching !== undefined) {
-                        status.returnedStale = true;
-                    }
-                    return allowStale ? value.__staleWhileFetching : undefined;
-                }
-            }
-            else {
-                if (status)
-                    status.get = 'hit';
-                // if we're currently fetching it, we don't actually have it yet
-                // it's not stale, which means this isn't a staleWhileRefetching.
-                // If it's not stale, and fetching, AND has a __staleWhileFetching
-                // value, then that means the user fetched with {forceRefresh:true},
-                // so it's safe to return that value.
-                if (fetching) {
-                    return value.__staleWhileFetching;
-                }
-                this.#moveToTail(index);
-                if (updateAgeOnGet) {
-                    this.#updateItemAge(index);
-                }
-                return value;
-            }
-        }
-        else if (status) {
-            status.get = 'miss';
-        }
-    }
-    #connect(p, n) {
-        this.#prev[n] = p;
-        this.#next[p] = n;
-    }
-    #moveToTail(index) {
-        // if tail already, nothing to do
-        // if head, move head to next[index]
-        // else
-        //   move next[prev[index]] to next[index] (head has no prev)
-        //   move prev[next[index]] to prev[index]
-        // prev[index] = tail
-        // next[tail] = index
-        // tail = index
-        if (index !== this.#tail) {
-            if (index === this.#head) {
-                this.#head = this.#next[index];
-            }
-            else {
-                this.#connect(this.#prev[index], this.#next[index]);
-            }
-            this.#connect(this.#tail, index);
-            this.#tail = index;
-        }
-    }
-    /**
-     * Deletes a key out of the cache.
-     *
-     * Returns true if the key was deleted, false otherwise.
-     */
-    delete(k) {
-        return this.#delete(k, 'delete');
-    }
-    #delete(k, reason) {
-        let deleted = false;
-        if (this.#size !== 0) {
-            const index = this.#keyMap.get(k);
-            if (index !== undefined) {
-                deleted = true;
-                if (this.#size === 1) {
-                    this.#clear(reason);
-                }
-                else {
-                    this.#removeItemSize(index);
-                    const v = this.#valList[index];
-                    if (this.#isBackgroundFetch(v)) {
-                        v.__abortController.abort(new Error('deleted'));
-                    }
-                    else if (this.#hasDispose || this.#hasDisposeAfter) {
-                        if (this.#hasDispose) {
-                            this.#dispose?.(v, k, reason);
-                        }
-                        if (this.#hasDisposeAfter) {
-                            this.#disposed?.push([v, k, reason]);
-                        }
-                    }
-                    this.#keyMap.delete(k);
-                    this.#keyList[index] = undefined;
-                    this.#valList[index] = undefined;
-                    if (index === this.#tail) {
-                        this.#tail = this.#prev[index];
-                    }
-                    else if (index === this.#head) {
-                        this.#head = this.#next[index];
-                    }
-                    else {
-                        const pi = this.#prev[index];
-                        this.#next[pi] = this.#next[index];
-                        const ni = this.#next[index];
-                        this.#prev[ni] = this.#prev[index];
-                    }
-                    this.#size--;
-                    this.#free.push(index);
-                }
-            }
-        }
-        if (this.#hasDisposeAfter && this.#disposed?.length) {
-            const dt = this.#disposed;
-            let task;
-            while ((task = dt?.shift())) {
-                this.#disposeAfter?.(...task);
-            }
-        }
-        return deleted;
-    }
-    /**
-     * Clear the cache entirely, throwing away all values.
-     */
-    clear() {
-        return this.#clear('delete');
-    }
-    #clear(reason) {
-        for (const index of this.#rindexes({ allowStale: true })) {
-            const v = this.#valList[index];
-            if (this.#isBackgroundFetch(v)) {
-                v.__abortController.abort(new Error('deleted'));
-            }
-            else {
-                const k = this.#keyList[index];
-                if (this.#hasDispose) {
-                    this.#dispose?.(v, k, reason);
-                }
-                if (this.#hasDisposeAfter) {
-                    this.#disposed?.push([v, k, reason]);
-                }
-            }
-        }
-        this.#keyMap.clear();
-        this.#valList.fill(undefined);
-        this.#keyList.fill(undefined);
-        if (this.#ttls && this.#starts) {
-            this.#ttls.fill(0);
-            this.#starts.fill(0);
-        }
-        if (this.#sizes) {
-            this.#sizes.fill(0);
-        }
-        this.#head = 0;
-        this.#tail = 0;
-        this.#free.length = 0;
-        this.#calculatedSize = 0;
-        this.#size = 0;
-        if (this.#hasDisposeAfter && this.#disposed) {
-            const dt = this.#disposed;
-            let task;
-            while ((task = dt?.shift())) {
-                this.#disposeAfter?.(...task);
-            }
-        }
-    }
-}
-exports.LRUCache = LRUCache;
-//# sourceMappingURL=index.js.map
 
 /***/ }),
 
@@ -64966,7 +62945,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PathScurry = exports.Path = exports.PathScurryDarwin = exports.PathScurryPosix = exports.PathScurryWin32 = exports.PathScurryBase = exports.PathPosix = exports.PathWin32 = exports.PathBase = exports.ChildrenCache = exports.ResolveCache = void 0;
-const lru_cache_1 = __nccwpck_require__(3866);
+const lru_cache_1 = __nccwpck_require__(6091);
 const node_path_1 = __nccwpck_require__(9411);
 const node_url_1 = __nccwpck_require__(1041);
 const fs_1 = __nccwpck_require__(7147);
@@ -64975,7 +62954,7 @@ const realpathSync = fs_1.realpathSync.native;
 // TODO: test perf of fs/promises realpath vs realpathCB,
 // since the promises one uses realpath.native
 const promises_1 = __nccwpck_require__(3977);
-const minipass_1 = __nccwpck_require__(3852);
+const minipass_1 = __nccwpck_require__(4968);
 const defaultFS = {
     lstatSync: fs_1.lstatSync,
     readdir: fs_1.readdir,
@@ -66957,1037 +64936,1555 @@ exports.PathScurry = process.platform === 'win32' ? PathScurryWin32
 
 /***/ }),
 
-/***/ 3852:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ 6091:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+/**
+ * @module LRUCache
+ */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Minipass = exports.isWritable = exports.isReadable = exports.isStream = void 0;
-const proc = typeof process === 'object' && process
-    ? process
-    : {
-        stdout: null,
-        stderr: null,
+exports.LRUCache = void 0;
+const perf = typeof performance === 'object' &&
+    performance &&
+    typeof performance.now === 'function'
+    ? performance
+    : Date;
+const warned = new Set();
+/* c8 ignore start */
+const PROCESS = (typeof process === 'object' && !!process ? process : {});
+/* c8 ignore start */
+const emitWarning = (msg, type, code, fn) => {
+    typeof PROCESS.emitWarning === 'function'
+        ? PROCESS.emitWarning(msg, type, code, fn)
+        : console.error(`[${code}] ${type}: ${msg}`);
+};
+let AC = globalThis.AbortController;
+let AS = globalThis.AbortSignal;
+/* c8 ignore start */
+if (typeof AC === 'undefined') {
+    //@ts-ignore
+    AS = class AbortSignal {
+        onabort;
+        _onabort = [];
+        reason;
+        aborted = false;
+        addEventListener(_, fn) {
+            this._onabort.push(fn);
+        }
     };
-const events_1 = __nccwpck_require__(2361);
-const stream_1 = __importDefault(__nccwpck_require__(2781));
-const string_decoder_1 = __nccwpck_require__(1576);
-/**
- * Return true if the argument is a Minipass stream, Node stream, or something
- * else that Minipass can interact with.
- */
-const isStream = (s) => !!s &&
-    typeof s === 'object' &&
-    (s instanceof Minipass ||
-        s instanceof stream_1.default ||
-        (0, exports.isReadable)(s) ||
-        (0, exports.isWritable)(s));
-exports.isStream = isStream;
-/**
- * Return true if the argument is a valid {@link Minipass.Readable}
- */
-const isReadable = (s) => !!s &&
-    typeof s === 'object' &&
-    s instanceof events_1.EventEmitter &&
-    typeof s.pipe === 'function' &&
-    // node core Writable streams have a pipe() method, but it throws
-    s.pipe !== stream_1.default.Writable.prototype.pipe;
-exports.isReadable = isReadable;
-/**
- * Return true if the argument is a valid {@link Minipass.Writable}
- */
-const isWritable = (s) => !!s &&
-    typeof s === 'object' &&
-    s instanceof events_1.EventEmitter &&
-    typeof s.write === 'function' &&
-    typeof s.end === 'function';
-exports.isWritable = isWritable;
-const EOF = Symbol('EOF');
-const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
-const EMITTED_END = Symbol('emittedEnd');
-const EMITTING_END = Symbol('emittingEnd');
-const EMITTED_ERROR = Symbol('emittedError');
-const CLOSED = Symbol('closed');
-const READ = Symbol('read');
-const FLUSH = Symbol('flush');
-const FLUSHCHUNK = Symbol('flushChunk');
-const ENCODING = Symbol('encoding');
-const DECODER = Symbol('decoder');
-const FLOWING = Symbol('flowing');
-const PAUSED = Symbol('paused');
-const RESUME = Symbol('resume');
-const BUFFER = Symbol('buffer');
-const PIPES = Symbol('pipes');
-const BUFFERLENGTH = Symbol('bufferLength');
-const BUFFERPUSH = Symbol('bufferPush');
-const BUFFERSHIFT = Symbol('bufferShift');
-const OBJECTMODE = Symbol('objectMode');
-// internal event when stream is destroyed
-const DESTROYED = Symbol('destroyed');
-// internal event when stream has an error
-const ERROR = Symbol('error');
-const EMITDATA = Symbol('emitData');
-const EMITEND = Symbol('emitEnd');
-const EMITEND2 = Symbol('emitEnd2');
-const ASYNC = Symbol('async');
-const ABORT = Symbol('abort');
-const ABORTED = Symbol('aborted');
-const SIGNAL = Symbol('signal');
-const DATALISTENERS = Symbol('dataListeners');
-const DISCARDED = Symbol('discarded');
-const defer = (fn) => Promise.resolve().then(fn);
-const nodefer = (fn) => fn();
-const isEndish = (ev) => ev === 'end' || ev === 'finish' || ev === 'prefinish';
-const isArrayBufferLike = (b) => b instanceof ArrayBuffer ||
-    (!!b &&
-        typeof b === 'object' &&
-        b.constructor &&
-        b.constructor.name === 'ArrayBuffer' &&
-        b.byteLength >= 0);
-const isArrayBufferView = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
-/**
- * Internal class representing a pipe to a destination stream.
- *
- * @internal
- */
-class Pipe {
-    src;
-    dest;
-    opts;
-    ondrain;
-    constructor(src, dest, opts) {
-        this.src = src;
-        this.dest = dest;
-        this.opts = opts;
-        this.ondrain = () => src[RESUME]();
-        this.dest.on('drain', this.ondrain);
-    }
-    unpipe() {
-        this.dest.removeListener('drain', this.ondrain);
-    }
-    // only here for the prototype
-    /* c8 ignore start */
-    proxyErrors(_er) { }
-    /* c8 ignore stop */
-    end() {
-        this.unpipe();
-        if (this.opts.end)
-            this.dest.end();
-    }
-}
-/**
- * Internal class representing a pipe to a destination stream where
- * errors are proxied.
- *
- * @internal
- */
-class PipeProxyErrors extends Pipe {
-    unpipe() {
-        this.src.removeListener('error', this.proxyErrors);
-        super.unpipe();
-    }
-    constructor(src, dest, opts) {
-        super(src, dest, opts);
-        this.proxyErrors = er => dest.emit('error', er);
-        src.on('error', this.proxyErrors);
-    }
-}
-const isObjectModeOptions = (o) => !!o.objectMode;
-const isEncodingOptions = (o) => !o.objectMode && !!o.encoding && o.encoding !== 'buffer';
-/**
- * Main export, the Minipass class
- *
- * `RType` is the type of data emitted, defaults to Buffer
- *
- * `WType` is the type of data to be written, if RType is buffer or string,
- * then any {@link Minipass.ContiguousData} is allowed.
- *
- * `Events` is the set of event handler signatures that this object
- * will emit, see {@link Minipass.Events}
- */
-class Minipass extends events_1.EventEmitter {
-    [FLOWING] = false;
-    [PAUSED] = false;
-    [PIPES] = [];
-    [BUFFER] = [];
-    [OBJECTMODE];
-    [ENCODING];
-    [ASYNC];
-    [DECODER];
-    [EOF] = false;
-    [EMITTED_END] = false;
-    [EMITTING_END] = false;
-    [CLOSED] = false;
-    [EMITTED_ERROR] = null;
-    [BUFFERLENGTH] = 0;
-    [DESTROYED] = false;
-    [SIGNAL];
-    [ABORTED] = false;
-    [DATALISTENERS] = 0;
-    [DISCARDED] = false;
-    /**
-     * true if the stream can be written
-     */
-    writable = true;
-    /**
-     * true if the stream can be read
-     */
-    readable = true;
-    /**
-     * If `RType` is Buffer, then options do not need to be provided.
-     * Otherwise, an options object must be provided to specify either
-     * {@link Minipass.SharedOptions.objectMode} or
-     * {@link Minipass.SharedOptions.encoding}, as appropriate.
-     */
-    constructor(...args) {
-        const options = (args[0] ||
-            {});
-        super();
-        if (options.objectMode && typeof options.encoding === 'string') {
-            throw new TypeError('Encoding and objectMode may not be used together');
+    //@ts-ignore
+    AC = class AbortController {
+        constructor() {
+            warnACPolyfill();
         }
-        if (isObjectModeOptions(options)) {
-            this[OBJECTMODE] = true;
-            this[ENCODING] = null;
-        }
-        else if (isEncodingOptions(options)) {
-            this[ENCODING] = options.encoding;
-            this[OBJECTMODE] = false;
-        }
-        else {
-            this[OBJECTMODE] = false;
-            this[ENCODING] = null;
-        }
-        this[ASYNC] = !!options.async;
-        this[DECODER] = this[ENCODING]
-            ? new string_decoder_1.StringDecoder(this[ENCODING])
-            : null;
-        //@ts-ignore - private option for debugging and testing
-        if (options && options.debugExposeBuffer === true) {
-            Object.defineProperty(this, 'buffer', { get: () => this[BUFFER] });
-        }
-        //@ts-ignore - private option for debugging and testing
-        if (options && options.debugExposePipes === true) {
-            Object.defineProperty(this, 'pipes', { get: () => this[PIPES] });
-        }
-        const { signal } = options;
-        if (signal) {
-            this[SIGNAL] = signal;
-            if (signal.aborted) {
-                this[ABORT]();
+        signal = new AS();
+        abort(reason) {
+            if (this.signal.aborted)
+                return;
+            //@ts-ignore
+            this.signal.reason = reason;
+            //@ts-ignore
+            this.signal.aborted = true;
+            //@ts-ignore
+            for (const fn of this.signal._onabort) {
+                fn(reason);
             }
-            else {
-                signal.addEventListener('abort', () => this[ABORT]());
-            }
+            this.signal.onabort?.(reason);
         }
-    }
-    /**
-     * The amount of data stored in the buffer waiting to be read.
-     *
-     * For Buffer strings, this will be the total byte length.
-     * For string encoding streams, this will be the string character length,
-     * according to JavaScript's `string.length` logic.
-     * For objectMode streams, this is a count of the items waiting to be
-     * emitted.
-     */
-    get bufferLength() {
-        return this[BUFFERLENGTH];
-    }
-    /**
-     * The `BufferEncoding` currently in use, or `null`
-     */
-    get encoding() {
-        return this[ENCODING];
-    }
-    /**
-     * @deprecated - This is a read only property
-     */
-    set encoding(_enc) {
-        throw new Error('Encoding must be set at instantiation time');
-    }
-    /**
-     * @deprecated - Encoding may only be set at instantiation time
-     */
-    setEncoding(_enc) {
-        throw new Error('Encoding must be set at instantiation time');
-    }
-    /**
-     * True if this is an objectMode stream
-     */
-    get objectMode() {
-        return this[OBJECTMODE];
-    }
-    /**
-     * @deprecated - This is a read-only property
-     */
-    set objectMode(_om) {
-        throw new Error('objectMode must be set at instantiation time');
-    }
-    /**
-     * true if this is an async stream
-     */
-    get ['async']() {
-        return this[ASYNC];
-    }
-    /**
-     * Set to true to make this stream async.
-     *
-     * Once set, it cannot be unset, as this would potentially cause incorrect
-     * behavior.  Ie, a sync stream can be made async, but an async stream
-     * cannot be safely made sync.
-     */
-    set ['async'](a) {
-        this[ASYNC] = this[ASYNC] || !!a;
-    }
-    // drop everything and get out of the flow completely
-    [ABORT]() {
-        this[ABORTED] = true;
-        this.emit('abort', this[SIGNAL]?.reason);
-        this.destroy(this[SIGNAL]?.reason);
-    }
-    /**
-     * True if the stream has been aborted.
-     */
-    get aborted() {
-        return this[ABORTED];
-    }
-    /**
-     * No-op setter. Stream aborted status is set via the AbortSignal provided
-     * in the constructor options.
-     */
-    set aborted(_) { }
-    write(chunk, encoding, cb) {
-        if (this[ABORTED])
-            return false;
-        if (this[EOF])
-            throw new Error('write after end');
-        if (this[DESTROYED]) {
-            this.emit('error', Object.assign(new Error('Cannot call write after a stream was destroyed'), { code: 'ERR_STREAM_DESTROYED' }));
-            return true;
-        }
-        if (typeof encoding === 'function') {
-            cb = encoding;
-            encoding = 'utf8';
-        }
-        if (!encoding)
-            encoding = 'utf8';
-        const fn = this[ASYNC] ? defer : nodefer;
-        // convert array buffers and typed array views into buffers
-        // at some point in the future, we may want to do the opposite!
-        // leave strings and buffers as-is
-        // anything is only allowed if in object mode, so throw
-        if (!this[OBJECTMODE] && !Buffer.isBuffer(chunk)) {
-            if (isArrayBufferView(chunk)) {
-                //@ts-ignore - sinful unsafe type changing
-                chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-            }
-            else if (isArrayBufferLike(chunk)) {
-                //@ts-ignore - sinful unsafe type changing
-                chunk = Buffer.from(chunk);
-            }
-            else if (typeof chunk !== 'string') {
-                throw new Error('Non-contiguous data written to non-objectMode stream');
-            }
-        }
-        // handle object mode up front, since it's simpler
-        // this yields better performance, fewer checks later.
-        if (this[OBJECTMODE]) {
-            // maybe impossible?
-            /* c8 ignore start */
-            if (this[FLOWING] && this[BUFFERLENGTH] !== 0)
-                this[FLUSH](true);
-            /* c8 ignore stop */
-            if (this[FLOWING])
-                this.emit('data', chunk);
-            else
-                this[BUFFERPUSH](chunk);
-            if (this[BUFFERLENGTH] !== 0)
-                this.emit('readable');
-            if (cb)
-                fn(cb);
-            return this[FLOWING];
-        }
-        // at this point the chunk is a buffer or string
-        // don't buffer it up or send it to the decoder
-        if (!chunk.length) {
-            if (this[BUFFERLENGTH] !== 0)
-                this.emit('readable');
-            if (cb)
-                fn(cb);
-            return this[FLOWING];
-        }
-        // fast-path writing strings of same encoding to a stream with
-        // an empty buffer, skipping the buffer/decoder dance
-        if (typeof chunk === 'string' &&
-            // unless it is a string already ready for us to use
-            !(encoding === this[ENCODING] && !this[DECODER]?.lastNeed)) {
-            //@ts-ignore - sinful unsafe type change
-            chunk = Buffer.from(chunk, encoding);
-        }
-        if (Buffer.isBuffer(chunk) && this[ENCODING]) {
-            //@ts-ignore - sinful unsafe type change
-            chunk = this[DECODER].write(chunk);
-        }
-        // Note: flushing CAN potentially switch us into not-flowing mode
-        if (this[FLOWING] && this[BUFFERLENGTH] !== 0)
-            this[FLUSH](true);
-        if (this[FLOWING])
-            this.emit('data', chunk);
-        else
-            this[BUFFERPUSH](chunk);
-        if (this[BUFFERLENGTH] !== 0)
-            this.emit('readable');
-        if (cb)
-            fn(cb);
-        return this[FLOWING];
-    }
-    /**
-     * Low-level explicit read method.
-     *
-     * In objectMode, the argument is ignored, and one item is returned if
-     * available.
-     *
-     * `n` is the number of bytes (or in the case of encoding streams,
-     * characters) to consume. If `n` is not provided, then the entire buffer
-     * is returned, or `null` is returned if no data is available.
-     *
-     * If `n` is greater that the amount of data in the internal buffer,
-     * then `null` is returned.
-     */
-    read(n) {
-        if (this[DESTROYED])
-            return null;
-        this[DISCARDED] = false;
-        if (this[BUFFERLENGTH] === 0 ||
-            n === 0 ||
-            (n && n > this[BUFFERLENGTH])) {
-            this[MAYBE_EMIT_END]();
-            return null;
-        }
-        if (this[OBJECTMODE])
-            n = null;
-        if (this[BUFFER].length > 1 && !this[OBJECTMODE]) {
-            // not object mode, so if we have an encoding, then RType is string
-            // otherwise, must be Buffer
-            this[BUFFER] = [
-                (this[ENCODING]
-                    ? this[BUFFER].join('')
-                    : Buffer.concat(this[BUFFER], this[BUFFERLENGTH])),
-            ];
-        }
-        const ret = this[READ](n || null, this[BUFFER][0]);
-        this[MAYBE_EMIT_END]();
-        return ret;
-    }
-    [READ](n, chunk) {
-        if (this[OBJECTMODE])
-            this[BUFFERSHIFT]();
-        else {
-            const c = chunk;
-            if (n === c.length || n === null)
-                this[BUFFERSHIFT]();
-            else if (typeof c === 'string') {
-                this[BUFFER][0] = c.slice(n);
-                chunk = c.slice(0, n);
-                this[BUFFERLENGTH] -= n;
-            }
-            else {
-                this[BUFFER][0] = c.subarray(n);
-                chunk = c.subarray(0, n);
-                this[BUFFERLENGTH] -= n;
-            }
-        }
-        this.emit('data', chunk);
-        if (!this[BUFFER].length && !this[EOF])
-            this.emit('drain');
-        return chunk;
-    }
-    end(chunk, encoding, cb) {
-        if (typeof chunk === 'function') {
-            cb = chunk;
-            chunk = undefined;
-        }
-        if (typeof encoding === 'function') {
-            cb = encoding;
-            encoding = 'utf8';
-        }
-        if (chunk !== undefined)
-            this.write(chunk, encoding);
-        if (cb)
-            this.once('end', cb);
-        this[EOF] = true;
-        this.writable = false;
-        // if we haven't written anything, then go ahead and emit,
-        // even if we're not reading.
-        // we'll re-emit if a new 'end' listener is added anyway.
-        // This makes MP more suitable to write-only use cases.
-        if (this[FLOWING] || !this[PAUSED])
-            this[MAYBE_EMIT_END]();
-        return this;
-    }
-    // don't let the internal resume be overwritten
-    [RESUME]() {
-        if (this[DESTROYED])
+    };
+    let printACPolyfillWarning = PROCESS.env?.LRU_CACHE_IGNORE_AC_WARNING !== '1';
+    const warnACPolyfill = () => {
+        if (!printACPolyfillWarning)
             return;
-        if (!this[DATALISTENERS] && !this[PIPES].length) {
-            this[DISCARDED] = true;
+        printACPolyfillWarning = false;
+        emitWarning('AbortController is not defined. If using lru-cache in ' +
+            'node 14, load an AbortController polyfill from the ' +
+            '`node-abort-controller` package. A minimal polyfill is ' +
+            'provided for use by LRUCache.fetch(), but it should not be ' +
+            'relied upon in other contexts (eg, passing it to other APIs that ' +
+            'use AbortController/AbortSignal might have undesirable effects). ' +
+            'You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.', 'NO_ABORT_CONTROLLER', 'ENOTSUP', warnACPolyfill);
+    };
+}
+/* c8 ignore stop */
+const shouldWarn = (code) => !warned.has(code);
+const TYPE = Symbol('type');
+const isPosInt = (n) => n && n === Math.floor(n) && n > 0 && isFinite(n);
+/* c8 ignore start */
+// This is a little bit ridiculous, tbh.
+// The maximum array length is 2^32-1 or thereabouts on most JS impls.
+// And well before that point, you're caching the entire world, I mean,
+// that's ~32GB of just integers for the next/prev links, plus whatever
+// else to hold that many keys and values.  Just filling the memory with
+// zeroes at init time is brutal when you get that big.
+// But why not be complete?
+// Maybe in the future, these limits will have expanded.
+const getUintArray = (max) => !isPosInt(max)
+    ? null
+    : max <= Math.pow(2, 8)
+        ? Uint8Array
+        : max <= Math.pow(2, 16)
+            ? Uint16Array
+            : max <= Math.pow(2, 32)
+                ? Uint32Array
+                : max <= Number.MAX_SAFE_INTEGER
+                    ? ZeroArray
+                    : null;
+/* c8 ignore stop */
+class ZeroArray extends Array {
+    constructor(size) {
+        super(size);
+        this.fill(0);
+    }
+}
+class Stack {
+    heap;
+    length;
+    // private constructor
+    static #constructing = false;
+    static create(max) {
+        const HeapCls = getUintArray(max);
+        if (!HeapCls)
+            return [];
+        Stack.#constructing = true;
+        const s = new Stack(max, HeapCls);
+        Stack.#constructing = false;
+        return s;
+    }
+    constructor(max, HeapCls) {
+        /* c8 ignore start */
+        if (!Stack.#constructing) {
+            throw new TypeError('instantiate Stack using Stack.create(n)');
         }
-        this[PAUSED] = false;
-        this[FLOWING] = true;
-        this.emit('resume');
-        if (this[BUFFER].length)
-            this[FLUSH]();
-        else if (this[EOF])
-            this[MAYBE_EMIT_END]();
-        else
-            this.emit('drain');
+        /* c8 ignore stop */
+        this.heap = new HeapCls(max);
+        this.length = 0;
     }
+    push(n) {
+        this.heap[this.length++] = n;
+    }
+    pop() {
+        return this.heap[--this.length];
+    }
+}
+/**
+ * Default export, the thing you're using this module to get.
+ *
+ * The `K` and `V` types define the key and value types, respectively. The
+ * optional `FC` type defines the type of the `context` object passed to
+ * `cache.fetch()` and `cache.memo()`.
+ *
+ * Keys and values **must not** be `null` or `undefined`.
+ *
+ * All properties from the options object (with the exception of `max`,
+ * `maxSize`, `fetchMethod`, `memoMethod`, `dispose` and `disposeAfter`) are
+ * added as normal public members. (The listed options are read-only getters.)
+ *
+ * Changing any of these will alter the defaults for subsequent method calls.
+ */
+class LRUCache {
+    // options that cannot be changed without disaster
+    #max;
+    #maxSize;
+    #dispose;
+    #disposeAfter;
+    #fetchMethod;
+    #memoMethod;
     /**
-     * Resume the stream if it is currently in a paused state
+     * {@link LRUCache.OptionsBase.ttl}
+     */
+    ttl;
+    /**
+     * {@link LRUCache.OptionsBase.ttlResolution}
+     */
+    ttlResolution;
+    /**
+     * {@link LRUCache.OptionsBase.ttlAutopurge}
+     */
+    ttlAutopurge;
+    /**
+     * {@link LRUCache.OptionsBase.updateAgeOnGet}
+     */
+    updateAgeOnGet;
+    /**
+     * {@link LRUCache.OptionsBase.updateAgeOnHas}
+     */
+    updateAgeOnHas;
+    /**
+     * {@link LRUCache.OptionsBase.allowStale}
+     */
+    allowStale;
+    /**
+     * {@link LRUCache.OptionsBase.noDisposeOnSet}
+     */
+    noDisposeOnSet;
+    /**
+     * {@link LRUCache.OptionsBase.noUpdateTTL}
+     */
+    noUpdateTTL;
+    /**
+     * {@link LRUCache.OptionsBase.maxEntrySize}
+     */
+    maxEntrySize;
+    /**
+     * {@link LRUCache.OptionsBase.sizeCalculation}
+     */
+    sizeCalculation;
+    /**
+     * {@link LRUCache.OptionsBase.noDeleteOnFetchRejection}
+     */
+    noDeleteOnFetchRejection;
+    /**
+     * {@link LRUCache.OptionsBase.noDeleteOnStaleGet}
+     */
+    noDeleteOnStaleGet;
+    /**
+     * {@link LRUCache.OptionsBase.allowStaleOnFetchAbort}
+     */
+    allowStaleOnFetchAbort;
+    /**
+     * {@link LRUCache.OptionsBase.allowStaleOnFetchRejection}
+     */
+    allowStaleOnFetchRejection;
+    /**
+     * {@link LRUCache.OptionsBase.ignoreFetchAbort}
+     */
+    ignoreFetchAbort;
+    // computed properties
+    #size;
+    #calculatedSize;
+    #keyMap;
+    #keyList;
+    #valList;
+    #next;
+    #prev;
+    #head;
+    #tail;
+    #free;
+    #disposed;
+    #sizes;
+    #starts;
+    #ttls;
+    #hasDispose;
+    #hasFetchMethod;
+    #hasDisposeAfter;
+    /**
+     * Do not call this method unless you need to inspect the
+     * inner workings of the cache.  If anything returned by this
+     * object is modified in any way, strange breakage may occur.
      *
-     * If called when there are no pipe destinations or `data` event listeners,
-     * this will place the stream in a "discarded" state, where all data will
-     * be thrown away. The discarded state is removed if a pipe destination or
-     * data handler is added, if pause() is called, or if any synchronous or
-     * asynchronous iteration is started.
-     */
-    resume() {
-        return this[RESUME]();
-    }
-    /**
-     * Pause the stream
-     */
-    pause() {
-        this[FLOWING] = false;
-        this[PAUSED] = true;
-        this[DISCARDED] = false;
-    }
-    /**
-     * true if the stream has been forcibly destroyed
-     */
-    get destroyed() {
-        return this[DESTROYED];
-    }
-    /**
-     * true if the stream is currently in a flowing state, meaning that
-     * any writes will be immediately emitted.
-     */
-    get flowing() {
-        return this[FLOWING];
-    }
-    /**
-     * true if the stream is currently in a paused state
-     */
-    get paused() {
-        return this[PAUSED];
-    }
-    [BUFFERPUSH](chunk) {
-        if (this[OBJECTMODE])
-            this[BUFFERLENGTH] += 1;
-        else
-            this[BUFFERLENGTH] += chunk.length;
-        this[BUFFER].push(chunk);
-    }
-    [BUFFERSHIFT]() {
-        if (this[OBJECTMODE])
-            this[BUFFERLENGTH] -= 1;
-        else
-            this[BUFFERLENGTH] -= this[BUFFER][0].length;
-        return this[BUFFER].shift();
-    }
-    [FLUSH](noDrain = false) {
-        do { } while (this[FLUSHCHUNK](this[BUFFERSHIFT]()) &&
-            this[BUFFER].length);
-        if (!noDrain && !this[BUFFER].length && !this[EOF])
-            this.emit('drain');
-    }
-    [FLUSHCHUNK](chunk) {
-        this.emit('data', chunk);
-        return this[FLOWING];
-    }
-    /**
-     * Pipe all data emitted by this stream into the destination provided.
+     * These fields are private for a reason!
      *
-     * Triggers the flow of data.
+     * @internal
      */
-    pipe(dest, opts) {
-        if (this[DESTROYED])
-            return dest;
-        this[DISCARDED] = false;
-        const ended = this[EMITTED_END];
-        opts = opts || {};
-        if (dest === proc.stdout || dest === proc.stderr)
-            opts.end = false;
-        else
-            opts.end = opts.end !== false;
-        opts.proxyErrors = !!opts.proxyErrors;
-        // piping an ended stream ends immediately
-        if (ended) {
-            if (opts.end)
-                dest.end();
+    static unsafeExposeInternals(c) {
+        return {
+            // properties
+            starts: c.#starts,
+            ttls: c.#ttls,
+            sizes: c.#sizes,
+            keyMap: c.#keyMap,
+            keyList: c.#keyList,
+            valList: c.#valList,
+            next: c.#next,
+            prev: c.#prev,
+            get head() {
+                return c.#head;
+            },
+            get tail() {
+                return c.#tail;
+            },
+            free: c.#free,
+            // methods
+            isBackgroundFetch: (p) => c.#isBackgroundFetch(p),
+            backgroundFetch: (k, index, options, context) => c.#backgroundFetch(k, index, options, context),
+            moveToTail: (index) => c.#moveToTail(index),
+            indexes: (options) => c.#indexes(options),
+            rindexes: (options) => c.#rindexes(options),
+            isStale: (index) => c.#isStale(index),
+        };
+    }
+    // Protected read-only members
+    /**
+     * {@link LRUCache.OptionsBase.max} (read-only)
+     */
+    get max() {
+        return this.#max;
+    }
+    /**
+     * {@link LRUCache.OptionsBase.maxSize} (read-only)
+     */
+    get maxSize() {
+        return this.#maxSize;
+    }
+    /**
+     * The total computed size of items in the cache (read-only)
+     */
+    get calculatedSize() {
+        return this.#calculatedSize;
+    }
+    /**
+     * The number of items stored in the cache (read-only)
+     */
+    get size() {
+        return this.#size;
+    }
+    /**
+     * {@link LRUCache.OptionsBase.fetchMethod} (read-only)
+     */
+    get fetchMethod() {
+        return this.#fetchMethod;
+    }
+    get memoMethod() {
+        return this.#memoMethod;
+    }
+    /**
+     * {@link LRUCache.OptionsBase.dispose} (read-only)
+     */
+    get dispose() {
+        return this.#dispose;
+    }
+    /**
+     * {@link LRUCache.OptionsBase.disposeAfter} (read-only)
+     */
+    get disposeAfter() {
+        return this.#disposeAfter;
+    }
+    constructor(options) {
+        const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, } = options;
+        if (max !== 0 && !isPosInt(max)) {
+            throw new TypeError('max option must be a nonnegative integer');
+        }
+        const UintArray = max ? getUintArray(max) : Array;
+        if (!UintArray) {
+            throw new Error('invalid max value: ' + max);
+        }
+        this.#max = max;
+        this.#maxSize = maxSize;
+        this.maxEntrySize = maxEntrySize || this.#maxSize;
+        this.sizeCalculation = sizeCalculation;
+        if (this.sizeCalculation) {
+            if (!this.#maxSize && !this.maxEntrySize) {
+                throw new TypeError('cannot set sizeCalculation without setting maxSize or maxEntrySize');
+            }
+            if (typeof this.sizeCalculation !== 'function') {
+                throw new TypeError('sizeCalculation set to non-function');
+            }
+        }
+        if (memoMethod !== undefined &&
+            typeof memoMethod !== 'function') {
+            throw new TypeError('memoMethod must be a function if defined');
+        }
+        this.#memoMethod = memoMethod;
+        if (fetchMethod !== undefined &&
+            typeof fetchMethod !== 'function') {
+            throw new TypeError('fetchMethod must be a function if specified');
+        }
+        this.#fetchMethod = fetchMethod;
+        this.#hasFetchMethod = !!fetchMethod;
+        this.#keyMap = new Map();
+        this.#keyList = new Array(max).fill(undefined);
+        this.#valList = new Array(max).fill(undefined);
+        this.#next = new UintArray(max);
+        this.#prev = new UintArray(max);
+        this.#head = 0;
+        this.#tail = 0;
+        this.#free = Stack.create(max);
+        this.#size = 0;
+        this.#calculatedSize = 0;
+        if (typeof dispose === 'function') {
+            this.#dispose = dispose;
+        }
+        if (typeof disposeAfter === 'function') {
+            this.#disposeAfter = disposeAfter;
+            this.#disposed = [];
         }
         else {
-            // "as" here just ignores the WType, which pipes don't care about,
-            // since they're only consuming from us, and writing to the dest
-            this[PIPES].push(!opts.proxyErrors
-                ? new Pipe(this, dest, opts)
-                : new PipeProxyErrors(this, dest, opts));
-            if (this[ASYNC])
-                defer(() => this[RESUME]());
-            else
-                this[RESUME]();
+            this.#disposeAfter = undefined;
+            this.#disposed = undefined;
         }
-        return dest;
-    }
-    /**
-     * Fully unhook a piped destination stream.
-     *
-     * If the destination stream was the only consumer of this stream (ie,
-     * there are no other piped destinations or `'data'` event listeners)
-     * then the flow of data will stop until there is another consumer or
-     * {@link Minipass#resume} is explicitly called.
-     */
-    unpipe(dest) {
-        const p = this[PIPES].find(p => p.dest === dest);
-        if (p) {
-            if (this[PIPES].length === 1) {
-                if (this[FLOWING] && this[DATALISTENERS] === 0) {
-                    this[FLOWING] = false;
+        this.#hasDispose = !!this.#dispose;
+        this.#hasDisposeAfter = !!this.#disposeAfter;
+        this.noDisposeOnSet = !!noDisposeOnSet;
+        this.noUpdateTTL = !!noUpdateTTL;
+        this.noDeleteOnFetchRejection = !!noDeleteOnFetchRejection;
+        this.allowStaleOnFetchRejection = !!allowStaleOnFetchRejection;
+        this.allowStaleOnFetchAbort = !!allowStaleOnFetchAbort;
+        this.ignoreFetchAbort = !!ignoreFetchAbort;
+        // NB: maxEntrySize is set to maxSize if it's set
+        if (this.maxEntrySize !== 0) {
+            if (this.#maxSize !== 0) {
+                if (!isPosInt(this.#maxSize)) {
+                    throw new TypeError('maxSize must be a positive integer if specified');
                 }
-                this[PIPES] = [];
             }
-            else
-                this[PIPES].splice(this[PIPES].indexOf(p), 1);
-            p.unpipe();
+            if (!isPosInt(this.maxEntrySize)) {
+                throw new TypeError('maxEntrySize must be a positive integer if specified');
+            }
+            this.#initializeSizeTracking();
         }
-    }
-    /**
-     * Alias for {@link Minipass#on}
-     */
-    addListener(ev, handler) {
-        return this.on(ev, handler);
-    }
-    /**
-     * Mostly identical to `EventEmitter.on`, with the following
-     * behavior differences to prevent data loss and unnecessary hangs:
-     *
-     * - Adding a 'data' event handler will trigger the flow of data
-     *
-     * - Adding a 'readable' event handler when there is data waiting to be read
-     *   will cause 'readable' to be emitted immediately.
-     *
-     * - Adding an 'endish' event handler ('end', 'finish', etc.) which has
-     *   already passed will cause the event to be emitted immediately and all
-     *   handlers removed.
-     *
-     * - Adding an 'error' event handler after an error has been emitted will
-     *   cause the event to be re-emitted immediately with the error previously
-     *   raised.
-     */
-    on(ev, handler) {
-        const ret = super.on(ev, handler);
-        if (ev === 'data') {
-            this[DISCARDED] = false;
-            this[DATALISTENERS]++;
-            if (!this[PIPES].length && !this[FLOWING]) {
-                this[RESUME]();
+        this.allowStale = !!allowStale;
+        this.noDeleteOnStaleGet = !!noDeleteOnStaleGet;
+        this.updateAgeOnGet = !!updateAgeOnGet;
+        this.updateAgeOnHas = !!updateAgeOnHas;
+        this.ttlResolution =
+            isPosInt(ttlResolution) || ttlResolution === 0
+                ? ttlResolution
+                : 1;
+        this.ttlAutopurge = !!ttlAutopurge;
+        this.ttl = ttl || 0;
+        if (this.ttl) {
+            if (!isPosInt(this.ttl)) {
+                throw new TypeError('ttl must be a positive integer if specified');
+            }
+            this.#initializeTTLTracking();
+        }
+        // do not allow completely unbounded caches
+        if (this.#max === 0 && this.ttl === 0 && this.#maxSize === 0) {
+            throw new TypeError('At least one of max, maxSize, or ttl is required');
+        }
+        if (!this.ttlAutopurge && !this.#max && !this.#maxSize) {
+            const code = 'LRU_CACHE_UNBOUNDED';
+            if (shouldWarn(code)) {
+                warned.add(code);
+                const msg = 'TTL caching without ttlAutopurge, max, or maxSize can ' +
+                    'result in unbounded memory consumption.';
+                emitWarning(msg, 'UnboundedCacheWarning', code, LRUCache);
             }
         }
-        else if (ev === 'readable' && this[BUFFERLENGTH] !== 0) {
-            super.emit('readable');
-        }
-        else if (isEndish(ev) && this[EMITTED_END]) {
-            super.emit(ev);
-            this.removeAllListeners(ev);
-        }
-        else if (ev === 'error' && this[EMITTED_ERROR]) {
-            const h = handler;
-            if (this[ASYNC])
-                defer(() => h.call(this, this[EMITTED_ERROR]));
-            else
-                h.call(this, this[EMITTED_ERROR]);
-        }
-        return ret;
     }
     /**
-     * Alias for {@link Minipass#off}
+     * Return the number of ms left in the item's TTL. If item is not in cache,
+     * returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
      */
-    removeListener(ev, handler) {
-        return this.off(ev, handler);
+    getRemainingTTL(key) {
+        return this.#keyMap.has(key) ? Infinity : 0;
     }
-    /**
-     * Mostly identical to `EventEmitter.off`
-     *
-     * If a 'data' event handler is removed, and it was the last consumer
-     * (ie, there are no pipe destinations or other 'data' event listeners),
-     * then the flow of data will stop until there is another consumer or
-     * {@link Minipass#resume} is explicitly called.
-     */
-    off(ev, handler) {
-        const ret = super.off(ev, handler);
-        // if we previously had listeners, and now we don't, and we don't
-        // have any pipes, then stop the flow, unless it's been explicitly
-        // put in a discarded flowing state via stream.resume().
-        if (ev === 'data') {
-            this[DATALISTENERS] = this.listeners('data').length;
-            if (this[DATALISTENERS] === 0 &&
-                !this[DISCARDED] &&
-                !this[PIPES].length) {
-                this[FLOWING] = false;
-            }
-        }
-        return ret;
-    }
-    /**
-     * Mostly identical to `EventEmitter.removeAllListeners`
-     *
-     * If all 'data' event handlers are removed, and they were the last consumer
-     * (ie, there are no pipe destinations), then the flow of data will stop
-     * until there is another consumer or {@link Minipass#resume} is explicitly
-     * called.
-     */
-    removeAllListeners(ev) {
-        const ret = super.removeAllListeners(ev);
-        if (ev === 'data' || ev === undefined) {
-            this[DATALISTENERS] = 0;
-            if (!this[DISCARDED] && !this[PIPES].length) {
-                this[FLOWING] = false;
-            }
-        }
-        return ret;
-    }
-    /**
-     * true if the 'end' event has been emitted
-     */
-    get emittedEnd() {
-        return this[EMITTED_END];
-    }
-    [MAYBE_EMIT_END]() {
-        if (!this[EMITTING_END] &&
-            !this[EMITTED_END] &&
-            !this[DESTROYED] &&
-            this[BUFFER].length === 0 &&
-            this[EOF]) {
-            this[EMITTING_END] = true;
-            this.emit('end');
-            this.emit('prefinish');
-            this.emit('finish');
-            if (this[CLOSED])
-                this.emit('close');
-            this[EMITTING_END] = false;
-        }
-    }
-    /**
-     * Mostly identical to `EventEmitter.emit`, with the following
-     * behavior differences to prevent data loss and unnecessary hangs:
-     *
-     * If the stream has been destroyed, and the event is something other
-     * than 'close' or 'error', then `false` is returned and no handlers
-     * are called.
-     *
-     * If the event is 'end', and has already been emitted, then the event
-     * is ignored. If the stream is in a paused or non-flowing state, then
-     * the event will be deferred until data flow resumes. If the stream is
-     * async, then handlers will be called on the next tick rather than
-     * immediately.
-     *
-     * If the event is 'close', and 'end' has not yet been emitted, then
-     * the event will be deferred until after 'end' is emitted.
-     *
-     * If the event is 'error', and an AbortSignal was provided for the stream,
-     * and there are no listeners, then the event is ignored, matching the
-     * behavior of node core streams in the presense of an AbortSignal.
-     *
-     * If the event is 'finish' or 'prefinish', then all listeners will be
-     * removed after emitting the event, to prevent double-firing.
-     */
-    emit(ev, ...args) {
-        const data = args[0];
-        // error and close are only events allowed after calling destroy()
-        if (ev !== 'error' &&
-            ev !== 'close' &&
-            ev !== DESTROYED &&
-            this[DESTROYED]) {
-            return false;
-        }
-        else if (ev === 'data') {
-            return !this[OBJECTMODE] && !data
-                ? false
-                : this[ASYNC]
-                    ? (defer(() => this[EMITDATA](data)), true)
-                    : this[EMITDATA](data);
-        }
-        else if (ev === 'end') {
-            return this[EMITEND]();
-        }
-        else if (ev === 'close') {
-            this[CLOSED] = true;
-            // don't emit close before 'end' and 'finish'
-            if (!this[EMITTED_END] && !this[DESTROYED])
-                return false;
-            const ret = super.emit('close');
-            this.removeAllListeners('close');
-            return ret;
-        }
-        else if (ev === 'error') {
-            this[EMITTED_ERROR] = data;
-            super.emit(ERROR, data);
-            const ret = !this[SIGNAL] || this.listeners('error').length
-                ? super.emit('error', data)
-                : false;
-            this[MAYBE_EMIT_END]();
-            return ret;
-        }
-        else if (ev === 'resume') {
-            const ret = super.emit('resume');
-            this[MAYBE_EMIT_END]();
-            return ret;
-        }
-        else if (ev === 'finish' || ev === 'prefinish') {
-            const ret = super.emit(ev);
-            this.removeAllListeners(ev);
-            return ret;
-        }
-        // Some other unknown event
-        const ret = super.emit(ev, ...args);
-        this[MAYBE_EMIT_END]();
-        return ret;
-    }
-    [EMITDATA](data) {
-        for (const p of this[PIPES]) {
-            if (p.dest.write(data) === false)
-                this.pause();
-        }
-        const ret = this[DISCARDED] ? false : super.emit('data', data);
-        this[MAYBE_EMIT_END]();
-        return ret;
-    }
-    [EMITEND]() {
-        if (this[EMITTED_END])
-            return false;
-        this[EMITTED_END] = true;
-        this.readable = false;
-        return this[ASYNC]
-            ? (defer(() => this[EMITEND2]()), true)
-            : this[EMITEND2]();
-    }
-    [EMITEND2]() {
-        if (this[DECODER]) {
-            const data = this[DECODER].end();
-            if (data) {
-                for (const p of this[PIPES]) {
-                    p.dest.write(data);
+    #initializeTTLTracking() {
+        const ttls = new ZeroArray(this.#max);
+        const starts = new ZeroArray(this.#max);
+        this.#ttls = ttls;
+        this.#starts = starts;
+        this.#setItemTTL = (index, ttl, start = perf.now()) => {
+            starts[index] = ttl !== 0 ? start : 0;
+            ttls[index] = ttl;
+            if (ttl !== 0 && this.ttlAutopurge) {
+                const t = setTimeout(() => {
+                    if (this.#isStale(index)) {
+                        this.#delete(this.#keyList[index], 'expire');
+                    }
+                }, ttl + 1);
+                // unref() not supported on all platforms
+                /* c8 ignore start */
+                if (t.unref) {
+                    t.unref();
                 }
-                if (!this[DISCARDED])
-                    super.emit('data', data);
+                /* c8 ignore stop */
+            }
+        };
+        this.#updateItemAge = index => {
+            starts[index] = ttls[index] !== 0 ? perf.now() : 0;
+        };
+        this.#statusTTL = (status, index) => {
+            if (ttls[index]) {
+                const ttl = ttls[index];
+                const start = starts[index];
+                /* c8 ignore next */
+                if (!ttl || !start)
+                    return;
+                status.ttl = ttl;
+                status.start = start;
+                status.now = cachedNow || getNow();
+                const age = status.now - start;
+                status.remainingTTL = ttl - age;
+            }
+        };
+        // debounce calls to perf.now() to 1s so we're not hitting
+        // that costly call repeatedly.
+        let cachedNow = 0;
+        const getNow = () => {
+            const n = perf.now();
+            if (this.ttlResolution > 0) {
+                cachedNow = n;
+                const t = setTimeout(() => (cachedNow = 0), this.ttlResolution);
+                // not available on all platforms
+                /* c8 ignore start */
+                if (t.unref) {
+                    t.unref();
+                }
+                /* c8 ignore stop */
+            }
+            return n;
+        };
+        this.getRemainingTTL = key => {
+            const index = this.#keyMap.get(key);
+            if (index === undefined) {
+                return 0;
+            }
+            const ttl = ttls[index];
+            const start = starts[index];
+            if (!ttl || !start) {
+                return Infinity;
+            }
+            const age = (cachedNow || getNow()) - start;
+            return ttl - age;
+        };
+        this.#isStale = index => {
+            const s = starts[index];
+            const t = ttls[index];
+            return !!t && !!s && (cachedNow || getNow()) - s > t;
+        };
+    }
+    // conditionally set private methods related to TTL
+    #updateItemAge = () => { };
+    #statusTTL = () => { };
+    #setItemTTL = () => { };
+    /* c8 ignore stop */
+    #isStale = () => false;
+    #initializeSizeTracking() {
+        const sizes = new ZeroArray(this.#max);
+        this.#calculatedSize = 0;
+        this.#sizes = sizes;
+        this.#removeItemSize = index => {
+            this.#calculatedSize -= sizes[index];
+            sizes[index] = 0;
+        };
+        this.#requireSize = (k, v, size, sizeCalculation) => {
+            // provisionally accept background fetches.
+            // actual value size will be checked when they return.
+            if (this.#isBackgroundFetch(v)) {
+                return 0;
+            }
+            if (!isPosInt(size)) {
+                if (sizeCalculation) {
+                    if (typeof sizeCalculation !== 'function') {
+                        throw new TypeError('sizeCalculation must be a function');
+                    }
+                    size = sizeCalculation(v, k);
+                    if (!isPosInt(size)) {
+                        throw new TypeError('sizeCalculation return invalid (expect positive integer)');
+                    }
+                }
+                else {
+                    throw new TypeError('invalid size value (must be positive integer). ' +
+                        'When maxSize or maxEntrySize is used, sizeCalculation ' +
+                        'or size must be set.');
+                }
+            }
+            return size;
+        };
+        this.#addItemSize = (index, size, status) => {
+            sizes[index] = size;
+            if (this.#maxSize) {
+                const maxSize = this.#maxSize - sizes[index];
+                while (this.#calculatedSize > maxSize) {
+                    this.#evict(true);
+                }
+            }
+            this.#calculatedSize += sizes[index];
+            if (status) {
+                status.entrySize = size;
+                status.totalCalculatedSize = this.#calculatedSize;
+            }
+        };
+    }
+    #removeItemSize = _i => { };
+    #addItemSize = (_i, _s, _st) => { };
+    #requireSize = (_k, _v, size, sizeCalculation) => {
+        if (size || sizeCalculation) {
+            throw new TypeError('cannot set size without setting maxSize or maxEntrySize on cache');
+        }
+        return 0;
+    };
+    *#indexes({ allowStale = this.allowStale } = {}) {
+        if (this.#size) {
+            for (let i = this.#tail; true;) {
+                if (!this.#isValidIndex(i)) {
+                    break;
+                }
+                if (allowStale || !this.#isStale(i)) {
+                    yield i;
+                }
+                if (i === this.#head) {
+                    break;
+                }
+                else {
+                    i = this.#prev[i];
+                }
             }
         }
-        for (const p of this[PIPES]) {
-            p.end();
+    }
+    *#rindexes({ allowStale = this.allowStale } = {}) {
+        if (this.#size) {
+            for (let i = this.#head; true;) {
+                if (!this.#isValidIndex(i)) {
+                    break;
+                }
+                if (allowStale || !this.#isStale(i)) {
+                    yield i;
+                }
+                if (i === this.#tail) {
+                    break;
+                }
+                else {
+                    i = this.#next[i];
+                }
+            }
         }
-        const ret = super.emit('end');
-        this.removeAllListeners('end');
-        return ret;
+    }
+    #isValidIndex(index) {
+        return (index !== undefined &&
+            this.#keyMap.get(this.#keyList[index]) === index);
     }
     /**
-     * Return a Promise that resolves to an array of all emitted data once
-     * the stream ends.
+     * Return a generator yielding `[key, value]` pairs,
+     * in order from most recently used to least recently used.
      */
-    async collect() {
-        const buf = Object.assign([], {
-            dataLength: 0,
-        });
-        if (!this[OBJECTMODE])
-            buf.dataLength = 0;
-        // set the promise first, in case an error is raised
-        // by triggering the flow here.
-        const p = this.promise();
-        this.on('data', c => {
-            buf.push(c);
-            if (!this[OBJECTMODE])
-                buf.dataLength += c.length;
-        });
-        await p;
-        return buf;
-    }
-    /**
-     * Return a Promise that resolves to the concatenation of all emitted data
-     * once the stream ends.
-     *
-     * Not allowed on objectMode streams.
-     */
-    async concat() {
-        if (this[OBJECTMODE]) {
-            throw new Error('cannot concat in objectMode');
+    *entries() {
+        for (const i of this.#indexes()) {
+            if (this.#valList[i] !== undefined &&
+                this.#keyList[i] !== undefined &&
+                !this.#isBackgroundFetch(this.#valList[i])) {
+                yield [this.#keyList[i], this.#valList[i]];
+            }
         }
-        const buf = await this.collect();
-        return (this[ENCODING]
-            ? buf.join('')
-            : Buffer.concat(buf, buf.dataLength));
     }
     /**
-     * Return a void Promise that resolves once the stream ends.
-     */
-    async promise() {
-        return new Promise((resolve, reject) => {
-            this.on(DESTROYED, () => reject(new Error('stream destroyed')));
-            this.on('error', er => reject(er));
-            this.on('end', () => resolve());
-        });
-    }
-    /**
-     * Asynchronous `for await of` iteration.
+     * Inverse order version of {@link LRUCache.entries}
      *
-     * This will continue emitting all chunks until the stream terminates.
+     * Return a generator yielding `[key, value]` pairs,
+     * in order from least recently used to most recently used.
      */
-    [Symbol.asyncIterator]() {
-        // set this up front, in case the consumer doesn't call next()
-        // right away.
-        this[DISCARDED] = false;
-        let stopped = false;
-        const stop = async () => {
-            this.pause();
-            stopped = true;
-            return { value: undefined, done: true };
-        };
-        const next = () => {
-            if (stopped)
-                return stop();
-            const res = this.read();
-            if (res !== null)
-                return Promise.resolve({ done: false, value: res });
-            if (this[EOF])
-                return stop();
-            let resolve;
-            let reject;
-            const onerr = (er) => {
-                this.off('data', ondata);
-                this.off('end', onend);
-                this.off(DESTROYED, ondestroy);
-                stop();
-                reject(er);
-            };
-            const ondata = (value) => {
-                this.off('error', onerr);
-                this.off('end', onend);
-                this.off(DESTROYED, ondestroy);
-                this.pause();
-                resolve({ value, done: !!this[EOF] });
-            };
-            const onend = () => {
-                this.off('error', onerr);
-                this.off('data', ondata);
-                this.off(DESTROYED, ondestroy);
-                stop();
-                resolve({ done: true, value: undefined });
-            };
-            const ondestroy = () => onerr(new Error('stream destroyed'));
-            return new Promise((res, rej) => {
-                reject = rej;
-                resolve = res;
-                this.once(DESTROYED, ondestroy);
-                this.once('error', onerr);
-                this.once('end', onend);
-                this.once('data', ondata);
-            });
-        };
-        return {
-            next,
-            throw: stop,
-            return: stop,
-            [Symbol.asyncIterator]() {
-                return this;
-            },
-        };
+    *rentries() {
+        for (const i of this.#rindexes()) {
+            if (this.#valList[i] !== undefined &&
+                this.#keyList[i] !== undefined &&
+                !this.#isBackgroundFetch(this.#valList[i])) {
+                yield [this.#keyList[i], this.#valList[i]];
+            }
+        }
     }
     /**
-     * Synchronous `for of` iteration.
+     * Return a generator yielding the keys in the cache,
+     * in order from most recently used to least recently used.
+     */
+    *keys() {
+        for (const i of this.#indexes()) {
+            const k = this.#keyList[i];
+            if (k !== undefined &&
+                !this.#isBackgroundFetch(this.#valList[i])) {
+                yield k;
+            }
+        }
+    }
+    /**
+     * Inverse order version of {@link LRUCache.keys}
      *
-     * The iteration will terminate when the internal buffer runs out, even
-     * if the stream has not yet terminated.
+     * Return a generator yielding the keys in the cache,
+     * in order from least recently used to most recently used.
+     */
+    *rkeys() {
+        for (const i of this.#rindexes()) {
+            const k = this.#keyList[i];
+            if (k !== undefined &&
+                !this.#isBackgroundFetch(this.#valList[i])) {
+                yield k;
+            }
+        }
+    }
+    /**
+     * Return a generator yielding the values in the cache,
+     * in order from most recently used to least recently used.
+     */
+    *values() {
+        for (const i of this.#indexes()) {
+            const v = this.#valList[i];
+            if (v !== undefined &&
+                !this.#isBackgroundFetch(this.#valList[i])) {
+                yield this.#valList[i];
+            }
+        }
+    }
+    /**
+     * Inverse order version of {@link LRUCache.values}
+     *
+     * Return a generator yielding the values in the cache,
+     * in order from least recently used to most recently used.
+     */
+    *rvalues() {
+        for (const i of this.#rindexes()) {
+            const v = this.#valList[i];
+            if (v !== undefined &&
+                !this.#isBackgroundFetch(this.#valList[i])) {
+                yield this.#valList[i];
+            }
+        }
+    }
+    /**
+     * Iterating over the cache itself yields the same results as
+     * {@link LRUCache.entries}
      */
     [Symbol.iterator]() {
-        // set this up front, in case the consumer doesn't call next()
-        // right away.
-        this[DISCARDED] = false;
-        let stopped = false;
-        const stop = () => {
-            this.pause();
-            this.off(ERROR, stop);
-            this.off(DESTROYED, stop);
-            this.off('end', stop);
-            stopped = true;
-            return { done: true, value: undefined };
-        };
-        const next = () => {
-            if (stopped)
-                return stop();
-            const value = this.read();
-            return value === null ? stop() : { done: false, value };
-        };
-        this.once('end', stop);
-        this.once(ERROR, stop);
-        this.once(DESTROYED, stop);
-        return {
-            next,
-            throw: stop,
-            return: stop,
-            [Symbol.iterator]() {
-                return this;
-            },
-        };
+        return this.entries();
     }
     /**
-     * Destroy a stream, preventing it from being used for any further purpose.
-     *
-     * If the stream has a `close()` method, then it will be called on
-     * destruction.
-     *
-     * After destruction, any attempt to write data, read data, or emit most
-     * events will be ignored.
-     *
-     * If an error argument is provided, then it will be emitted in an
-     * 'error' event.
+     * A String value that is used in the creation of the default string
+     * description of an object. Called by the built-in method
+     * `Object.prototype.toString`.
      */
-    destroy(er) {
-        if (this[DESTROYED]) {
-            if (er)
-                this.emit('error', er);
-            else
-                this.emit(DESTROYED);
+    [Symbol.toStringTag] = 'LRUCache';
+    /**
+     * Find a value for which the supplied fn method returns a truthy value,
+     * similar to `Array.find()`. fn is called as `fn(value, key, cache)`.
+     */
+    find(fn, getOptions = {}) {
+        for (const i of this.#indexes()) {
+            const v = this.#valList[i];
+            const value = this.#isBackgroundFetch(v)
+                ? v.__staleWhileFetching
+                : v;
+            if (value === undefined)
+                continue;
+            if (fn(value, this.#keyList[i], this)) {
+                return this.get(this.#keyList[i], getOptions);
+            }
+        }
+    }
+    /**
+     * Call the supplied function on each item in the cache, in order from most
+     * recently used to least recently used.
+     *
+     * `fn` is called as `fn(value, key, cache)`.
+     *
+     * If `thisp` is provided, function will be called in the `this`-context of
+     * the provided object, or the cache if no `thisp` object is provided.
+     *
+     * Does not update age or recenty of use, or iterate over stale values.
+     */
+    forEach(fn, thisp = this) {
+        for (const i of this.#indexes()) {
+            const v = this.#valList[i];
+            const value = this.#isBackgroundFetch(v)
+                ? v.__staleWhileFetching
+                : v;
+            if (value === undefined)
+                continue;
+            fn.call(thisp, value, this.#keyList[i], this);
+        }
+    }
+    /**
+     * The same as {@link LRUCache.forEach} but items are iterated over in
+     * reverse order.  (ie, less recently used items are iterated over first.)
+     */
+    rforEach(fn, thisp = this) {
+        for (const i of this.#rindexes()) {
+            const v = this.#valList[i];
+            const value = this.#isBackgroundFetch(v)
+                ? v.__staleWhileFetching
+                : v;
+            if (value === undefined)
+                continue;
+            fn.call(thisp, value, this.#keyList[i], this);
+        }
+    }
+    /**
+     * Delete any stale entries. Returns true if anything was removed,
+     * false otherwise.
+     */
+    purgeStale() {
+        let deleted = false;
+        for (const i of this.#rindexes({ allowStale: true })) {
+            if (this.#isStale(i)) {
+                this.#delete(this.#keyList[i], 'expire');
+                deleted = true;
+            }
+        }
+        return deleted;
+    }
+    /**
+     * Get the extended info about a given entry, to get its value, size, and
+     * TTL info simultaneously. Returns `undefined` if the key is not present.
+     *
+     * Unlike {@link LRUCache#dump}, which is designed to be portable and survive
+     * serialization, the `start` value is always the current timestamp, and the
+     * `ttl` is a calculated remaining time to live (negative if expired).
+     *
+     * Always returns stale values, if their info is found in the cache, so be
+     * sure to check for expirations (ie, a negative {@link LRUCache.Entry#ttl})
+     * if relevant.
+     */
+    info(key) {
+        const i = this.#keyMap.get(key);
+        if (i === undefined)
+            return undefined;
+        const v = this.#valList[i];
+        const value = this.#isBackgroundFetch(v)
+            ? v.__staleWhileFetching
+            : v;
+        if (value === undefined)
+            return undefined;
+        const entry = { value };
+        if (this.#ttls && this.#starts) {
+            const ttl = this.#ttls[i];
+            const start = this.#starts[i];
+            if (ttl && start) {
+                const remain = ttl - (perf.now() - start);
+                entry.ttl = remain;
+                entry.start = Date.now();
+            }
+        }
+        if (this.#sizes) {
+            entry.size = this.#sizes[i];
+        }
+        return entry;
+    }
+    /**
+     * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
+     * passed to {@link LRLUCache#load}.
+     *
+     * The `start` fields are calculated relative to a portable `Date.now()`
+     * timestamp, even if `performance.now()` is available.
+     *
+     * Stale entries are always included in the `dump`, even if
+     * {@link LRUCache.OptionsBase.allowStale} is false.
+     *
+     * Note: this returns an actual array, not a generator, so it can be more
+     * easily passed around.
+     */
+    dump() {
+        const arr = [];
+        for (const i of this.#indexes({ allowStale: true })) {
+            const key = this.#keyList[i];
+            const v = this.#valList[i];
+            const value = this.#isBackgroundFetch(v)
+                ? v.__staleWhileFetching
+                : v;
+            if (value === undefined || key === undefined)
+                continue;
+            const entry = { value };
+            if (this.#ttls && this.#starts) {
+                entry.ttl = this.#ttls[i];
+                // always dump the start relative to a portable timestamp
+                // it's ok for this to be a bit slow, it's a rare operation.
+                const age = perf.now() - this.#starts[i];
+                entry.start = Math.floor(Date.now() - age);
+            }
+            if (this.#sizes) {
+                entry.size = this.#sizes[i];
+            }
+            arr.unshift([key, entry]);
+        }
+        return arr;
+    }
+    /**
+     * Reset the cache and load in the items in entries in the order listed.
+     *
+     * The shape of the resulting cache may be different if the same options are
+     * not used in both caches.
+     *
+     * The `start` fields are assumed to be calculated relative to a portable
+     * `Date.now()` timestamp, even if `performance.now()` is available.
+     */
+    load(arr) {
+        this.clear();
+        for (const [key, entry] of arr) {
+            if (entry.start) {
+                // entry.start is a portable timestamp, but we may be using
+                // node's performance.now(), so calculate the offset, so that
+                // we get the intended remaining TTL, no matter how long it's
+                // been on ice.
+                //
+                // it's ok for this to be a bit slow, it's a rare operation.
+                const age = Date.now() - entry.start;
+                entry.start = perf.now() - age;
+            }
+            this.set(key, entry.value, entry);
+        }
+    }
+    /**
+     * Add a value to the cache.
+     *
+     * Note: if `undefined` is specified as a value, this is an alias for
+     * {@link LRUCache#delete}
+     *
+     * Fields on the {@link LRUCache.SetOptions} options param will override
+     * their corresponding values in the constructor options for the scope
+     * of this single `set()` operation.
+     *
+     * If `start` is provided, then that will set the effective start
+     * time for the TTL calculation. Note that this must be a previous
+     * value of `performance.now()` if supported, or a previous value of
+     * `Date.now()` if not.
+     *
+     * Options object may also include `size`, which will prevent
+     * calling the `sizeCalculation` function and just use the specified
+     * number if it is a positive integer, and `noDisposeOnSet` which
+     * will prevent calling a `dispose` function in the case of
+     * overwrites.
+     *
+     * If the `size` (or return value of `sizeCalculation`) for a given
+     * entry is greater than `maxEntrySize`, then the item will not be
+     * added to the cache.
+     *
+     * Will update the recency of the entry.
+     *
+     * If the value is `undefined`, then this is an alias for
+     * `cache.delete(key)`. `undefined` is never stored in the cache.
+     */
+    set(k, v, setOptions = {}) {
+        if (v === undefined) {
+            this.delete(k);
             return this;
         }
-        this[DESTROYED] = true;
-        this[DISCARDED] = true;
-        // throw away all buffered data, it's never coming out
-        this[BUFFER].length = 0;
-        this[BUFFERLENGTH] = 0;
-        const wc = this;
-        if (typeof wc.close === 'function' && !this[CLOSED])
-            wc.close();
-        if (er)
-            this.emit('error', er);
-        // if no error to emit, still reject pending promises
-        else
-            this.emit(DESTROYED);
+        const { ttl = this.ttl, start, noDisposeOnSet = this.noDisposeOnSet, sizeCalculation = this.sizeCalculation, status, } = setOptions;
+        let { noUpdateTTL = this.noUpdateTTL } = setOptions;
+        const size = this.#requireSize(k, v, setOptions.size || 0, sizeCalculation);
+        // if the item doesn't fit, don't do anything
+        // NB: maxEntrySize set to maxSize by default
+        if (this.maxEntrySize && size > this.maxEntrySize) {
+            if (status) {
+                status.set = 'miss';
+                status.maxEntrySizeExceeded = true;
+            }
+            // have to delete, in case something is there already.
+            this.#delete(k, 'set');
+            return this;
+        }
+        let index = this.#size === 0 ? undefined : this.#keyMap.get(k);
+        if (index === undefined) {
+            // addition
+            index = (this.#size === 0
+                ? this.#tail
+                : this.#free.length !== 0
+                    ? this.#free.pop()
+                    : this.#size === this.#max
+                        ? this.#evict(false)
+                        : this.#size);
+            this.#keyList[index] = k;
+            this.#valList[index] = v;
+            this.#keyMap.set(k, index);
+            this.#next[this.#tail] = index;
+            this.#prev[index] = this.#tail;
+            this.#tail = index;
+            this.#size++;
+            this.#addItemSize(index, size, status);
+            if (status)
+                status.set = 'add';
+            noUpdateTTL = false;
+        }
+        else {
+            // update
+            this.#moveToTail(index);
+            const oldVal = this.#valList[index];
+            if (v !== oldVal) {
+                if (this.#hasFetchMethod && this.#isBackgroundFetch(oldVal)) {
+                    oldVal.__abortController.abort(new Error('replaced'));
+                    const { __staleWhileFetching: s } = oldVal;
+                    if (s !== undefined && !noDisposeOnSet) {
+                        if (this.#hasDispose) {
+                            this.#dispose?.(s, k, 'set');
+                        }
+                        if (this.#hasDisposeAfter) {
+                            this.#disposed?.push([s, k, 'set']);
+                        }
+                    }
+                }
+                else if (!noDisposeOnSet) {
+                    if (this.#hasDispose) {
+                        this.#dispose?.(oldVal, k, 'set');
+                    }
+                    if (this.#hasDisposeAfter) {
+                        this.#disposed?.push([oldVal, k, 'set']);
+                    }
+                }
+                this.#removeItemSize(index);
+                this.#addItemSize(index, size, status);
+                this.#valList[index] = v;
+                if (status) {
+                    status.set = 'replace';
+                    const oldValue = oldVal && this.#isBackgroundFetch(oldVal)
+                        ? oldVal.__staleWhileFetching
+                        : oldVal;
+                    if (oldValue !== undefined)
+                        status.oldValue = oldValue;
+                }
+            }
+            else if (status) {
+                status.set = 'update';
+            }
+        }
+        if (ttl !== 0 && !this.#ttls) {
+            this.#initializeTTLTracking();
+        }
+        if (this.#ttls) {
+            if (!noUpdateTTL) {
+                this.#setItemTTL(index, ttl, start);
+            }
+            if (status)
+                this.#statusTTL(status, index);
+        }
+        if (!noDisposeOnSet && this.#hasDisposeAfter && this.#disposed) {
+            const dt = this.#disposed;
+            let task;
+            while ((task = dt?.shift())) {
+                this.#disposeAfter?.(...task);
+            }
+        }
         return this;
     }
     /**
-     * Alias for {@link isStream}
-     *
-     * Former export location, maintained for backwards compatibility.
-     *
-     * @deprecated
+     * Evict the least recently used item, returning its value or
+     * `undefined` if cache is empty.
      */
-    static get isStream() {
-        return exports.isStream;
+    pop() {
+        try {
+            while (this.#size) {
+                const val = this.#valList[this.#head];
+                this.#evict(true);
+                if (this.#isBackgroundFetch(val)) {
+                    if (val.__staleWhileFetching) {
+                        return val.__staleWhileFetching;
+                    }
+                }
+                else if (val !== undefined) {
+                    return val;
+                }
+            }
+        }
+        finally {
+            if (this.#hasDisposeAfter && this.#disposed) {
+                const dt = this.#disposed;
+                let task;
+                while ((task = dt?.shift())) {
+                    this.#disposeAfter?.(...task);
+                }
+            }
+        }
+    }
+    #evict(free) {
+        const head = this.#head;
+        const k = this.#keyList[head];
+        const v = this.#valList[head];
+        if (this.#hasFetchMethod && this.#isBackgroundFetch(v)) {
+            v.__abortController.abort(new Error('evicted'));
+        }
+        else if (this.#hasDispose || this.#hasDisposeAfter) {
+            if (this.#hasDispose) {
+                this.#dispose?.(v, k, 'evict');
+            }
+            if (this.#hasDisposeAfter) {
+                this.#disposed?.push([v, k, 'evict']);
+            }
+        }
+        this.#removeItemSize(head);
+        // if we aren't about to use the index, then null these out
+        if (free) {
+            this.#keyList[head] = undefined;
+            this.#valList[head] = undefined;
+            this.#free.push(head);
+        }
+        if (this.#size === 1) {
+            this.#head = this.#tail = 0;
+            this.#free.length = 0;
+        }
+        else {
+            this.#head = this.#next[head];
+        }
+        this.#keyMap.delete(k);
+        this.#size--;
+        return head;
+    }
+    /**
+     * Check if a key is in the cache, without updating the recency of use.
+     * Will return false if the item is stale, even though it is technically
+     * in the cache.
+     *
+     * Check if a key is in the cache, without updating the recency of
+     * use. Age is updated if {@link LRUCache.OptionsBase.updateAgeOnHas} is set
+     * to `true` in either the options or the constructor.
+     *
+     * Will return `false` if the item is stale, even though it is technically in
+     * the cache. The difference can be determined (if it matters) by using a
+     * `status` argument, and inspecting the `has` field.
+     *
+     * Will not update item age unless
+     * {@link LRUCache.OptionsBase.updateAgeOnHas} is set.
+     */
+    has(k, hasOptions = {}) {
+        const { updateAgeOnHas = this.updateAgeOnHas, status } = hasOptions;
+        const index = this.#keyMap.get(k);
+        if (index !== undefined) {
+            const v = this.#valList[index];
+            if (this.#isBackgroundFetch(v) &&
+                v.__staleWhileFetching === undefined) {
+                return false;
+            }
+            if (!this.#isStale(index)) {
+                if (updateAgeOnHas) {
+                    this.#updateItemAge(index);
+                }
+                if (status) {
+                    status.has = 'hit';
+                    this.#statusTTL(status, index);
+                }
+                return true;
+            }
+            else if (status) {
+                status.has = 'stale';
+                this.#statusTTL(status, index);
+            }
+        }
+        else if (status) {
+            status.has = 'miss';
+        }
+        return false;
+    }
+    /**
+     * Like {@link LRUCache#get} but doesn't update recency or delete stale
+     * items.
+     *
+     * Returns `undefined` if the item is stale, unless
+     * {@link LRUCache.OptionsBase.allowStale} is set.
+     */
+    peek(k, peekOptions = {}) {
+        const { allowStale = this.allowStale } = peekOptions;
+        const index = this.#keyMap.get(k);
+        if (index === undefined ||
+            (!allowStale && this.#isStale(index))) {
+            return;
+        }
+        const v = this.#valList[index];
+        // either stale and allowed, or forcing a refresh of non-stale value
+        return this.#isBackgroundFetch(v) ? v.__staleWhileFetching : v;
+    }
+    #backgroundFetch(k, index, options, context) {
+        const v = index === undefined ? undefined : this.#valList[index];
+        if (this.#isBackgroundFetch(v)) {
+            return v;
+        }
+        const ac = new AC();
+        const { signal } = options;
+        // when/if our AC signals, then stop listening to theirs.
+        signal?.addEventListener('abort', () => ac.abort(signal.reason), {
+            signal: ac.signal,
+        });
+        const fetchOpts = {
+            signal: ac.signal,
+            options,
+            context,
+        };
+        const cb = (v, updateCache = false) => {
+            const { aborted } = ac.signal;
+            const ignoreAbort = options.ignoreFetchAbort && v !== undefined;
+            if (options.status) {
+                if (aborted && !updateCache) {
+                    options.status.fetchAborted = true;
+                    options.status.fetchError = ac.signal.reason;
+                    if (ignoreAbort)
+                        options.status.fetchAbortIgnored = true;
+                }
+                else {
+                    options.status.fetchResolved = true;
+                }
+            }
+            if (aborted && !ignoreAbort && !updateCache) {
+                return fetchFail(ac.signal.reason);
+            }
+            // either we didn't abort, and are still here, or we did, and ignored
+            const bf = p;
+            if (this.#valList[index] === p) {
+                if (v === undefined) {
+                    if (bf.__staleWhileFetching) {
+                        this.#valList[index] = bf.__staleWhileFetching;
+                    }
+                    else {
+                        this.#delete(k, 'fetch');
+                    }
+                }
+                else {
+                    if (options.status)
+                        options.status.fetchUpdated = true;
+                    this.set(k, v, fetchOpts.options);
+                }
+            }
+            return v;
+        };
+        const eb = (er) => {
+            if (options.status) {
+                options.status.fetchRejected = true;
+                options.status.fetchError = er;
+            }
+            return fetchFail(er);
+        };
+        const fetchFail = (er) => {
+            const { aborted } = ac.signal;
+            const allowStaleAborted = aborted && options.allowStaleOnFetchAbort;
+            const allowStale = allowStaleAborted || options.allowStaleOnFetchRejection;
+            const noDelete = allowStale || options.noDeleteOnFetchRejection;
+            const bf = p;
+            if (this.#valList[index] === p) {
+                // if we allow stale on fetch rejections, then we need to ensure that
+                // the stale value is not removed from the cache when the fetch fails.
+                const del = !noDelete || bf.__staleWhileFetching === undefined;
+                if (del) {
+                    this.#delete(k, 'fetch');
+                }
+                else if (!allowStaleAborted) {
+                    // still replace the *promise* with the stale value,
+                    // since we are done with the promise at this point.
+                    // leave it untouched if we're still waiting for an
+                    // aborted background fetch that hasn't yet returned.
+                    this.#valList[index] = bf.__staleWhileFetching;
+                }
+            }
+            if (allowStale) {
+                if (options.status && bf.__staleWhileFetching !== undefined) {
+                    options.status.returnedStale = true;
+                }
+                return bf.__staleWhileFetching;
+            }
+            else if (bf.__returned === bf) {
+                throw er;
+            }
+        };
+        const pcall = (res, rej) => {
+            const fmp = this.#fetchMethod?.(k, v, fetchOpts);
+            if (fmp && fmp instanceof Promise) {
+                fmp.then(v => res(v === undefined ? undefined : v), rej);
+            }
+            // ignored, we go until we finish, regardless.
+            // defer check until we are actually aborting,
+            // so fetchMethod can override.
+            ac.signal.addEventListener('abort', () => {
+                if (!options.ignoreFetchAbort ||
+                    options.allowStaleOnFetchAbort) {
+                    res(undefined);
+                    // when it eventually resolves, update the cache.
+                    if (options.allowStaleOnFetchAbort) {
+                        res = v => cb(v, true);
+                    }
+                }
+            });
+        };
+        if (options.status)
+            options.status.fetchDispatched = true;
+        const p = new Promise(pcall).then(cb, eb);
+        const bf = Object.assign(p, {
+            __abortController: ac,
+            __staleWhileFetching: v,
+            __returned: undefined,
+        });
+        if (index === undefined) {
+            // internal, don't expose status.
+            this.set(k, bf, { ...fetchOpts.options, status: undefined });
+            index = this.#keyMap.get(k);
+        }
+        else {
+            this.#valList[index] = bf;
+        }
+        return bf;
+    }
+    #isBackgroundFetch(p) {
+        if (!this.#hasFetchMethod)
+            return false;
+        const b = p;
+        return (!!b &&
+            b instanceof Promise &&
+            b.hasOwnProperty('__staleWhileFetching') &&
+            b.__abortController instanceof AC);
+    }
+    async fetch(k, fetchOptions = {}) {
+        const { 
+        // get options
+        allowStale = this.allowStale, updateAgeOnGet = this.updateAgeOnGet, noDeleteOnStaleGet = this.noDeleteOnStaleGet, 
+        // set options
+        ttl = this.ttl, noDisposeOnSet = this.noDisposeOnSet, size = 0, sizeCalculation = this.sizeCalculation, noUpdateTTL = this.noUpdateTTL, 
+        // fetch exclusive options
+        noDeleteOnFetchRejection = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection = this.allowStaleOnFetchRejection, ignoreFetchAbort = this.ignoreFetchAbort, allowStaleOnFetchAbort = this.allowStaleOnFetchAbort, context, forceRefresh = false, status, signal, } = fetchOptions;
+        if (!this.#hasFetchMethod) {
+            if (status)
+                status.fetch = 'get';
+            return this.get(k, {
+                allowStale,
+                updateAgeOnGet,
+                noDeleteOnStaleGet,
+                status,
+            });
+        }
+        const options = {
+            allowStale,
+            updateAgeOnGet,
+            noDeleteOnStaleGet,
+            ttl,
+            noDisposeOnSet,
+            size,
+            sizeCalculation,
+            noUpdateTTL,
+            noDeleteOnFetchRejection,
+            allowStaleOnFetchRejection,
+            allowStaleOnFetchAbort,
+            ignoreFetchAbort,
+            status,
+            signal,
+        };
+        let index = this.#keyMap.get(k);
+        if (index === undefined) {
+            if (status)
+                status.fetch = 'miss';
+            const p = this.#backgroundFetch(k, index, options, context);
+            return (p.__returned = p);
+        }
+        else {
+            // in cache, maybe already fetching
+            const v = this.#valList[index];
+            if (this.#isBackgroundFetch(v)) {
+                const stale = allowStale && v.__staleWhileFetching !== undefined;
+                if (status) {
+                    status.fetch = 'inflight';
+                    if (stale)
+                        status.returnedStale = true;
+                }
+                return stale ? v.__staleWhileFetching : (v.__returned = v);
+            }
+            // if we force a refresh, that means do NOT serve the cached value,
+            // unless we are already in the process of refreshing the cache.
+            const isStale = this.#isStale(index);
+            if (!forceRefresh && !isStale) {
+                if (status)
+                    status.fetch = 'hit';
+                this.#moveToTail(index);
+                if (updateAgeOnGet) {
+                    this.#updateItemAge(index);
+                }
+                if (status)
+                    this.#statusTTL(status, index);
+                return v;
+            }
+            // ok, it is stale or a forced refresh, and not already fetching.
+            // refresh the cache.
+            const p = this.#backgroundFetch(k, index, options, context);
+            const hasStale = p.__staleWhileFetching !== undefined;
+            const staleVal = hasStale && allowStale;
+            if (status) {
+                status.fetch = isStale ? 'stale' : 'refresh';
+                if (staleVal && isStale)
+                    status.returnedStale = true;
+            }
+            return staleVal ? p.__staleWhileFetching : (p.__returned = p);
+        }
+    }
+    async forceFetch(k, fetchOptions = {}) {
+        const v = await this.fetch(k, fetchOptions);
+        if (v === undefined)
+            throw new Error('fetch() returned undefined');
+        return v;
+    }
+    memo(k, memoOptions = {}) {
+        const memoMethod = this.#memoMethod;
+        if (!memoMethod) {
+            throw new Error('no memoMethod provided to constructor');
+        }
+        const { context, forceRefresh, ...options } = memoOptions;
+        const v = this.get(k, options);
+        if (!forceRefresh && v !== undefined)
+            return v;
+        const vv = memoMethod(k, v, {
+            options,
+            context,
+        });
+        this.set(k, vv, options);
+        return vv;
+    }
+    /**
+     * Return a value from the cache. Will update the recency of the cache
+     * entry found.
+     *
+     * If the key is not found, get() will return `undefined`.
+     */
+    get(k, getOptions = {}) {
+        const { allowStale = this.allowStale, updateAgeOnGet = this.updateAgeOnGet, noDeleteOnStaleGet = this.noDeleteOnStaleGet, status, } = getOptions;
+        const index = this.#keyMap.get(k);
+        if (index !== undefined) {
+            const value = this.#valList[index];
+            const fetching = this.#isBackgroundFetch(value);
+            if (status)
+                this.#statusTTL(status, index);
+            if (this.#isStale(index)) {
+                if (status)
+                    status.get = 'stale';
+                // delete only if not an in-flight background fetch
+                if (!fetching) {
+                    if (!noDeleteOnStaleGet) {
+                        this.#delete(k, 'expire');
+                    }
+                    if (status && allowStale)
+                        status.returnedStale = true;
+                    return allowStale ? value : undefined;
+                }
+                else {
+                    if (status &&
+                        allowStale &&
+                        value.__staleWhileFetching !== undefined) {
+                        status.returnedStale = true;
+                    }
+                    return allowStale ? value.__staleWhileFetching : undefined;
+                }
+            }
+            else {
+                if (status)
+                    status.get = 'hit';
+                // if we're currently fetching it, we don't actually have it yet
+                // it's not stale, which means this isn't a staleWhileRefetching.
+                // If it's not stale, and fetching, AND has a __staleWhileFetching
+                // value, then that means the user fetched with {forceRefresh:true},
+                // so it's safe to return that value.
+                if (fetching) {
+                    return value.__staleWhileFetching;
+                }
+                this.#moveToTail(index);
+                if (updateAgeOnGet) {
+                    this.#updateItemAge(index);
+                }
+                return value;
+            }
+        }
+        else if (status) {
+            status.get = 'miss';
+        }
+    }
+    #connect(p, n) {
+        this.#prev[n] = p;
+        this.#next[p] = n;
+    }
+    #moveToTail(index) {
+        // if tail already, nothing to do
+        // if head, move head to next[index]
+        // else
+        //   move next[prev[index]] to next[index] (head has no prev)
+        //   move prev[next[index]] to prev[index]
+        // prev[index] = tail
+        // next[tail] = index
+        // tail = index
+        if (index !== this.#tail) {
+            if (index === this.#head) {
+                this.#head = this.#next[index];
+            }
+            else {
+                this.#connect(this.#prev[index], this.#next[index]);
+            }
+            this.#connect(this.#tail, index);
+            this.#tail = index;
+        }
+    }
+    /**
+     * Deletes a key out of the cache.
+     *
+     * Returns true if the key was deleted, false otherwise.
+     */
+    delete(k) {
+        return this.#delete(k, 'delete');
+    }
+    #delete(k, reason) {
+        let deleted = false;
+        if (this.#size !== 0) {
+            const index = this.#keyMap.get(k);
+            if (index !== undefined) {
+                deleted = true;
+                if (this.#size === 1) {
+                    this.#clear(reason);
+                }
+                else {
+                    this.#removeItemSize(index);
+                    const v = this.#valList[index];
+                    if (this.#isBackgroundFetch(v)) {
+                        v.__abortController.abort(new Error('deleted'));
+                    }
+                    else if (this.#hasDispose || this.#hasDisposeAfter) {
+                        if (this.#hasDispose) {
+                            this.#dispose?.(v, k, reason);
+                        }
+                        if (this.#hasDisposeAfter) {
+                            this.#disposed?.push([v, k, reason]);
+                        }
+                    }
+                    this.#keyMap.delete(k);
+                    this.#keyList[index] = undefined;
+                    this.#valList[index] = undefined;
+                    if (index === this.#tail) {
+                        this.#tail = this.#prev[index];
+                    }
+                    else if (index === this.#head) {
+                        this.#head = this.#next[index];
+                    }
+                    else {
+                        const pi = this.#prev[index];
+                        this.#next[pi] = this.#next[index];
+                        const ni = this.#next[index];
+                        this.#prev[ni] = this.#prev[index];
+                    }
+                    this.#size--;
+                    this.#free.push(index);
+                }
+            }
+        }
+        if (this.#hasDisposeAfter && this.#disposed?.length) {
+            const dt = this.#disposed;
+            let task;
+            while ((task = dt?.shift())) {
+                this.#disposeAfter?.(...task);
+            }
+        }
+        return deleted;
+    }
+    /**
+     * Clear the cache entirely, throwing away all values.
+     */
+    clear() {
+        return this.#clear('delete');
+    }
+    #clear(reason) {
+        for (const index of this.#rindexes({ allowStale: true })) {
+            const v = this.#valList[index];
+            if (this.#isBackgroundFetch(v)) {
+                v.__abortController.abort(new Error('deleted'));
+            }
+            else {
+                const k = this.#keyList[index];
+                if (this.#hasDispose) {
+                    this.#dispose?.(v, k, reason);
+                }
+                if (this.#hasDisposeAfter) {
+                    this.#disposed?.push([v, k, reason]);
+                }
+            }
+        }
+        this.#keyMap.clear();
+        this.#valList.fill(undefined);
+        this.#keyList.fill(undefined);
+        if (this.#ttls && this.#starts) {
+            this.#ttls.fill(0);
+            this.#starts.fill(0);
+        }
+        if (this.#sizes) {
+            this.#sizes.fill(0);
+        }
+        this.#head = 0;
+        this.#tail = 0;
+        this.#free.length = 0;
+        this.#calculatedSize = 0;
+        this.#size = 0;
+        if (this.#hasDisposeAfter && this.#disposed) {
+            const dt = this.#disposed;
+            let task;
+            while ((task = dt?.shift())) {
+                this.#disposeAfter?.(...task);
+            }
+        }
     }
 }
-exports.Minipass = Minipass;
+exports.LRUCache = LRUCache;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -68098,118 +66595,13 @@ module.exports = JSON.parse('{"$schema":"http://json-schema.org/draft-07/schema#
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const core = __nccwpck_require__(2186);
-const glob = __nccwpck_require__(8211);
-const { validateFromFile } = __nccwpck_require__(1250);
-
-const usage = `
-Usage: validate-entity [OPTION] [FILE]
-
-Validates Backstage entity definition files.  Files may be specified as
-arguments or via STDIN, one per line.
-
-OPTION:
--h  display help
--q  minimal output while validating entities
--i  validate files provided over standard input
--l  location of custom validation schema file
-`.trim();
-
-async function validate(files, { github, verbose, validationSchemaFileLocation }) {
-  for (const file of files) {
-    try {
-      if (github) {
-        core.setOutput('time', new Date().toTimeString());
-      }
- 
-      await validateFromFile(file, verbose, validationSchemaFileLocation);
-    } catch (err) {
-      if (github) {
-        core.setFailed(`Action failed with error: ${err.message}`);
-      } else {
-        console.error(`Failed to validate ${file}: ${err.message}`);
-      }
-      return 1;
-    }
-  }
-  return 0;
-}
-
-async function main() {
-  const argv = __nccwpck_require__(5871)(process.argv.slice(2), {
-    boolean: ['h', 'i', 'q'],
-    default: {
-      // help
-      h: false,
-      // read file(s) to validate from STDIN
-      i: false,
-      // quiet output
-      q: false,
-    }
-  });
-
-  if (argv.h) {
-    console.log(usage);
-    return 0;
-  }
-
-  const options = {
-    verbose: !argv.q,
-    github: false,
-    validationSchemaFileLocation: argv.l
-  };
-
-  // files to validate
-  let files = [];
-
-  // this will be empty in non-github environments
-  const ghPath = core.getInput('path');
-  if (ghPath) {
-    // add one or more files seperated by comma
-    files = files.concat(ghPath.split(','));
-    options.github = true;
-  }
-
-  const ghVerbose = core.getInput('verbose');
-  if (ghVerbose) {
-    options.verbose = ghVerbose === 'true';
-  }
-
-  const ghValidationSchemaFileLocation = core.getInput('validationSchemaFileLocation');
-  if (ghValidationSchemaFileLocation) {
-    options.validationSchemaFileLocation = ghValidationSchemaFileLocation;
-  }
-
-  // add files specified as arguments
-  files = files.concat(argv._);
-
-  if (argv.i) {
-    // add files specified over STDIN
-    files = files.concat((__nccwpck_require__(7147).readFileSync)(0)
-      .toString()
-      .split('\n')
-      .filter(l => l.length > 0));
-  }
-
-  // Expand glob patterns like services/*/catalog.yaml into a list of files
-  files = files.map(file => glob.sync(file)).flat();
-
-  if (files.length === 0) {
-    console.error('No files specified to validate');
-    return 1;
-  }
-
-  return await validate(files, options);
-}
-
-main().then(process.exit);
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(4351);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

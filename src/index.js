@@ -16,22 +16,57 @@ OPTION:
 `.trim();
 
 async function validate(files, { github, verbose, validationSchemaFileLocation }) {
+  const errors = [];
+  let successCount = 0;
+
   for (const file of files) {
     try {
       if (github) {
         core.setOutput('time', new Date().toTimeString());
       }
- 
+
       await validateFromFile(file, verbose, validationSchemaFileLocation);
+      successCount++;
     } catch (err) {
-      if (github) {
-        core.setFailed(`Action failed with error: ${err.message}`);
-      } else {
+      errors.push({ file, error: err.message });
+      if (!verbose) {
         console.error(`Failed to validate ${file}: ${err.message}`);
       }
-      return 1;
     }
   }
+
+  // Print summary
+  const totalFiles = files.length;
+  const failedCount = errors.length;
+
+  if (failedCount > 0) {
+    console.error(`\n${'='.repeat(60)}`);
+    console.error(`Validation Summary:`);
+    console.error(`  Total files: ${totalFiles}`);
+    console.error(`  ✓ Passed: ${successCount}`);
+    console.error(`  ✗ Failed: ${failedCount}`);
+    console.error(`${'='.repeat(60)}`);
+
+    if (verbose) {
+      console.error(`\nFailed files:`);
+      errors.forEach(({ file, error }) => {
+        console.error(`  ✗ ${file}`);
+        console.error(`    ${error}`);
+      });
+    }
+
+    if (github) {
+      const errorSummary = errors.map(e => `${e.file}: ${e.error}`).join('\n');
+      core.setFailed(`Validation failed for ${failedCount} file(s):\n${errorSummary}`);
+    }
+
+    return 1;
+  }
+
+  if (verbose) {
+    console.log(`\n✓ All ${totalFiles} file(s) validated successfully`);
+  }
+
   return 0;
 }
 
@@ -103,4 +138,10 @@ async function main() {
   return await validate(files, options);
 }
 
-main().then(process.exit);
+// Export for testing
+module.exports = { validate };
+
+// Only run main if this is the entry point
+if (require.main === module) {
+  main().then(process.exit);
+}
