@@ -15,3 +15,20 @@ jobs:
           node-version: 20
       - run: npm install
       - run: npm test
+
+  docker-smoke-test:
+    name: Docker Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+      - name: Build Docker image
+        run: docker build -t bev-test .
+      - name: Test valid catalog-info
+        run: docker run --rm -v ${{ github.workspace }}/sample:/workdir bev-test catalog-info.yml
+      - name: Test invalid catalog-info fails
+        run: |
+          if docker run --rm -v ${{ github.workspace }}/sample:/workdir bev-test invalid-catalog-info.yml; then
+            echo "Expected validation to fail but it passed"
+            exit 1
+          fi
