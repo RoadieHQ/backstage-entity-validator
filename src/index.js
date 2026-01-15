@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const glob = require('glob');
-const { validateFromFile } = require('@roadiehq/roadie-backstage-entity-validator/src/validator');
+const { validateFromFile } = require('@roadiehq/roadie-backstage-entity-validator');
 
 const usage = `
 Usage: validate-entity [OPTION] [FILE]
@@ -103,4 +103,10 @@ async function main() {
   return await validate(files, options);
 }
 
-main().then(process.exit);
+// Export for testing
+module.exports = { validate, main, usage };
+
+// Only run when executed directly, not when required as a module
+if (require.main === module) {
+  main().then(process.exit);
+}

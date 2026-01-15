@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require('../dist/index');
+const { main } = require('../dist/index');
+main().then(process.exit);
