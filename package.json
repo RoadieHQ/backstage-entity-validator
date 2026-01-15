@@ -1,6 +1,6 @@
 {
   "name": "@roadiehq/backstage-entity-validator",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "RoadieHQ",
   "description": "Backstage entity validator",
   "main": "dist/index.js",
@@ -29,7 +29,7 @@
     "@roadiehq/roadie-backstage-entity-validator": "^2.8.0",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
-    "glob": "^10.3.16",
+    "glob": "^13.0.0",
     "js-yaml": "^4.1.0",
     "minimist": "^1.2.8"
   },
