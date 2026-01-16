@@ -1,6 +1,6 @@
 {
   "name": "@roadiehq/backstage-entity-validator",
-  "version": "0.6.2",
+  "version": "1.0.0",
   "author": "RoadieHQ",
   "description": "Backstage entity validator",
   "main": "dist/index.js",
@@ -12,6 +12,9 @@
     "email": "support@roadie.io"
   },
   "repository": "https://github.com/RoadieHQ/backstage-entity-validator",
+  "engines": {
+    "node": ">=20"
+  },
   "publishConfig": {
     "access": "public"
   },
