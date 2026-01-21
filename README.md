@@ -74,6 +74,27 @@ usage:
             path: catalog-info.yaml
 ```
 
+## Docker
+
+The validator is available as a Docker image at `roadiehq/backstage-entity-validator`.
+
+### Usage
+
+```bash
+# Validate a file in the current directory
+docker run --rm -v $(pwd):/workdir roadiehq/backstage-entity-validator catalog-info.yaml
+
+# Validate multiple files
+docker run --rm -v $(pwd):/workdir roadiehq/backstage-entity-validator catalog-info.yaml other-file.yaml
+
+# Validate with glob pattern
+docker run --rm -v $(pwd):/workdir roadiehq/backstage-entity-validator "services/*/catalog-info.yaml"
+```
+
+### Available Tags
+
+- `latest` - Latest release
+- `x.y.z` - Specific version (e.g., `0.6.2`)
 
 ## Using the CLI
 
