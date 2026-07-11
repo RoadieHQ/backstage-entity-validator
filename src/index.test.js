@@ -1,11 +1,8 @@
 // @ts-nocheck
 /* eslint-disable no-import-assign */
-// noinspection JSConstantReassignment
 
-// Store original process.argv
 const originalArgv = process.argv;
 
-// Mock modules
 jest.mock('@actions/core');
 jest.mock('@roadiehq/roadie-backstage-entity-validator');
 jest.mock('glob');
@@ -19,28 +16,21 @@ describe('backstage-entity-validator', () => {
   let usage;
 
   beforeEach(() => {
-    // Reset all mocks and module cache
     jest.resetModules();
     jest.clearAllMocks();
-
-    // Reset process.argv
     process.argv = ['node', 'index.js'];
 
-    // Re-require mocked modules after resetModules
     core = require('@actions/core');
     glob = require('glob');
     const validator = require('@roadiehq/roadie-backstage-entity-validator');
     validateFromFile = validator.validateFromFile;
 
-    // Set up default mock implementations
-    // @ts-ignore - mocking module for tests
     glob.sync = jest.fn((pattern) => [pattern]);
     core.getInput = jest.fn().mockReturnValue('');
     core.setOutput = jest.fn();
     core.setFailed = jest.fn();
     validateFromFile.mockResolvedValue(undefined);
 
-    // Now require the module under test (which will use our mocks)
     const indexModule = require('./index');
     validate = indexModule.validate;
     main = indexModule.main;
@@ -76,11 +66,10 @@ describe('backstage-entity-validator', () => {
       });
 
       expect(result).toBe(1);
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to validate invalid.yaml: Invalid entity');
       consoleSpy.mockRestore();
     });
 
-    it('stops validation on first failure', async () => {
+    it('validates all files and reports all errors instead of stopping at first failure', async () => {
       validateFromFile
         .mockResolvedValueOnce(undefined)
         .mockRejectedValueOnce(new Error('Invalid'))
@@ -94,7 +83,76 @@ describe('backstage-entity-validator', () => {
       });
 
       expect(result).toBe(1);
+      expect(validateFromFile).toHaveBeenCalledTimes(3);
+      consoleSpy.mockRestore();
+    });
+
+    it('displays summary statistics showing total/passed/failed counts', async () => {
+      validateFromFile
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(undefined)
+        .mockRejectedValueOnce(new Error('Validation error'));
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await validate(['valid1.yaml', 'valid2.yaml', 'invalid.yaml'], {
+        github: false,
+        verbose: false,
+        validationSchemaFileLocation: undefined
+      });
+
+      expect(result).toBe(1);
+
+      const errorCalls = consoleSpy.mock.calls.map(call => call.join(' '));
+      const output = errorCalls.join('\n');
+
+      expect(output).toContain('Total files: 3');
+      expect(output).toContain('Passed: 2');
+      expect(output).toContain('Failed: 1');
+      consoleSpy.mockRestore();
+    });
+
+    it('shows success message when all files pass in verbose mode', async () => {
+      validateFromFile
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(undefined);
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      const result = await validate(['valid1.yaml', 'valid2.yaml'], {
+        github: false,
+        verbose: true,
+        validationSchemaFileLocation: undefined
+      });
+
+      expect(result).toBe(0);
       expect(validateFromFile).toHaveBeenCalledTimes(2);
+
+      const logCalls = consoleSpy.mock.calls.map(call => call.join(' '));
+      const output = logCalls.join('\n');
+
+      expect(output).toContain('2 file(s) validated successfully');
+      consoleSpy.mockRestore();
+    });
+
+    it('in verbose mode, lists all failed files with their errors', async () => {
+      validateFromFile
+        .mockRejectedValueOnce(new Error('Error A'))
+        .mockRejectedValueOnce(new Error('Error B'));
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      await validate(['fileA.yaml', 'fileB.yaml'], {
+        github: false,
+        verbose: true,
+        validationSchemaFileLocation: undefined
+      });
+
+      const errorCalls = consoleSpy.mock.calls.map(call => call.join(' '));
+      const output = errorCalls.join('\n');
+
+      expect(output).toContain('fileA.yaml');
+      expect(output).toContain('Error A');
+      expect(output).toContain('fileB.yaml');
+      expect(output).toContain('Error B');
+      expect(output).toContain('Failed files:');
       consoleSpy.mockRestore();
     });
 
@@ -119,6 +177,8 @@ describe('backstage-entity-validator', () => {
     });
 
     it('validates empty file list without calling validator', async () => {
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
       const result = await validate([], {
         github: false,
         verbose: true,
@@ -127,6 +187,7 @@ describe('backstage-entity-validator', () => {
 
       expect(result).toBe(0);
       expect(validateFromFile).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
 
     describe('GitHub Actions mode', () => {
@@ -140,30 +201,28 @@ describe('backstage-entity-validator', () => {
         expect(core.setOutput).toHaveBeenCalledWith('time', expect.any(String));
       });
 
-      it('calls core.setFailed on validation error', async () => {
-        validateFromFile.mockRejectedValue(new Error('Validation failed'));
+      it('calls core.setFailed with summary of all errors', async () => {
+        validateFromFile
+          .mockRejectedValueOnce(new Error('Error 1'))
+          .mockRejectedValueOnce(new Error('Error 2'));
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-        const result = await validate(['file.yaml'], {
+        const result = await validate(['file1.yaml', 'file2.yaml'], {
           github: true,
-          verbose: true,
+          verbose: false,
           validationSchemaFileLocation: undefined
         });
 
         expect(result).toBe(1);
-        expect(core.setFailed).toHaveBeenCalledWith('Action failed with error: Validation failed');
-      });
-
-      it('does not call console.error in GitHub mode', async () => {
-        validateFromFile.mockRejectedValue(new Error('Validation failed'));
-        const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-
-        await validate(['file.yaml'], {
-          github: true,
-          verbose: true,
-          validationSchemaFileLocation: undefined
-        });
-
-        expect(consoleSpy).not.toHaveBeenCalled();
+        expect(core.setFailed).toHaveBeenCalledWith(
+          expect.stringContaining('Validation failed for 2 file(s)')
+        );
+        expect(core.setFailed).toHaveBeenCalledWith(
+          expect.stringContaining('file1.yaml: Error 1')
+        );
+        expect(core.setFailed).toHaveBeenCalledWith(
+          expect.stringContaining('file2.yaml: Error 2')
+        );
         consoleSpy.mockRestore();
       });
     });
@@ -175,7 +234,7 @@ describe('backstage-entity-validator', () => {
 
         await validate(['test.yaml'], {
           github: false,
-          verbose: true,
+          verbose: false,
           validationSchemaFileLocation: undefined
         });
 
@@ -192,12 +251,10 @@ describe('backstage-entity-validator', () => {
         process.argv = ['node', 'index.js', '-h'];
         const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-        // Re-require to pick up new argv
         jest.resetModules();
         core = require('@actions/core');
         core.getInput = jest.fn().mockReturnValue('');
         glob = require('glob');
-        // @ts-ignore - mocking module for tests
         glob.sync = jest.fn((pattern) => [pattern]);
         const indexModule = require('./index');
 
@@ -217,7 +274,6 @@ describe('backstage-entity-validator', () => {
         core = require('@actions/core');
         core.getInput = jest.fn().mockReturnValue('');
         glob = require('glob');
-        // @ts-ignore - mocking module for tests
         glob.sync = jest.fn((pattern) => [pattern]);
         const validator = require('@roadiehq/roadie-backstage-entity-validator');
         validator.validateFromFile.mockResolvedValue(undefined);
@@ -235,7 +291,6 @@ describe('backstage-entity-validator', () => {
         core = require('@actions/core');
         core.getInput = jest.fn().mockReturnValue('');
         glob = require('glob');
-        // @ts-ignore - mocking module for tests
         glob.sync = jest.fn((pattern) => [pattern]);
         const validator = require('@roadiehq/roadie-backstage-entity-validator');
         validator.validateFromFile.mockResolvedValue(undefined);
@@ -255,7 +310,6 @@ describe('backstage-entity-validator', () => {
         core = require('@actions/core');
         core.getInput = jest.fn().mockReturnValue('');
         glob = require('glob');
-        // @ts-ignore - mocking module for tests
         glob.sync = jest.fn((pattern) => [pattern]);
         const validator = require('@roadiehq/roadie-backstage-entity-validator');
         validator.validateFromFile.mockResolvedValue(undefined);
@@ -275,7 +329,6 @@ describe('backstage-entity-validator', () => {
         core = require('@actions/core');
         core.getInput = jest.fn().mockReturnValue('');
         glob = require('glob');
-        // @ts-ignore - mocking module for tests
         glob.sync = jest.fn((pattern) => [pattern]);
         const validator = require('@roadiehq/roadie-backstage-entity-validator');
         validator.validateFromFile.mockResolvedValue(undefined);
@@ -296,7 +349,6 @@ describe('backstage-entity-validator', () => {
         core = require('@actions/core');
         core.getInput = jest.fn().mockReturnValue('');
         glob = require('glob');
-        // @ts-ignore - mocking module for tests
         glob.sync = jest.fn((pattern) => [pattern]);
         const indexModule = require('./index');
 
@@ -485,7 +537,6 @@ describe('backstage-entity-validator', () => {
 
       await indexModule.main();
 
-      // GitHub mode should call setOutput
       expect(core.setOutput).toHaveBeenCalledWith('time', expect.any(String));
     });
 
